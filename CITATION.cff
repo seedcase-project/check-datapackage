@@ -35,5 +35,5 @@ keywords:
   - "metadata checks"
 license: MIT
 message: "If you use this software, please cite it using these metadata."
-repository-code: "https://github.com/seedcase-project/template-data-package"
-url: "https://template-data-package.seedcase-project.org"
+repository-code: "https://github.com/seedcase-project/check-data-package"
+url: "https://check-data-package.seedcase-project.org"
