@@ -10,7 +10,7 @@ run-all: install-deps update-quarto-theme format-python _checks _tests _builds
 
 # List all TODO items in the repository
 list-todos:
-  grep -R -n --exclude="*.code-snippets" "TODO" *
+  grep -R -n --exclude="*.code-snippets" --exclude="justfile" "TODO" *
 
 # Install the pre-commit hooks
 install-precommit:
