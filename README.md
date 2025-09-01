@@ -1,6 +1,6 @@
 
 
-# check-datapackage: TODO add more to title
+# check-datapackage: Ensure the correctness and compliance of your Data Package
 
 <!-- TODO: Include DOI after uploading -->
 

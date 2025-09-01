@@ -4,7 +4,7 @@ metadata-files:
   - _metadata.yml
 ---
 
-# {{< meta gh.repo >}}: TODO add more to title
+# {{< meta gh.repo >}}: Ensure the correctness and compliance of your Data Package
 
 {{< include /docs/includes/_badges.qmd >}}
 
