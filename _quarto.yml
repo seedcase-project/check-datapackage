@@ -1,18 +1,8 @@
 project:
-  # TODO: change to extension name if using a custom extension
-  type: website
-  # Delete auto-generated files from `quartodoc`
-  post-render: rm -f docs/reference/*.qmd
-  render:
-    - "docs/*"
-    - "index.qmd"
-    - "404.qmd"
-    - "CONTRIBUTING.md"
+  type: seedcase-theme
 
 website:
-  # TODO: Fill in the title of the website.
-  title: ""
-  # TODO: Set the Netlify custom domain URL
+  title: "Check Data Package"
   site-url: "https://check-datapackage.seedcase-project.org"
   repo-url: "https://github.com/seedcase-project/check-datapackage"
   page-navigation: true
