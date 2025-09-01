@@ -1,0 +1,15 @@
+<!-- TODO: Include DOI after uploading -->
+<!-- [![PyPI Version](https://img.shields.io/pypi/v/{{< meta gh.repo >}}.svg)](https://pypi.org/project/{{< meta gh.repo >}}/) -->
+[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-teal.json?raw=true.svg)](https://github.com/copier-org/copier)
+[![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2F{{< meta gh.org >}}%2F{{< meta gh.repo >}}%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/blob/main/pyproject.toml)
+[![GitHub License](https://img.shields.io/github/license/{{< meta gh.org >}}/{{< meta gh.repo >}}.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/blob/main/LICENSE.md)
+[![GitHub Release](https://img.shields.io/github/v/release/{{< meta gh.org >}}/{{< meta gh.repo >}}.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/releases/latest)
+[![Build documentation](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-website.yml/badge.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-website.yml)
+[![Build package](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-package.yml/badge.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-package.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/badge?raw=true.svg)](https://scorecard.dev/viewer/?uri=github.com/{{< meta gh.org >}}/{{< meta gh.repo >}})
+[![CodeQL](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/github-code-scanning/codeql)
+[![code coverage](https://raw.githubusercontent.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/coverage.svg?raw=true)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/index.html)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/{{< meta gh.org >}}/{{< meta gh.repo >}}/main.svg)](https://results.pre-commit.ci/latest/github/{{< meta gh.org >}}/{{< meta gh.repo >}}/main)
+[![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+<!-- [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) -->

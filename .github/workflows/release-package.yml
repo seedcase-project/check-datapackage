@@ -1,0 +1,61 @@
+name: Release package
+
+on:
+  push:
+    branches:
+      - main
+
+# Limit token permissions for security
+permissions: read-all
+
+jobs:
+  release:
+    # This job outputs env variables `previous_version` and `current_version`.
+    # Only give permissions for this job.
+    permissions:
+      contents: write
+    uses: seedcase-project/.github/.github/workflows/reusable-release-project.yml@main
+    with:
+      app-id: ${{ vars.UPDATE_VERSION_APP_ID }}
+    secrets:
+      update-version-gh-token: ${{ secrets.UPDATE_VERSION_TOKEN }}
+
+  pypi-publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    # Only give permissions for this job.
+    permissions:
+      # IMPORTANT: mandatory for trusted publishing.
+      id-token: write
+    environment:
+      name: pypi
+    needs:
+      - release
+    if: ${{ needs.release.outputs.previous_version != needs.release.outputs.current_version }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Need to explicitly get the current version, otherwise it defaults to current commit
+          # (which is not the same as the release/version commit).
+          ref: ${{ needs.release.outputs.current_version }}
+
+      # This workflow and the publish workflows are based on:
+      # - https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+      # - https://www.andrlik.org/dispatches/til-use-uv-for-build-and-publish-github-actions/
+      # - https://github.com/astral-sh/trusted-publishing-examples
+      - name: Set up uv
+        uses: astral-sh/setup-uv@bd01e18f51369d5a26f1651c3cb451d3417e3bba # v6.3.1
+
+      - name: Build distributions
+        # Builds dists from source and stores them in the dist/ directory.
+        run: uv build
+
+      - name: Publish 📦 to PyPI
+        # Only publish if the option is explicitly set in the calling workflow.
+        run: uv publish --trusted-publishing always

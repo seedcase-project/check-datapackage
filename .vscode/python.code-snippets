@@ -1,0 +1,18 @@
+{
+  "Insert a Python test": {
+    "prefix": "test-gwt",
+    "body": [
+      "def test_$1():",
+      "    # Given",
+      "    $2",
+      "    ",
+      "    # When",
+      "    $3",
+      "    ",
+      "    # Then",
+      "    $4",
+      "",
+    ],
+    "description": "Create Given-When-Then test"
+  }
+}

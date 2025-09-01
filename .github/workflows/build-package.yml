@@ -1,0 +1,19 @@
+name: Build package
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+# Limit token permissions for security
+permissions: read-all
+
+jobs:
+  build:
+    uses: seedcase-project/.github/.github/workflows/reusable-build-python.yml@main
+    # Permissions needed for pushing to the coverage branch.
+    permissions:
+      contents: write

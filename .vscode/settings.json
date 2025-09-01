@@ -1,0 +1,40 @@
+{
+  "files.autoSave": "onFocusChange",
+  "editor.wordWrap": "off",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
+  "git.autofetch": false,
+  "quarto.visualEditor.markdownWrap": "column",
+  "quarto.visualEditor.markdownWrapColumn": 72,
+  "autoDocstring.customTemplatePath": ".vscode/google-notypes.mustache",
+  "editor.tabCompletion": "on",
+  "editor.snippetSuggestions": "inline",
+  "conventional-branch.type": [
+    "build",
+    "ci",
+    "docs",
+    "feat",
+    "fix",
+    "refactor",
+    "style",
+    "test",
+    "chore",
+    "perf",
+    "revert"
+  ],
+  "conventional-branch.format": "{Type}/{Branch}",
+  "[quarto][qmd]": {
+    "editor.formatOnSave": false
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+  "python.languageServer": "Pylance",
+  "files.insertFinalNewline": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestPath": "${workspaceFolder}/.venv/bin/pytest",
+  "mypy.runUsingActiveInterpreter": true,
+}

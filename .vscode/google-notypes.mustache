@@ -1,0 +1,41 @@
+{{! Copied from https://github.com/NilsJPWerner/autoDocstring/blob/master/src/docstring/templates/google-notypes.mustache with some edits }}
+{{! Google Docstring Template without Types for Args, Returns or Yields }}
+{{summaryPlaceholder}}.
+
+{{extendedSummaryPlaceholder}}
+{{#parametersExist}}
+
+Args:
+{{#args}}
+    {{var}}: {{descriptionPlaceholder}}.
+{{/args}}
+{{#kwargs}}
+    {{var}}: {{descriptionPlaceholder}}. Defaults to {{&default}}.
+{{/kwargs}}
+{{/parametersExist}}
+{{#returnsExist}}
+
+Returns:
+{{#returns}}
+    {{descriptionPlaceholder}}.
+{{/returns}}
+{{/returnsExist}}
+{{#exceptionsExist}}
+
+Raises:
+{{#exceptions}}
+    {{type}}: {{descriptionPlaceholder}}.
+{{/exceptions}}
+{{/exceptionsExist}}
+{{#yieldsExist}}
+
+Yields:
+{{#yields}}
+    {{descriptionPlaceholder}}.
+{{/yields}}
+{{/yieldsExist}}
+
+Examples:
+    ```{python}
+    {{descriptionPlaceholder}}
+    ```
