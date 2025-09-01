@@ -1,24 +1,40 @@
-# TODO: Add title of Python package.
-title: ""
+title: "Check Data Package: Ensure the correctness and compliance of your Data Package"
 # TODO: Add abstract of Python package.
 abstract: ""
 authors:
   - family-names: Johnston
     given-names: Luke William
-  # TODO: Add ORCID and affiliation for the author.
-    orcid: ""
-    affiliation: ""
-  # TODO: Add more authors as needed.
-  # - family-names: ""
-  #   given-names: ""
-  #   orcid: ""
-  #   affiliation: ""
+    orcid: "https://orcid.org/0000-0003-4169-2616"
+    affiliation: "Steno Diabetes Center Aarhus"
+  - family-names: Brødbæk
+    given-names: Signe Kirk
+    affiliation: "Steno Diabetes Center Aarhus"
+    orcid: "https://orcid.org/0009-0000-2208-7088"
+  - family-names: Beicher
+    given-names: Kristiane
+    affiliation: "Steno Diabetes Center Aarhus"
+    orcid: "https://orcid.org/0000-0001-7556-9566"
+  - family-names: Vago
+    given-names: Marton
+    affiliation: "Steno Diabetes Center Aarhus"
+    orcid: "https://orcid.org/0009-0007-4628-655X"
 cff-version: 1.2.0
-# doi:
+# doi: ""
+# date-released: ""
 keywords:
-  # TODO: Add keywords relevant to the project.
-  - ""
+  - "data package"
+  - "data package checks"
+  - "frictionless"
+  - "frictionless data"
+  - "verification"
+  - "checks"
+  - "metadata"
+  - "metadata checks"
+  - "metadata verification"
+  - "verification"
+  - "data engineering"
+  - "metadata checks"
 license: MIT
-message: "If you use this Python package, please cite it using these metadata."
-repository-code: "https://github.com/seedcase-project/check-datapackage"
-url: "https://check-datapackage.seedcase-project.org"
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/seedcase-project/check-data-package"
+url: "https://check-data-package.seedcase-project.org"
