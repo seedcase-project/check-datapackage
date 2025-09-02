@@ -15,7 +15,10 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE.md"]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "jsonschema>=4.25.1",
+    "types-jsonschema>=4.25.1.20250822",
+]
 
 [project.urls]
 homepage = "https://check-datapackage.seedcase-project.org"

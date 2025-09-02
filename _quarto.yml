@@ -56,6 +56,17 @@ quartodoc:
     style: _renderer.py
     table_style: description-list
     show_signature_annotations: true
+  options: null
+  sections:
+  - title: check_datapackage
+    desc: Check functions and constants for the Frictionless Data Package standard.
+    contents:
+    - name: CheckError
+    - name: CheckErrorMatcher
+    - name: PACKAGE_RECOMMENDED_FIELDS
+    - name: PACKAGE_REQUIRED_FIELDS
+    - name: RESOURCE_REQUIRED_FIELDS
+    - name: RequiredFieldType
 
 metadata-files:
   - docs/reference/_sidebar.yml
