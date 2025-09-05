@@ -1,3 +1,32 @@
 ---
 title: "Design"
 ---
+
+The purpose of these documents is to describe the design of `check-datapackage` in enough detail to help us develop it in a way that is sustainable (i.e., maintainable over the long term) and that ensures we as a team have a shared understanding of what the package is and is not.
+
+`check-datapackage`'s design builds off of our overall Seedcase [design principles and patterns](https://design.seedcase-project.org/), in that any design we create for `check-datapackage` should strongly follow the same design principles and patterns described there.
+
+## Purpose
+
+The overall aim of `check-datapackage` is to check the correctness and compliance of Data Package descriptors (i.e., the contents of `datapackage.json`) against the [Data Package standard](https://datapackage.org/).
+
+Specifically, `check-datapackage` should:
+
+1.  Verify that the structure and contents of Data Package descriptors match the specification.
+2.  Provide simple, user-friendly feedback about mismatches.
+
+## Requirements
+
+Overall, `check-datapackage` must:
+
+-   Check Data Package descriptors against the Data Package standard.
+-   Allow configuration to check or not check certain components of the descriptor.
+-   Support turning off specific checks defined in the standard.
+-   Support custom, user-defined checks in addition to those in the standard.
+-   Provide informative, user-friendly, and structured error messages.
+-   Identify where in the descriptor issues occur.
+
+In general, `check-datapackage` will not:
+
+-   Depend on other Seedcase packages.
+-   Check resource data against its descriptor.
