@@ -12,7 +12,7 @@ The overall aim of `check-datapackage` is to check the correctness and complianc
 
 Specifically, `check-datapackage` should:
 
-1.  Verify that the structure and contents of Data Package descriptors match the specification.
+1.  Check that the structure and contents of Data Package descriptors match the specification.
 2.  Provide simple, user-friendly feedback about mismatches.
 
 ## Requirements
@@ -23,8 +23,8 @@ Overall, `check-datapackage` must:
 -   Allow configuration to check or not check certain components of the descriptor.
 -   Support turning off specific checks defined in the standard.
 -   Support custom, user-defined checks in addition to those in the standard.
--   Provide informative, user-friendly, and structured error messages.
--   Identify where in the descriptor issues occur.
+-   Provide informative, user-friendly, and structured messages about any issues.
+-   Identify where in the descriptor the issues occur.
 
 In general, `check-datapackage` will not:
 
