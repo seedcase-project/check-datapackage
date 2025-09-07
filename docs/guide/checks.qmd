@@ -2,6 +2,8 @@
 title: "Checking package and resource properties"
 order: 4
 jupyter: python3
+# TODO: eval when updated
+eval: false
 ---
 
 <!-- TODO: I think this section needs to be updated. -->

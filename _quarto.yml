@@ -9,13 +9,16 @@ website:
   navbar:
     pinned: true
     title: false
-    logo: "_extensions/seedcase-project/seedcase-theme/logos/navbar-logo-check-datapackage.svg"
+    # TODO: add logo specific to check-datapackage
+    logo: "_extensions/seedcase-project/seedcase-theme/logos/seedcase-logo.svg"
     logo-alt: "check-datapackage logo: Main page"
     left:
       - text: "Guide"
         href: docs/guide/index.qmd
       - text: "Design"
         href: docs/design/index.qmd
+      - text: "Reference"
+        href: docs/reference/index.qmd
     tools:
       - icon: github
         href: "https://github.com/seedcase-project/check-datapackage"
@@ -53,9 +56,10 @@ quartodoc:
     contents:
     - name: CheckError
     - name: CheckErrorMatcher
-    - name: PACKAGE_RECOMMENDED_FIELDS
-    - name: PACKAGE_REQUIRED_FIELDS
-    - name: RESOURCE_REQUIRED_FIELDS
+    # TODO: fix how constants are rendered by quartodoc
+    # - name: constants.PACKAGE_RECOMMENDED_FIELDS
+    # - name: constants.PACKAGE_REQUIRED_FIELDS
+    # - name: constants.RESOURCE_REQUIRED_FIELDS
     - name: RequiredFieldType
 
 metadata-files:

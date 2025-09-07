@@ -10,12 +10,13 @@ class CheckErrorMatcher:
 
     Examples:
             ```{python}
-            error = CheckError(
+            import check_datapackage as cdp
+            error = cdp.CheckError(
                 message="123 is not of type 'string'",
                 json_path="$.resources[0].name",
                 validator="type",
             )
-            matcher = CheckErrorMatcher(
+            matcher = cdp.CheckErrorMatcher(
                 message="of type 'string'",
                 json_path=r"resources\[.\]",
                 validator="type",
