@@ -1,0 +1,143 @@
+---
+title: "Architecture"
+---
+
+This documentation contains the architectural designs for
+`check-datapackage`. For design details on Seedcase as a whole, see the
+[Design](https://design.seedcase-project.org) documentation.
+
+The purpose of these architectural documents is to describe to ourselves
+and others what `check-datapackage` aims to accomplish and how it will
+do that.
+
+# User types {#user-types}
+
+This section describes the different users we expect and design for.
+
+-   **Owner:** Creates and owns the Data Package. Wants to ensure that
+    the Data Package is correct, at least at the level of the
+    properties.
+-   **Manager:** Manages and edits the properties within the Data
+    Package. Wants to make sure that whenever changes are made to the
+    properties (e.g., updating the description field), they remain
+    compliant with the standard.
+-   **Developer:** Contributes to building up the Data Package or the
+    infrastructure around it. Wants to ensure that changes don't impact
+    the correctness of the Data Package descriptor.
+
+# Inputs
+
+This section describes the inputs accepted by `check-datapackage`.
+
+-   **Descriptor:** This is a Python dictionary containing the
+    properties of a Data Package or Data Resource. Allowed properties
+    are defined in the [Data Package
+    standard](https://datapackage.org/). A common use case is loading
+    the descriptor from the `datapackage.json` file.
+-   **Config:** A `Config` object can optionally be passed to
+    `check-datapackage` with settings to modify the behaviour and output
+    of the check mechanism. See
+    [Config](/docs/design/interface.qmd#config) for a more detailed
+    description.
+
+# Outputs
+
+For each failed check, `check-datapackage` flags the corresponding issue
+in the descriptor. If all checks pass, no output is produced.
+
+-   Default mode: The issues are returned as a list without stopping
+    program execution.
+-   Error mode: The issues are raised as an error stopping program
+    execution.
+
+# C4 Models
+
+This section contains the [C4 Models](https://c4model.com/) for
+`check-datapackage`. The C4 Model is an established visualisation
+approach to describe the architecture of a software system. It breaks
+the system down into four levels of architectural abstraction: Context,
+Containers, Components, and Code. For our case, the **Context** and
+**Containers** diagrams are the most useful.
+
+## Context
+
+The Context diagram shows the users and any external systems that
+interact with `check-datapackage`. This includes the user types
+described in the [User types](#user-types) section.
+
+::: callout-caution
+For some reason, these diagrams don't display well on some browsers like
+Firefox. To see them, try using a different browser like Chrome or Edge.
+:::
+
+```{mermaid}
+%%| label: fig-c4-context
+%%| fig-cap: "C4 Context diagram showing a very basic overview of `check-datapackage` and its anticipated users."
+flowchart LR
+    user_owner(["Owner<br>[person]"])
+    user_manager(["Manager<br>[person]"])
+    user_developer(["Developer<br>[person]"])
+	ext_dp_schema(["Data Package standard<br>[standard]"])
+    check
+
+	ext_dp_schema --> check
+    user_owner --> check
+    user_manager --> check
+    user_developer --> check
+```
+
+## Container
+
+The Container diagram shows the larger parts of the system, what they
+are responsible for, and how they interact with each other. It also
+shows the technology choices for each container.
+
+```{mermaid}
+%%| label: fig-c4-container
+%%| fig-cap: "C4 Container diagram showing larger parts of `check-datapackage` and their connections."
+flowchart LR
+	ext_dp_schema(["Data Package standard<br>[JSON]<br><br>Define descriptor<br>structure and contents."])
+	in_dp_json(["Descriptor<br>[Python]<br><br>Describe Data Package<br>or Data Resource."])
+	config(["Config<br>[Python]<br><br>Configure check<br>behaviour and output."])
+	check
+	
+	config --> check
+	ext_dp_schema --> check
+	in_dp_json --> check
+```
+
+# Naming
+
+This section contains a naming scheme for `check-datapackage` that is
+guided by our [style guide](https://design.seedcase-project.org/style/)
+and the [Data Package standard](https://datapackage.org/).
+
+Following Data Package terminology, we simplify "data package" to
+"package" and "data resource" to "resource". The Data Package standard
+calls package and resource metadata contained in the `datapackage.json`
+file
+["descriptors"]((https://datapackage.org/standard/glossary/#descriptor)).
+We adopt this usage, but may also use the words "property" or
+"properties" to refer to metadata.
+
+## Objects
+
+| Object | Description |
+|----------------------------|--------------------------------------------|
+| package | A data package that contains a collection of related data resources and properties. |
+| resource | A single data file within a package including its properties. |
+| descriptor | Metadata about a package or resource. |
+| properties | Metadata about a package or resource. |
+| standard | The JSON schema defining the Data Package standard. |
+| config | An object containing settings for modifying the behaviour and output of the check mechanism. |
+
+: Objects used throughout `check-datapackage`.
+
+## Actions
+
+| Action | Description |
+|----------------------------|--------------------------------------------|
+| check | Check that a descriptor conforms to the Data Package standard. |
+| explain | Explain issues flagged by the check mechanism in more detail using non-technical language. |
+
+: Actions that `check-datapackage` can perform.
