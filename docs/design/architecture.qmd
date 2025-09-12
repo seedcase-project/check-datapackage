@@ -10,7 +10,7 @@ The purpose of these architectural documents is to describe to ourselves
 and others what `check-datapackage` aims to accomplish and how it will
 do that.
 
-# User types {#user-types}
+## User types {#user-types}
 
 This section describes the different users we expect and design for.
 
@@ -25,7 +25,7 @@ This section describes the different users we expect and design for.
     infrastructure around it. Wants to ensure that changes don't impact
     the correctness of the Data Package descriptor.
 
-# Inputs
+## Inputs
 
 This section describes the inputs accepted by `check-datapackage`.
 
@@ -36,11 +36,9 @@ This section describes the inputs accepted by `check-datapackage`.
     the descriptor from the `datapackage.json` file.
 -   **Config:** A `Config` object can optionally be passed to
     `check-datapackage` with settings to modify the behaviour and output
-    of the check mechanism. See
-    [Config](/docs/design/interface.qmd#config) for a more detailed
-    description.
+    of the check mechanism.
 
-# Outputs
+## Outputs
 
 For each failed check, `check-datapackage` flags the corresponding issue
 in the descriptor. If all checks pass, no output is produced.
@@ -50,7 +48,7 @@ in the descriptor. If all checks pass, no output is produced.
 -   Error mode: The issues are raised as an error stopping program
     execution.
 
-# C4 Models
+## C4 Models
 
 This section contains the [C4 Models](https://c4model.com/) for
 `check-datapackage`. The C4 Model is an established visualisation
@@ -59,7 +57,7 @@ the system down into four levels of architectural abstraction: Context,
 Containers, Components, and Code. For our case, the **Context** and
 **Containers** diagrams are the most useful.
 
-## Context
+### Context
 
 The Context diagram shows the users and any external systems that
 interact with `check-datapackage`. This includes the user types
@@ -77,7 +75,7 @@ flowchart LR
     user_owner(["Owner<br>[person]"])
     user_manager(["Manager<br>[person]"])
     user_developer(["Developer<br>[person]"])
-	ext_dp_schema(["Data Package standard<br>[standard]"])
+    ext_dp_schema(["Data Package standard<br>[standard]"])
     check
 
 	ext_dp_schema --> check
@@ -86,7 +84,7 @@ flowchart LR
     user_developer --> check
 ```
 
-## Container
+### Container
 
 The Container diagram shows the larger parts of the system, what they
 are responsible for, and how they interact with each other. It also
@@ -106,11 +104,10 @@ flowchart LR
 	in_dp_json --> check
 ```
 
-# Naming
+## Naming
 
 This section contains a naming scheme for `check-datapackage` that is
-guided by our [style guide](https://design.seedcase-project.org/style/)
-and the [Data Package standard](https://datapackage.org/).
+inspired by the [Data Package standard](https://datapackage.org/).
 
 Following Data Package terminology, we simplify "data package" to
 "package" and "data resource" to "resource". The Data Package standard
@@ -120,11 +117,11 @@ file
 We adopt this usage, but may also use the words "property" or
 "properties" to refer to metadata.
 
-## Objects
+### Objects
 
 | Object | Description |
 |----------------------------|--------------------------------------------|
-| package | A data package that contains a collection of related data resources and properties. |
+| package | A Data Package that contains a collection of related data resources and properties. |
 | resource | A single data file within a package including its properties. |
 | descriptor | Metadata about a package or resource. |
 | properties | Metadata about a package or resource. |
@@ -133,7 +130,7 @@ We adopt this usage, but may also use the words "property" or
 
 : Objects used throughout `check-datapackage`.
 
-## Actions
+### Actions
 
 | Action | Description |
 |----------------------------|--------------------------------------------|
