@@ -78,7 +78,7 @@ flowchart LR
     ext_dp_schema(["Data Package standard<br>[standard]"])
     check
 
-	ext_dp_schema --> check
+    ext_dp_schema --> check
     user_owner --> check
     user_manager --> check
     user_developer --> check
@@ -94,14 +94,14 @@ shows the technology choices for each container.
 %%| label: fig-c4-container
 %%| fig-cap: "C4 Container diagram showing larger parts of `check-datapackage` and their connections."
 flowchart LR
-	ext_dp_schema(["Data Package standard<br>[JSON]<br><br>Define descriptor<br>structure and contents."])
-	in_dp_json(["Descriptor<br>[Python]<br><br>Describe Data Package<br>or Data Resource."])
-	config(["Config<br>[Python]<br><br>Configure check<br>behaviour and output."])
-	check
+    ext_dp_schema(["Data Package standard<br>[JSON]<br><br>Define descriptor<br>structure and contents."])
+    in_dp_json(["Descriptor<br>[Python]<br><br>Describe Data Package<br>or Data Resource."])
+    config(["Config<br>[Python]<br><br>Configure check<br>behaviour and output."])
+    check
 
-	config --> check
-	ext_dp_schema --> check
-	in_dp_json --> check
+    config --> check
+    ext_dp_schema --> check
+    in_dp_json --> check
 ```
 
 ## Naming
