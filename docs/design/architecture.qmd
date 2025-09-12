@@ -100,7 +100,7 @@ flowchart LR
 	in_dp_json(["Descriptor<br>[Python]<br><br>Describe Data Package<br>or Data Resource."])
 	config(["Config<br>[Python]<br><br>Configure check<br>behaviour and output."])
 	check
-	
+
 	config --> check
 	ext_dp_schema --> check
 	in_dp_json --> check
