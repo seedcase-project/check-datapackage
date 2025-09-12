@@ -116,7 +116,7 @@ Following Data Package terminology, we simplify "data package" to
 "package" and "data resource" to "resource". The Data Package standard
 calls package and resource metadata contained in the `datapackage.json`
 file
-["descriptors"]((https://datapackage.org/standard/glossary/#descriptor)).
+["descriptors"](https://datapackage.org/standard/glossary/#descriptor).
 We adopt this usage, but may also use the words "property" or
 "properties" to refer to metadata.
 
