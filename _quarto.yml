@@ -31,8 +31,10 @@ website:
       pinned: true
       style: "floating"
       contents:
-        - text: "Design"
+        - section: "Design"
           href: docs/design/index.qmd
+          contents:
+            - docs/design/architecture.qmd
     - id: guide
       contents:
         - section: "Guide"
