@@ -148,8 +148,8 @@ class Config:
             ignored (i.e., removed from the output of the check function).
         rules (list[Rule]): Custom checks listed here will be done in addition
             to checks defined in the Data Package standard.
-        version (list[string]) = ["v2", "v1"]: Version(s) of the Data Package
-            standard to check against. Defaults to both v2 and v1.
+        version: Version(s) of the Data Package
+            standard to check against. Defaults to "v2".
         strict: Whether to run recommended as well as required
             checks. If True, recommended checks will also be run. Default is False.
     """
@@ -236,7 +236,6 @@ class Issue:
             format, pointing to the field in the input object where the issue is located.
             For example, `"$.resources[2].name"`.
         issue (string): A description of what exactly the issue is.
-        solution (string): A message suggesting a potential solution to the issue.
         type (string): The type of the check that failed.
             Used mostly for excluding specific types of issues.
 
