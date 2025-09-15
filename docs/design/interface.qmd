@@ -168,8 +168,8 @@ class Config:
         strict (bool): Whether to run recommended as well as required checks. If
             True, recommended checks will also be run. Default is False.
     """
-    exclude: list[Exclude] = None
-    rules: list[Rule] = None
+    exclude: list[Exclude] = []
+    rules: list[Rule] = []
     version: str = "v2"
     strict: bool = False
 ```
