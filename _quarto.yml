@@ -39,8 +39,8 @@ website:
     - id: design
       contents:
         - section: "Design"
+          href: docs/design/index.qmd
           contents:
-            - docs/design/index.qmd
             - docs/design/architecture.qmd
     - id: guide
       contents:
