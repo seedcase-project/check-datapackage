@@ -1,0 +1,290 @@
+---
+title: "Interface"
+---
+
+This section of the documentation focuses on the design of the interface and how
+it is implemented as Python code.
+
+::: callout-note
+We use {{< var wip >}} to indicate parts of the design that are still a work in
+progress, which will contain the function and class signatures. Once the
+interface is implemented, indicated by {{< var done >}}, we will remove the
+signatures from the documentation and point instead to the reference
+documentation.
+:::
+
+## Inputs
+
+This section describes the inputs accepted by `check-datapackage`.
+
+-   **Descriptor:** This is a Python dictionary containing the
+    properties of a Data Package or Data Resource. Allowed properties
+    are defined in the [Data Package
+    standard](https://datapackage.org/). A common use case is loading
+    the descriptor from the `datapackage.json` file.
+-   **Config:** A `Config` object can optionally be passed to
+    `check-datapackage` with settings to modify the behaviour and output
+    of the check mechanism.
+
+## Outputs
+
+For each failed check, `check-datapackage` flags the corresponding issue
+in the descriptor. If all checks pass, an empty list is returned.
+
+-   Default mode: The issues are returned as a list without stopping
+    program execution.
+-   Error mode: The issues result in errors that stop program
+    execution.
+
+## Functions
+
+There are two main functions and two helper functions that we expose in this
+package. Together, these functions could be combined to create a command-line
+interface.
+
+::: content-hidden
+Potentially we could also have a function that lists what the checks are or lists
+what fields can be excluded. Not sure if that works better as a CLI or if it could
+be used some way as Python code. I didn't include it for now though.
+:::
+
+### {{< var wip >}} `check()`
+
+This is the main function of this package, which will check a Data Package
+descriptor against the Data Package standard, as well as include any custom
+exclusions or custom checks listed in the configuration. Below is the signature
+of the interface:
+
+``` python
+def check(
+    descriptor: dict,
+    config: Config = Config(),
+    error: bool = False
+) -> list[Issue]:
+    """Checks a Data Package descriptor against the Data Package standard.
+
+    Args:
+        descriptor: A Data Package descriptor as a Python dictionary.
+        config: Configuration for the checks to be done. See the `Config`
+            class for more details, especially about the default values.
+        error: Whether to treat any issues found as errors. Defaults
+            to False, meaning that issues will be returned as a list of `Issue`
+            objects. Will internally run `explain()` on the Issues
+            if set to `True`.
+
+    Returns:
+        list[Issue]: A list of `Issue` objects representing any issues found
+            while checking the descriptor. If no issues are found, an empty list
+            is returned.
+    """
+```
+
+The `Config` class is described below. By default, `check()` does not result in an
+error when issues are found, but errors can be triggered by setting `error=True`. We
+don't want `check-datapackage` to trigger errors by default because we want to
+allow users the flexibility to decide when and how failed checks should be
+enforced or handled. The output of this function is a list of `Issue` objects,
+which are described below.
+
+### {{< var wip >}} `explain()`
+
+The output of `check()` is a list of `Issue` objects, which are structured and
+machine-readable, but not very human-readable and user-friendly. It's important
+to have this output to provide structured information about the issues, but we
+also want to provide a way to explain these issues in a more pleasant and
+ergonomic way.
+
+``` python
+def explain(issues: list[Issue]) -> list[str]:
+    """Explain a list of issues in a user-friendly way.
+
+    Args:
+        issues: A list of `Issue` objects representing issues found while
+            checking a Data Package descriptor.
+
+    Returns:
+        A list of user-friendly, human-readable messages
+            explaining each issue.
+    """
+```
+
+### {{< var wip >}} `read_json()`
+
+This is a simple helper function to read the `datapackage.json` file into a
+Python dictionary.
+
+``` python
+def read_json(path: Path) -> dict:
+    """Reads `datapackage.json` into a Python dictionary.
+
+    Args:
+        path: The path to the `datapackage.json` file to read.
+
+    Returns:
+        The contents of the JSON file as a Python dictionary.
+    """
+```
+
+### {{< var wip >}} `read_config()`
+
+This is a simple helper function to read a configuration file into a `Config`
+object for when we extend to having the configurations in a file.
+
+``` python
+def read_config(path: Path) -> Config:
+    """Reads a configuration file into a `Config` object.
+
+    Args:
+        path: The path to the configuration file.
+
+    Returns:
+        A `Config` object populated with the contents of the configuration
+            file.
+    """
+```
+
+## Classes
+
+With all the configurations kept in one class, we can potentially store the
+configuration in a file that can be read into the class, which would be useful
+for a CLI interface.
+
+### {{< var wip >}} `Config`
+
+`Config` is a class that holds all the configurations for the `check()` function.
+
+``` python
+@dataclass
+class Config:
+    """Configuration for checking a Data Package descriptor.
+
+    Attributes:
+        exclude (list[Exclude]): Any issues matching any of these exclusions will be
+            ignored (i.e., removed from the output of the check function).
+        rules (list[Rule]): Custom checks listed here will be done in addition
+            to checks defined in the Data Package standard.
+        version (str): Version(s) of the Data Package standard to check against.
+            Defaults to "v2".
+        strict (bool): Whether to run recommended as well as required checks. If
+            True, recommended checks will also be run. Default is False.
+    """
+    exclude: list[Exclude] = []
+    rules: list[Rule] = []
+    version: str = "v2"
+    strict: bool = False
+```
+
+### {{< var wip >}} `Exclude`
+
+A subitem of `Config` for expressing checks to ignore.
+
+``` python
+@dataclass
+class Exclude:
+    """Exclude specific checks when checking a Data Package descriptor.
+
+    Attributes:
+        target (str): [JSON path](https://en.wikipedia.org/wiki/JSONPath)
+            to the field or fields in the input object where errors should be ignored,
+            e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
+            of the error to ignore.
+        type (str | None): The type of the check to ignore (e.g., "required" or
+            "pattern").  If not provided, all types of checks will be ignored for
+            the given target.
+    """
+    target: str
+    type: str | None = None
+```
+
+#### {{< var wip >}} `Rule`
+
+Expresses a custom check.
+
+``` python
+@dataclass
+class Rule:
+    """A custom check to be done on a Data Package descriptor.
+
+    Attributes:
+        target (str): [JSON path](https://en.wikipedia.org/wiki/JSONPath)
+            to the field or fields in the input object where the rule should be used,
+            e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
+            for the rule to apply to.
+        type (str): The type of the check defined by the rule. Can be a type that
+            exists in the Data Package standard (e.g., "required" or "pattern") or a
+            custom type.
+        message (str): A user-friendly explanation of what went wrong and any
+            tips for fixing it.
+        check (Callable[[Any], bool]): Function for doing the custom check. Takes a
+            value and returns true if the check passes, false if it fails.
+    """
+    target: str
+    message: str
+    check: Callable[[Any], bool]
+    type: str = "custom"
+```
+
+### {{< var wip >}} `Issue`
+
+This class represents an issue that is found when checking a Data Package, with the following interface:
+
+``` python
+@dataclass
+class Issue:
+    """An issue found while checking a Data Package descriptor
+
+    One Issue object represents one failed check on one field within the descriptor.
+
+    Attributes:
+        location (string): A [JSON path](https://en.wikipedia.org/wiki/JSONPath)
+            format, pointing to the field in the input object where the issue is located.
+            For example, `"$.resources[2].name"`.
+        message (string): A description of what exactly the issue is.
+        type (string): The type of the check that failed.
+            Used mostly for excluding specific types of issues.
+
+    Methods:
+        __str__(): Return a user-friendly, human-readable message of the issue, with more
+            details than the `message` attribute and more context. Used when running
+            `explain()` on the issues.
+    """
+    location: str
+    message: str
+    type: str
+
+    def __str__(self) -> str:
+        """Return a user-friendly, human-readable string representation of the issue."""
+```
+
+## Flow
+
+This is the potential flow of using `check-datapackage`:
+
+```{mermaid}
+%%| label: fig-interface-flow
+%%| fig-cap: "Flow of functions and classes when using `check-datapackage`."
+%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the datapackage.json and .cdp.yaml files, then checking the descriptor with the config, and finally explaining any issues found."
+flowchart TD
+    descriptor_file[(datapackage.json)]
+    read_json["read_json()"]
+    descriptor[/"Descriptor<br>(dict)"/]
+
+    config_file[(.cdp.yaml)]
+    read_config["read_config()"]
+
+    config[/Config/]
+    rules[/Rules/]
+    exclude[/Exclude/]
+    check["check()"]
+    issues[/"list[Issue]"/]
+
+    explain["explain()"]
+    messages[/messages/]
+
+    descriptor_file --> read_json --> descriptor
+    config_file --> read_config --> config
+    rules & exclude --> config
+    rules & exclude -.-> config_file
+
+    descriptor & config --> check --> issues --> explain --> messages
+```
