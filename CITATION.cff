@@ -35,6 +35,6 @@ keywords:
   - "data engineering"
   - "metadata checks"
 license: MIT
-message: "If you use this software, please cite it using these metadata."
-repository-code: "https://github.com/seedcase-project/check-data-package"
-url: "https://check-data-package.seedcase-project.org"
+message: "If you use this Python package, please cite it using these metadata."
+repository-code: "https://github.com/seedcase-project/check-datapackage"
+url: "https://check-datapackage.seedcase-project.org"
