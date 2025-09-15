@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.16.4
+_commit: 0.17.9
 _src_path: gh:seedcase-project/template-python-package
 author_email: lwjohnst@gmail.com
 author_family_name: Johnston
@@ -8,7 +8,6 @@ copyright_year: '2025'
 github_board_number: '18'
 github_repo: check-datapackage
 github_user: seedcase-project
-homepage: https://check-datapackage.seedcase-project.org
 hosting_provider: netlify
 is_seedcase_project: true
 review_team: '@seedcase-project/developers'

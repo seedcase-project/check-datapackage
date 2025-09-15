@@ -38,8 +38,10 @@ website:
         - CONTRIBUTING.md
     - id: design
       contents:
-        - text: "Design"
-          href: docs/design/index.qmd
+        - section: "Design"
+          contents:
+            - docs/design/index.qmd
+            - docs/design/architecture.qmd
     - id: guide
       contents:
         - section: "Guide"
