@@ -39,6 +39,8 @@ Overall, `check-datapackage` must:
     standard.
 -   Provide informative, user-friendly, and structured messages about
     any issues, identifying where in the descriptor the issues occur.
+-   Is designed in a way that can be extended as a command-line
+    interface (CLI) in the future.
 
 In general, `check-datapackage` will not:
 
