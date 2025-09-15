@@ -33,6 +33,7 @@ website:
       contents:
         - text: "Design"
           href: docs/design/index.qmd
+        - docs/design/interface.qmd
     - id: guide
       contents:
         - section: "Guide"
