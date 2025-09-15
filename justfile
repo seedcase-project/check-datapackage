@@ -10,7 +10,12 @@ run-all: install-deps update-quarto-theme format-python _checks _tests _builds
 
 # List all TODO items in the repository
 list-todos:
-  grep -R -n --exclude="*.code-snippets" --exclude="justfile" "TODO" *
+  grep -R -n \
+    --exclude="*.code-snippets" \
+    --exclude-dir=.quarto \
+    --exclude=justfile \
+    --exclude=_site \
+    "TODO" *
 
 # Install the pre-commit hooks
 install-precommit:
@@ -20,10 +25,10 @@ install-precommit:
   uvx pre-commit run --all-files
   # Update versions of pre-commit hooks
   uvx pre-commit autoupdate
-
 # Update the Quarto seedcase-theme extension
 update-quarto-theme:
-  quarto add seedcase-project/seedcase-theme --no-prompt
+  # Add theme if it doesn't exist, update if it does
+  quarto update seedcase-project/seedcase-theme --no-prompt
 
 # Install Python package dependencies
 install-deps:
@@ -55,7 +60,7 @@ build-website:
   export QUARTO_PYTHON=.venv/bin/python3
   # Delete any previously built files from quartodoc.
   # -f is to not give an error if the files don't exist yet.
-  rm -f docs/reference/*.qmd
+  rm -rf docs/reference
   uv run quartodoc build
   uv run quarto render --execute
 
