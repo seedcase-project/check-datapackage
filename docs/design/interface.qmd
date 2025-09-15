@@ -210,8 +210,9 @@ class Rule:
             to the field or fields in the input object where the rule should be used,
             e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
             for the rule to apply to.
-        type (str | None): The type of the check to apply the rule to (e.g., "required" or
-            "pattern").  If not provided, the rule will apply to all targets.
+        type (str): The type of the check defined by the rule. Can be a type that
+            exists in the Data Package standard (e.g., "required" or "pattern") or a
+            custom type.
         message (str): A user-friendly explanation of what went wrong and any
             tips for fixing it.
         check (Callable[[Any], bool]): Function for doing the custom check. Takes a
@@ -238,7 +239,7 @@ class Issue:
         location (string): A [JSON path](https://en.wikipedia.org/wiki/JSONPath)
             format, pointing to the field in the input object where the issue is located.
             For example, `"$.resources[2].name"`.
-        issue (string): A description of what exactly the issue is.
+        message (string): A description of what exactly the issue is.
         type (string): The type of the check that failed.
             Used mostly for excluding specific types of issues.
 
