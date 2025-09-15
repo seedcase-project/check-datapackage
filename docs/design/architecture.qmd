@@ -41,7 +41,7 @@ This section describes the inputs accepted by `check-datapackage`.
 ## Outputs
 
 For each failed check, `check-datapackage` flags the corresponding issue
-in the descriptor. If all checks pass, no output is produced.
+in the descriptor. If all checks pass, an empty list is returned.
 
 -   Default mode: The issues are returned as a list without stopping
     program execution.
@@ -111,11 +111,12 @@ inspired by the [Data Package standard](https://datapackage.org/).
 
 Following Data Package terminology, we simplify "data package" to
 "package" and "data resource" to "resource". The Data Package standard
-calls package and resource metadata contained in the `datapackage.json`
-file
-["descriptors"](https://datapackage.org/standard/glossary/#descriptor).
-We adopt this usage, but may also use the words "property" or
-"properties" to refer to metadata.
+calls a standalone and complete metadata structure
+["descriptor"](https://datapackage.org/standard/glossary/#descriptor).
+Descriptors are JSON objects contained in JSON files (e.g.,
+`datapackage.json` contains the Data Package descriptor). We adopt this
+usage, but may also use the word "properties" to refer to the metadata
+as a whole.
 
 ### Objects
 
