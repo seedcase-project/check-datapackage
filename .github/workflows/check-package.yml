@@ -1,4 +1,4 @@
-name: Build package
+name: Check package
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ permissions: read-all
 
 jobs:
   build:
-    uses: seedcase-project/.github/.github/workflows/reusable-build-python.yml@main
+    uses: seedcase-project/.github/.github/workflows/reusable-check-python.yml@main
     # Permissions needed for pushing to the coverage branch.
     permissions:
       contents: write

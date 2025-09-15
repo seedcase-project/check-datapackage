@@ -5,7 +5,7 @@
 [![GitHub License](https://img.shields.io/github/license/{{< meta gh.org >}}/{{< meta gh.repo >}}.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/blob/main/LICENSE.md)
 [![GitHub Release](https://img.shields.io/github/v/release/{{< meta gh.org >}}/{{< meta gh.repo >}}.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/releases/latest)
 [![Build documentation](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-website.yml/badge.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-website.yml)
-[![Build package](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-package.yml/badge.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/build-package.yml)
+[![Check package](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/check-package.yml/badge.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/check-package.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/badge?raw=true.svg)](https://scorecard.dev/viewer/?uri=github.com/{{< meta gh.org >}}/{{< meta gh.repo >}})
 [![CodeQL](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/github-code-scanning/codeql)
 [![code coverage](https://raw.githubusercontent.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/coverage.svg?raw=true)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/index.html)

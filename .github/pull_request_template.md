@@ -1,12 +1,12 @@
 # Description
 
-These changes EXPLANATION.
+EXPLANATION
 
 Closes #
 
-This PR needs a quick/an in-depth review.
+Needs a quick/an in-depth review.
 
 ## Checklist
 
+- [ ] Formatted Markdown
 - [ ] Ran `just run-all`
-- [ ] Formatted Markdown, if modified
