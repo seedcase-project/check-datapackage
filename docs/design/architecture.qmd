@@ -124,8 +124,8 @@ as a whole.
 |----------------------------|--------------------------------------------|
 | package | A Data Package that contains a collection of related data resources and properties. |
 | resource | A single data file within a package including its properties. |
-| descriptor | Metadata about a package or resource. |
-| properties | Metadata about a package or resource. |
+| descriptor | The standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
+| properties | Individual elements of the metadata structure or the structure as a whole. |
 | standard | The JSON schema defining the Data Package standard. |
 | config | An object containing settings for modifying the behaviour and output of the check mechanism. |
 
