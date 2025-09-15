@@ -13,6 +13,8 @@ website:
     logo: "_extensions/seedcase-project/seedcase-theme/logos/seedcase-logo.svg"
     logo-alt: "check-datapackage logo: Main page"
     left:
+      - text: "Overview"
+        href: docs/index.qmd
       - text: "Guide"
         href: docs/guide/index.qmd
       - text: "Design"
@@ -27,9 +29,14 @@ website:
         href: "https://seedcase-project.org"
         aria-label: "House icon: Main website for the Seedcase Project"
   sidebar:
-    - id: design
+    - id: overview
       pinned: true
       style: "floating"
+      contents:
+        - docs/index.qmd
+        - CHANGELOG.qmd
+        - CONTRIBUTING.md
+    - id: design
       contents:
         - section: "Design"
           href: docs/design/index.qmd
