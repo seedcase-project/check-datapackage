@@ -15,11 +15,26 @@ documentation.
 
 ## Inputs
 
-<!-- TODO: Move from architecture -->
+This section describes the inputs accepted by `check-datapackage`.
+
+-   **Descriptor:** This is a Python dictionary containing the
+    properties of a Data Package or Data Resource. Allowed properties
+    are defined in the [Data Package
+    standard](https://datapackage.org/). A common use case is loading
+    the descriptor from the `datapackage.json` file.
+-   **Config:** A `Config` object can optionally be passed to
+    `check-datapackage` with settings to modify the behaviour and output
+    of the check mechanism.
 
 ## Outputs
 
-<!-- TODO: Move from architecture -->
+For each failed check, `check-datapackage` flags the corresponding issue
+in the descriptor. If all checks pass, an empty list is returned.
+
+-   Default mode: The issues are returned as a list without stopping
+    program execution.
+-   Error mode: The issues result in errors that stop program
+    execution.
 
 ## Functions
 
@@ -151,8 +166,8 @@ class Config:
         strict (bool) = False: Whether to check recommended as well as required
             fields. If True, recommended fields will also be checked.
     """
-    exclude: list[Exclude]
-    rules: list[Rules]
+    exclude: list[Exclude]: Exclude()
+    rules: list[Rules] =
     version: string
     strict: bool
 
