@@ -163,22 +163,15 @@ class Config:
             ignored (i.e., removed from the output of the check function).
         rules (list[Rule]): Custom checks listed here will be done in addition
             to checks defined in the Data Package standard.
-        version: Version(s) of the Data Package
-            standard to check against. Defaults to "v2".
-        strict: Whether to run recommended as well as required
-            checks. If True, recommended checks will also be run. Default is False.
+        version (str): Version(s) of the Data Package standard to check against.
+            Defaults to "v2".
+        strict (bool): Whether to run recommended as well as required checks. If
+            True, recommended checks will also be run. Default is False.
     """
-    exclude: list[Exclude]
-    rules: list[Rule]
-    version: str
-    strict: bool
-
-    def __default__(self):
-        """Initialize a Config object with default values."""
-        self.exclude = []
-        self.rules = []
-        self.version = "v2"
-        self.strict = False
+    exclude: list[Exclude] = None
+    rules: list[Rule] = None
+    version: str = "v2"
+    strict: bool = False
 ```
 
 ### {{< var wip >}} `Exclude`
@@ -191,17 +184,13 @@ class Exclude:
     """Exclude specific checks when checking a Data Package descriptor.
 
     Attributes:
-        target: [JSON path](https://en.wikipedia.org/wiki/JSONPath)
+        target (str): [JSON path](https://en.wikipedia.org/wiki/JSONPath)
             to the field or fields in the input object where errors should be ignored,
             e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
             of the error to ignore.
-        type: The type of the check to ignore (e.g., "required" or "pattern").
-            If not provided, all types of checks will be ignored for the given
-            target.
-
-    Methods:
-        matches(error: CheckError) -> bool: Returns True if the given error matches
-            this filter, False otherwise.
+        type (str | None): The type of the check to ignore (e.g., "required" or
+            "pattern").  If not provided, all types of checks will be ignored for
+            the given target.
     """
     target: str
     type: str | None = None
@@ -217,17 +206,16 @@ class Rule:
     """A custom check to be done on a Data Package descriptor.
 
     Attributes:
-        target: [JSON path](https://en.wikipedia.org/wiki/JSONPath)
-            to the field or fields in the input object where errors should be ignored,
-            e.g., `$.resources[*].name`. Needs to match exactly the location of the error
-            to be ignored in the Data Package standard.
-        type: Either "required" or "pattern". The type of the check to ignore.
-            If not provided, all types of checks will be ignored for the given
-            target.
-        message: A user-friendly explanation of what went wrong and any
+        target (str): [JSON path](https://en.wikipedia.org/wiki/JSONPath)
+            to the field or fields in the input object where the rule should be used,
+            e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
+            for the rule to apply to.
+        type (str | None): The type of the check to apply the rule to (e.g., "required" or
+            "pattern").  If not provided, the rule will apply to all targets.
+        message (str): A user-friendly explanation of what went wrong and any
             tips for fixing it.
-        check: Function for doing the custom check. Takes a value and returns
-            true if the check passes, false if it fails.
+        check (Callable[[Any], bool]): Function for doing the custom check. Takes a
+            value and returns true if the check passes, false if it fails.
     """
     target: str
     message: str
