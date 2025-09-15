@@ -51,15 +51,16 @@ be used some way as Python code. I didn't include it for now though.
 ### {{< var wip >}} `check()`
 
 This is the main function of this package, which will check a Data Package
-descriptor against the Data Package standard, as well as any custom
-configurations added to those checks. Below is the signature of the interface:
+descriptor against the Data Package standard, as well as include any custom
+exclusions or custom checks listed in the configuration. Below is the signature
+of the interface:
 
 ``` python
 def check(
     descriptor: dict,
     config: Config = Config(),
     error: bool = False
-) -> list[Issues]:
+) -> list[Issue]:
     """Checks a Data Package descriptor against the Data Package standard.
 
     Args:
@@ -68,7 +69,8 @@ def check(
             class for more details, especially about the default values.
         error: Whether to treat any issues found as errors. Defaults
             to False, meaning that issues will be returned as a list of `Issue`
-            objects.
+            objects. Will internally run `explain()` on the Issues
+            if set to `True`.
 
     Returns:
         list[Issue]: A list of `Issue` objects representing any issues found
@@ -77,11 +79,11 @@ def check(
     """
 ```
 
-The `Config` class is described below. By default, `check()` does not trigger an
-error when issues are found, but can be triggered when `error=True` is given. We
+The `Config` class is described below. By default, `check()` does not result in an
+error when issues are found, but errors can be triggered by setting `error=True`. We
 don't want `check-datapackage` to trigger errors by default because we want to
-allow users the flexibility to decide when and how these checks should be
-enforced and used. The output of this function is a list of `Issue` objects,
+allow users the flexibility to decide when and how failed checks should be
+enforced or handled. The output of this function is a list of `Issue` objects,
 which are described below.
 
 ### {{< var wip >}} `explain()`
@@ -93,7 +95,7 @@ also want to provide a way to explain these issues in a more pleasant and
 ergonomic way.
 
 ``` python
-def explain(issues: list[Issue]) -> list[string]:
+def explain(issues: list[Issue]) -> list[str]:
     """Explain a list of issues in a user-friendly way.
 
     Args:
@@ -159,16 +161,16 @@ class Config:
     Attributes:
         exclude (list[Exclude]): Any issues matching any of these exclusions will be
             ignored (i.e., removed from the output of the check function).
-        rules (list[Rules]): Custom checks listed here will be done in addition
+        rules (list[Rule]): Custom checks listed here will be done in addition
             to checks defined in the Data Package standard.
-        version (list[string]) = ["v2", "v1"]: Version(s) of the Data Package
-            standard to check against. Defaults to both v2 and v1.
-        strict (bool) = False: Whether to check recommended as well as required
-            fields. If True, recommended fields will also be checked.
+        version: Version(s) of the Data Package
+            standard to check against. Defaults to "v2".
+        strict: Whether to run recommended as well as required
+            checks. If True, recommended checks will also be run. Default is False.
     """
-    exclude: list[Exclude]: Exclude()
-    rules: list[Rules] =
-    version: string
+    exclude: list[Exclude]
+    rules: list[Rule]
+    version: str
     strict: bool
 
     def __default__(self):
@@ -191,9 +193,9 @@ class Exclude:
     Attributes:
         target: [JSON path](https://en.wikipedia.org/wiki/JSONPath)
             to the field or fields in the input object where errors should be ignored,
-            e.g., `$.resources[*].name`. Needs to match exactly the location of the error
-            to be ignored in the Data Package standard.
-        type: Either "required" or "pattern". The type of the check to ignore.
+            e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
+            of the error to ignore.
+        type: The type of the check to ignore (e.g., "required" or "pattern").
             If not provided, all types of checks will be ignored for the given
             target.
 
@@ -201,17 +203,17 @@ class Exclude:
         matches(error: CheckError) -> bool: Returns True if the given error matches
             this filter, False otherwise.
     """
-    target: string
-    type: string = None
+    target: str
+    type: str | None = None
 ```
 
-#### {{< var wip >}} `Rules`
+#### {{< var wip >}} `Rule`
 
-Expresses a custom check, that inherits from the `Filter` class.
+Expresses a custom check.
 
 ``` python
 @dataclass
-class Rules(Filter):
+class Rule:
     """A custom check to be done on a Data Package descriptor.
 
     Attributes:
@@ -227,8 +229,10 @@ class Rules(Filter):
         check: Function for doing the custom check. Takes a value and returns
             true if the check passes, false if it fails.
     """
-    message: string,
-    check: Callable[[Any], bool],
+    target: str
+    message: str
+    check: Callable[[Any], bool]
+    type: str = "custom"
 ```
 
 ### {{< var wip >}} `Issue`
@@ -247,8 +251,7 @@ class Issue:
             format, pointing to the field in the input object where the issue is located.
             For example, `"$.resources[2].name"`.
         issue (string): A description of what exactly the issue is.
-        solution (string): A message suggesting a potential solution to the issue.
-        type (string, optional) = ["required", "pattern"]: The type of the check that failed.
+        type (string): The type of the check that failed.
             Used mostly for excluding specific types of issues.
 
     Methods:
@@ -256,10 +259,11 @@ class Issue:
             details than the `message` attribute and more context. Used when running
             `explain()` on the issues.
     """
-    location: string,
-    message: string,
-    type: string = None,
-    def __str__(self) -> string:
+    location: str
+    message: str
+    type: str
+
+    def __str__(self) -> str:
         """Return a user-friendly, human-readable string representation of the issue."""
 ```
 
@@ -283,7 +287,7 @@ flowchart TD
     rules[/Rules/]
     exclude[/Exclude/]
     check["check()"]
-    issues[/"list[Issues]"/]
+    issues[/"list[Issue]"/]
 
     explain["explain()"]
     messages[/messages/]
