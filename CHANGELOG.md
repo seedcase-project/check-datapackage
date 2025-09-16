@@ -8,3 +8,9 @@ based on the commit messages. This means that releases can happen quite
 often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
+
+## 0.1.1 (2025-09-16)
+
+### Fix
+
+- :bug: fix website build (#27)
