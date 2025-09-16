@@ -1,6 +1,5 @@
 ---
 title: "Checking a Data Package descriptor"
-order: 4
 jupyter: python3
 # TODO: eval when implemented
 eval: false
