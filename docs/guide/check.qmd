@@ -16,14 +16,13 @@ Data Package descriptor meets these requirements. `check()` takes a
 Python `dict` as input, representing the descriptor, and by default
 returns a list of `Issue` objects, each corresponding to a failed check
 on a field in the descriptor. If you prefer the output as an error, you
-can also run `check()` with `error=True`. When checking a descriptor, you
-can customise the function's behaviour by specifying issues to ignore
-and additional custom checks to perform.
+can also run `check()` with `error=True`. When checking a descriptor,
+you can customise the function's behaviour by specifying issues to
+ignore and additional custom checks to perform.
 
-
-By default, `check()` returns a list of `Issue`
-objects, each corresponding to one failed check on one field in the
-descriptor. If there are no failed checks, an empty list is returned.
+By default, `check()` returns a list of `Issue` objects, each
+corresponding to one failed check on one field in the descriptor. If
+there are no failed checks, an empty list is returned.
 
 In the example below, all required fields in the descriptor are present
 and well-formed, so the output of `check()`, `issues`, is an empty list.
@@ -261,11 +260,11 @@ issue flagging the first license attached to the Data Package.
 
 ### Strict mode
 
-The Data Package standard has both required and recommended rules.
-By default, `check()` checks only required rules. Recommended rules can
-be turned on by setting the `strict` argument to `True`. The example
-below violates the recommendation that the package `name` should contain
-no special characters.
+The Data Package standard has both required and recommended rules. By
+default, `check()` checks only required rules. Recommended rules can be
+turned on by setting the `strict` argument to `True`. The example below
+violates the recommendation that the package `name` should contain no
+special characters.
 
 ```{python}
 package_descriptor = {
