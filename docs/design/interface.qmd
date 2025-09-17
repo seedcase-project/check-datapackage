@@ -2,15 +2,15 @@
 title: "Interface"
 ---
 
-This section of the documentation focuses on the design of the interface and how
-it is implemented as Python code.
+This section of the documentation focuses on the design of the interface
+and how it is implemented as Python code.
 
 ::: callout-note
-We use {{< var wip >}} to indicate parts of the design that are still a work in
-progress, which will contain the function and class signatures. Once the
-interface is implemented, indicated by {{< var done >}}, we will remove the
-signatures from the documentation and point instead to the reference
-documentation.
+We use {{< var wip >}} to indicate parts of the design that are still a
+work in progress, which will contain the function and class signatures.
+Once the interface is implemented, indicated by {{< var done >}}, we
+will remove the signatures from the documentation and point instead to
+the reference documentation.
 :::
 
 ## Inputs
@@ -25,6 +25,8 @@ This section describes the inputs accepted by `check-datapackage`.
 -   **Config:** A `Config` object can optionally be passed to
     `check-datapackage` with settings to modify the behaviour and output
     of the check mechanism.
+-   **Error**: A boolean that controls whether the function errors out
+    or returns a value if any issues are found.
 
 ## Outputs
 
@@ -33,27 +35,27 @@ in the descriptor. If all checks pass, an empty list is returned.
 
 -   Default mode: The issues are returned as a list without stopping
     program execution.
--   Error mode: The issues result in errors that stop program
-    execution.
+-   Error mode: The issues result in errors that stop program execution.
 
 ## Functions
 
-There are two main functions and two helper functions that we expose in this
-package. Together, these functions could be combined to create a command-line
-interface.
+There are two main functions and two helper functions that we expose in
+this package. Together, these functions could be combined to create a
+command-line interface.
 
 ::: content-hidden
-Potentially we could also have a function that lists what the checks are or lists
-what fields can be excluded. Not sure if that works better as a CLI or if it could
-be used some way as Python code. I didn't include it for now though.
+Potentially we could also have a function that lists what the checks are
+or lists what fields can be excluded. Not sure if that works better as a
+CLI or if it could be used some way as Python code. I didn't include it
+for now though.
 :::
 
 ### {{< var wip >}} `check()`
 
-This is the main function of this package, which will check a Data Package
-descriptor against the Data Package standard, as well as include any custom
-exclusions or custom checks listed in the configuration. Below is the signature
-of the interface:
+This is the main function of this package, which will check a Data
+Package descriptor against the Data Package standard, as well as include
+any custom exclusions or custom checks listed in the configuration.
+Below is the signature of the interface:
 
 ``` python
 def check(
@@ -79,20 +81,21 @@ def check(
     """
 ```
 
-The `Config` class is described below. By default, `check()` does not result in an
-error when issues are found, but errors can be triggered by setting `error=True`. We
-don't want `check-datapackage` to trigger errors by default because we want to
-allow users the flexibility to decide when and how failed checks should be
-enforced or handled. The output of this function is a list of `Issue` objects,
-which are described below.
+The `Config` class is described below. By default, `check()` does not
+result in an error when issues are found, but errors can be triggered by
+setting `error=True`. We don't want `check-datapackage` to trigger
+errors by default because we want to allow users the flexibility to
+decide when and how failed checks should be enforced or handled. The
+output of this function is a list of `Issue` objects, which are
+described below.
 
 ### {{< var wip >}} `explain()`
 
-The output of `check()` is a list of `Issue` objects, which are structured and
-machine-readable, but not very human-readable and user-friendly. It's important
-to have this output to provide structured information about the issues, but we
-also want to provide a way to explain these issues in a more pleasant and
-ergonomic way.
+The output of `check()` is a list of `Issue` objects, which are
+structured and machine-readable, but not very human-readable and
+user-friendly. It's important to have this output to provide structured
+information about the issues, but we also want to provide a way to
+explain these issues in a more pleasant and ergonomic way.
 
 ``` python
 def explain(issues: list[Issue]) -> list[str]:
@@ -110,8 +113,8 @@ def explain(issues: list[Issue]) -> list[str]:
 
 ### {{< var wip >}} `read_json()`
 
-This is a simple helper function to read the `datapackage.json` file into a
-Python dictionary.
+This is a simple helper function to read the `datapackage.json` file
+into a Python dictionary.
 
 ``` python
 def read_json(path: Path) -> dict:
@@ -127,8 +130,9 @@ def read_json(path: Path) -> dict:
 
 ### {{< var wip >}} `read_config()`
 
-This is a simple helper function to read a configuration file into a `Config`
-object for when we extend to having the configurations in a file.
+This is a simple helper function to read a configuration file into a
+`Config` object for when we extend to having the configurations in a
+file.
 
 ``` python
 def read_config(path: Path) -> Config:
@@ -145,13 +149,14 @@ def read_config(path: Path) -> Config:
 
 ## Classes
 
-With all the configurations kept in one class, we can potentially store the
-configuration in a file that can be read into the class, which would be useful
-for a CLI interface.
+With all the configurations kept in one class, we can potentially store
+the configuration in a file that can be read into the class, which would
+be useful for a CLI interface.
 
 ### {{< var wip >}} `Config`
 
-`Config` is a class that holds all the configurations for the `check()` function.
+`Config` is a class that holds all the configurations for the `check()`
+function.
 
 ``` python
 @dataclass
@@ -226,7 +231,8 @@ class Rule:
 
 ### {{< var wip >}} `Issue`
 
-This class represents an issue that is found when checking a Data Package, with the following interface:
+This class represents an issue that is found when checking a Data
+Package, with the following interface:
 
 ``` python
 @dataclass
