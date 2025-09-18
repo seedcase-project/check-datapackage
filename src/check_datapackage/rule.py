@@ -14,9 +14,8 @@ class Rule:
         check (Callable[[Any], bool]): A function that expresses how compliance with the
             rule is checked. It takes the value at the `target` location as input and
             returns true if the rule is met, false if it isn't.
-        type (str): An identifier for your rule. This is what will show up in
-            error messages and what you will use if you want to exclude your
-            rule. Each `Rule` should have a unique `type`.
+        type (str): An identifier for the rule. It will be shown in error messages and
+            can be used to exclude the rule. Each rule should have a unique `type`.
 
     Examples:
         ```{python}
