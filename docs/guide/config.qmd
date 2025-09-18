@@ -27,7 +27,9 @@ example, to exclude checks flagging missing fields, you would exclude
 the `required` check by defining an `Exclude` object with this `type`:
 
 ```{python}
+from textwrap import dedent
 import check_datapackage as cdp
+
 exclude_required = cdp.Exclude(type="required")
 ```
 
@@ -129,7 +131,7 @@ to the `Config` object passed to the function:
 package_descriptor = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "description": cdp.dedent("""
+    "description": dedent("""
         This scoping review explores the hibernation physiology of the
         woolly dormouse, drawing on data collected over a 10-year period
         along the Taurus Mountain range in Turkey.
@@ -167,7 +169,7 @@ special characters.
 package_descriptor = {
     "name": "Woolly Dormice (Toros Dağları)",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "description": cdp.dedent("""
+    "description": dedent("""
         This scoping review explores the hibernation physiology of the
         woolly dormouse, drawing on data collected over a 10-year period
         along the Taurus Mountain range in Turkey.
