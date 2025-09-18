@@ -1,13 +1,14 @@
 from pytest import mark
 
-from check_datapackage.check_properties import check_properties
+from check_datapackage.check import check
+from check_datapackage.config import Config
 
 # Without recommendations
 
 
-def test_passes_matching_properties_with_resources():
-    """Should pass properties matching the schema."""
-    properties = {
+def test_passes_matching_descriptor_with_resources():
+    """Should pass descriptor matching the schema."""
+    descriptor = {
         "name": "a name with spaces",
         "title": "A Title",
         "created": "2024-05-14T05:00:01+00:00",
@@ -17,14 +18,14 @@ def test_passes_matching_properties_with_resources():
         "resources": [{"name": "a name", "path": "data.csv"}],
     }
 
-    assert check_properties(properties, check_recommendations=False) == []
+    assert check(descriptor) == []
 
 
-def test_fails_properties_without_resources():
-    """Should fail properties without resources."""
-    properties = {"name": "a name with spaces"}
+def test_fails_descriptor_without_resources():
+    """Should fail descriptor without resources."""
+    descriptor = {"name": "a name with spaces"}
 
-    errors = check_properties(properties, check_recommendations=False)
+    errors = check(descriptor)
 
     assert len(errors) == 1
     assert errors[0].validator == "required"
@@ -39,28 +40,28 @@ def test_fails_properties_without_resources():
         ([{"name": "a name", "path": "/a/bad/path"}], "$.resources[0].path", 2),
     ],
 )
-def test_fails_properties_with_bad_resources(resources, json_path, num_errors):
-    """Should fail properties with malformed resources."""
-    properties = {
+def test_fails_descriptor_with_bad_resources(resources, json_path, num_errors):
+    """Should fail descriptor with malformed resources."""
+    descriptor = {
         "name": "a name with spaces",
         "resources": resources,
     }
 
-    errors = check_properties(properties, check_recommendations=False)
+    errors = check(descriptor)
 
     assert len(errors) == num_errors
     assert errors[0].json_path == json_path
 
 
-def test_fails_properties_with_missing_required_fields():
-    """Should fail properties with missing required fields."""
-    properties = {
+def test_fails_descriptor_with_missing_required_fields():
+    """Should fail descriptor with missing required fields."""
+    descriptor = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "licenses": [{"title": "my license"}],
     }
 
-    errors = check_properties(properties, check_recommendations=False)
+    errors = check(descriptor)
 
     assert len(errors) == 2
     assert all(error.validator == "required" for error in errors)
@@ -70,43 +71,43 @@ def test_fails_properties_with_missing_required_fields():
     }
 
 
-def test_fails_properties_with_bad_type():
-    """Should fail properties with a field of the wrong type."""
-    properties = {
+def test_fails_descriptor_with_bad_type():
+    """Should fail descriptor with a field of the wrong type."""
+    descriptor = {
         "name": 123,
         "resources": [{"name": "a name", "path": "data.csv"}],
     }
-    errors = check_properties(properties, check_recommendations=False)
+    errors = check(descriptor)
 
     assert len(errors) == 1
     assert errors[0].validator == "type"
     assert errors[0].json_path == "$.name"
 
 
-def test_fails_properties_with_bad_format():
-    """Should fail properties with a field of the wrong format."""
-    properties = {
+def test_fails_descriptor_with_bad_format():
+    """Should fail descriptor with a field of the wrong format."""
+    descriptor = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "homepage": "not a URL",
     }
 
-    errors = check_properties(properties, check_recommendations=False)
+    errors = check(descriptor)
 
     assert len(errors) == 1
     assert errors[0].validator == "format"
     assert errors[0].json_path == "$.homepage"
 
 
-def test_fails_properties_with_pattern_mismatch():
-    """Should fail properties with a field that does not match the pattern."""
-    properties = {
+def test_fails_descriptor_with_pattern_mismatch():
+    """Should fail descriptor with a field that does not match the pattern."""
+    descriptor = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "contributors": [{"path": "/a/bad/path"}],
     }
 
-    errors = check_properties(properties, check_recommendations=False)
+    errors = check(descriptor)
 
     assert len(errors) == 1
     assert errors[0].validator == "pattern"
@@ -116,9 +117,9 @@ def test_fails_properties_with_pattern_mismatch():
 # With recommendations
 
 
-def test_passes_matching_properties_with_recommendations():
-    """Should pass properties matching recommendations."""
-    properties = {
+def test_passes_matching_descriptor_with_recommendations():
+    """Should pass descriptor matching recommendations."""
+    descriptor = {
         "name": "a-name-with-no-spaces",
         "title": "A Title",
         "id": "123",
@@ -130,24 +131,24 @@ def test_passes_matching_properties_with_recommendations():
         "resources": [{"name": "a-name-with-no-spaces", "path": "data.csv"}],
     }
 
-    assert check_properties(properties, check_recommendations=True) == []
+    assert check(descriptor, config=Config(strict=True)) == []
 
 
-def test_fails_properties_with_missing_required_fields_with_recommendations():
-    """Should fail properties with missing required fields."""
-    properties = {
+def test_fails_descriptor_with_missing_required_fields_with_recommendations():
+    """Should fail descriptor with missing required fields."""
+    descriptor = {
         "resources": [{"name": "a-name-with-no-spaces", "path": "data.csv"}],
     }
 
-    errors = check_properties(properties, check_recommendations=True)
+    errors = check(descriptor, config=Config(strict=True))
 
     assert len(errors) == 3
     assert all(error.validator == "required" for error in errors)
 
 
-def test_fails_properties_violating_recommendations():
-    """Should fail properties that do not meet the recommendations."""
-    properties = {
+def test_fails_descriptor_violating_recommendations():
+    """Should fail descriptor that do not meet the recommendations."""
+    descriptor = {
         "name": "a name with spaces",
         "id": "123",
         "version": "not semver",
@@ -157,7 +158,7 @@ def test_fails_properties_violating_recommendations():
         "resources": [{"name": "a name with spaces", "path": "data.csv"}],
     }
 
-    errors = check_properties(properties, check_recommendations=True)
+    errors = check(descriptor, config=Config(strict=True))
 
     assert len(errors) == 5
     assert {error.json_path for error in errors} == {
