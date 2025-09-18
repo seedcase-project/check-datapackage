@@ -64,15 +64,11 @@ quartodoc:
   options: null
   sections:
   - title: check_datapackage
-    desc: Check functions and constants for the Frictionless Data Package standard.
+    desc: Classes and functions in `check_datapackage`.
     contents:
-    - name: CheckError
-    - name: CheckErrorMatcher
-    # TODO: fix how constants are rendered by quartodoc
-    # - name: constants.PACKAGE_RECOMMENDED_FIELDS
-    # - name: constants.PACKAGE_REQUIRED_FIELDS
-    # - name: constants.RESOURCE_REQUIRED_FIELDS
-    - name: RequiredFieldType
+    - name: Config
+    - name: Exclude
+    - name: Rule
 
 metadata-files:
   - docs/reference/_sidebar.yml
