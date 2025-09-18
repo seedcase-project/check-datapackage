@@ -55,31 +55,8 @@ for now though.
 This is the main function of this package, which will check a Data
 Package descriptor against the Data Package standard, as well as include
 any custom exclusions or custom checks listed in the configuration.
-Below is the signature of the interface:
 
-``` python
-def check(
-    descriptor: dict,
-    config: Config = Config(),
-    error: bool = False
-) -> list[Issue]:
-    """Checks a Data Package descriptor against the Data Package standard.
-
-    Args:
-        descriptor: A Data Package descriptor as a Python dictionary.
-        config: Configuration for the checks to be done. See the `Config`
-            class for more details, especially about the default values.
-        error: Whether to treat any issues found as errors. Defaults
-            to False, meaning that issues will be returned as a list of `Issue`
-            objects. Will internally run `explain()` on the Issues
-            if set to `True`.
-
-    Returns:
-        list[Issue]: A list of `Issue` objects representing any issues found
-            while checking the descriptor. If no issues are found, an empty list
-            is returned.
-    """
-```
+See the help documentation with `help(check)` for more details.
 
 The `Config` class is described below. By default, `check()` does not
 result in an error when issues are found, but errors can be triggered by

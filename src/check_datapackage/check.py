@@ -14,21 +14,21 @@ from check_datapackage.internals import (
 def check(
     descriptor: dict[str, Any], config: Config = Config(), error: bool = False
 ) -> list[CheckError]:
-    """Checks that `descriptor` matches the Data Package standard.
-
-    All mismatches are collected before issues are flagged.
-
-    The schema loaded or constructed in this function overrides any values specified
-    in the `$schema` attribute of `descriptor`, including the default value.
+    """Checks a Data Package descriptor against the Data Package standard.
 
     Args:
-        descriptor: The Data Package descriptor to check.
-        config: Configuration to customise which issues to flag.
-        error: A boolean that controls whether the function errors out or returns a
-            value if any issues are found.
+        descriptor: A Data Package descriptor as a Python dictionary.
+        config: Configuration for the checks to be done. See the `Config`
+            class for more details, especially about the default values.
+        error: Whether to treat any issues found as errors. Defaults
+            to `False`, meaning that issues will be returned as a list of `Issue`
+            objects. Will internally run `explain()` on the Issues
+            if set to `True`.
 
     Returns:
-        A list of issues. An empty list if no issues are found.
+        A list of `Issue` objects representing any issues found
+            while checking the descriptor. If no issues are found, an empty list
+            is returned.
     """
     schema = _read_json(DATA_PACKAGE_SCHEMA_PATH)
 
