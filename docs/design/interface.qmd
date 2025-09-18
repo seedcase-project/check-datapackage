@@ -158,76 +158,19 @@ be useful for a CLI interface.
 `Config` is a class that holds all the configurations for the `check()`
 function.
 
-``` python
-@dataclass
-class Config:
-    """Configuration for checking a Data Package descriptor.
-
-    Attributes:
-        exclude (list[Exclude]): Any issues matching any of these exclusions will be
-            ignored (i.e., removed from the output of the check function).
-        rules (list[Rule]): Custom checks listed here will be done in addition
-            to checks defined in the Data Package standard.
-        version (str): Version(s) of the Data Package standard to check against.
-            Defaults to "v2".
-        strict (bool): Whether to run recommended as well as required checks. If
-            True, recommended checks will also be run. Default is False.
-    """
-    exclude: list[Exclude] = []
-    rules: list[Rule] = []
-    version: str = "v2"
-    strict: bool = False
-```
+See the help documentation with `help(Config)` for more details.
 
 ### {{< var wip >}} `Exclude`
 
 A subitem of `Config` for expressing checks to ignore.
 
-``` python
-@dataclass
-class Exclude:
-    """Exclude specific checks when checking a Data Package descriptor.
-
-    Attributes:
-        target (str): [JSON path](https://en.wikipedia.org/wiki/JSONPath)
-            to the field or fields in the input object where errors should be ignored,
-            e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
-            of the error to ignore.
-        type (str | None): The type of the check to ignore (e.g., "required" or
-            "pattern").  If not provided, all types of checks will be ignored for
-            the given target.
-    """
-    target: str
-    type: str | None = None
-```
+See the help documentation with `help(Exclude)` for more details.
 
 #### {{< var wip >}} `Rule`
 
 Expresses a custom check.
 
-``` python
-@dataclass
-class Rule:
-    """A custom check to be done on a Data Package descriptor.
-
-    Attributes:
-        target (str): [JSON path](https://en.wikipedia.org/wiki/JSONPath)
-            to the field or fields in the input object where the rule should be used,
-            e.g., `$.resources[*].name`. Needs to point to the location in the descriptor
-            for the rule to apply to.
-        type (str): The type of the check defined by the rule. Can be a type that
-            exists in the Data Package standard (e.g., "required" or "pattern") or a
-            custom type.
-        message (str): A user-friendly explanation of what went wrong and any
-            tips for fixing it.
-        check (Callable[[Any], bool]): Function for doing the custom check. Takes a
-            value and returns true if the check passes, false if it fails.
-    """
-    target: str
-    message: str
-    check: Callable[[Any], bool]
-    type: str = "custom"
-```
+See the help documentation with `help(Rule)` for more details.
 
 ### {{< var wip >}} `Issue`
 
