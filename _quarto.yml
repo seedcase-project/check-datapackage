@@ -47,6 +47,8 @@ website:
       contents:
         - section: "Guide"
           href: docs/guide/index.qmd
+          contents:
+           - auto: "docs/guide/*.qmd"
 
 quartodoc:
   sidebar: "docs/reference/_sidebar.yml"
