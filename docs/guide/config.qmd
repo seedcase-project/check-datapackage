@@ -1,0 +1,190 @@
+---
+title: "Configuring the checks"
+jupyter: python3
+# TODO: eval when implemented
+eval: false
+---
+
+You can pass a `Config` object to `check()` to customise the checks done
+on the descriptor. The following configuration options are available:
+
+-   `version`: The version of Data Package standard to check against.
+    Defaults to `v2`.
+-   `exclude`: The list of checks to exclude.
+-   `rules`: The list of custom checks to run in addition to the checks
+    defined in the standard.
+-   `strict`: Whether to run recommended checks in addition to required
+    ones. Defaults to `False`.
+
+## Excluding checks
+
+You can exclude checks based on their `type` and the fields they apply
+to.
+
+The Data Package standard defines a range of check types (e.g.,
+`required` or `pattern`) and it is also possible to create your own. For
+example, to exclude checks flagging missing fields, you would exclude
+the `required` check by defining an `Exclude` object with this `type`:
+
+```{python}
+import check_datapackage as cdp
+exclude_required = cdp.Exclude(type="required")
+```
+
+To exclude checks applying to specific fields in the descriptor, you
+express the location of the target field or fields in [JSON
+path](https://en.wikipedia.org/wiki/JSONPath) notation and define an
+`Exclude` object with this `target`. For example, you can exclude all
+checks on the `name` field of the Data Package descriptor by writing:
+
+```{python}
+exclude_name = cdp.Exclude(target="$.name")
+```
+
+Or you can use the wildcard JSON path selector to exclude checks on the
+`path` field of **all** Data Resource descriptors:
+
+```{python}
+exclude_path = cdp.Exclude(target="$.resources[*].path")
+```
+
+The `type` and `target` arguments can also be combined:
+
+```{python}
+exclude_desc_required = cdp.Exclude(type="required", target="$.resources[*].description")
+```
+
+This would exclude required checks on the `description` field of Data
+Resource descriptors.
+
+To make the `check()` function aware of your exclusions, you add them to
+the `Config` object passed to the function:
+
+```{python}
+package_descriptor = {
+    "name": 123,
+    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
+    "id": "123-abc-123",
+    "created": "2014-05-14T05:00:01+00:00",
+    "version": "1.0.0",
+    "licenses": [{"name": "odc-pddl"}],
+    "resources": [
+        {
+            "name": "woolly-dormice-2015",
+            "title": "Body fat percentage in the hibernating woolly dormouse",
+            "path": "https://en.wikipedia.org/wiki/Woolly_dormouse",
+        }
+    ],
+}
+
+config = cdp.Config(exclude=[exclude_required, exclude_name, exclude_path])
+issues = cdp.check(descriptor=package_descriptor, config=config)
+print(issues)
+```
+
+In the example above, we would expect four `Issue` items: the package
+`name` is a number, the required `description` field is missing in both
+the package and resource properties, and the resource `path` doesn't
+point to a data file. However, as we have defined exclusions for all of
+these, the function will flag no issues.
+
+## Adding custom check rules
+
+It is possible to create custom rules in addition to the ones defined in
+the Data Package standard.
+
+Let's say your organisation only accepts Data Packages licensed under
+MIT. You can express this requirement in a `Rule` as follows:
+
+```{python}
+license_rule = cdp.Rule(
+    type="only-mit",
+    target="$.licenses[*].name",
+    message=dedent("""
+        Data Packages may only be licensed under MIT. Please review
+        the licenses listed in the Data Package.
+        """),
+    check=lambda license_name: license_name == "mit",
+)
+```
+
+Here's a breakdown of what each argument does:
+
+-   `type`: An identifier for your rule. This is what will show up in
+    error messages and what you will use if you want to exclude your
+    rule. Each `Rule` should have a unique `type`.
+-   `target`: The location of the field or fields, expressed in [JSON
+    path](https://en.wikipedia.org/wiki/JSONPath) notation, to which the
+    rule applies. This rule applies to the `name` field of all package
+    licenses.
+-   `message`: The message that is shown when the rule is violated.
+-   `check`: A function that expresses how compliance with the rule is
+    checked. It takes the value at the `target` location as input and
+    returns true if the rule is met, false if it isn't.
+
+To register your custom rules with the `check()` function, you add them
+to the `Config` object passed to the function:
+
+```{python}
+package_descriptor = {
+    "name": "woolly-dormice",
+    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
+    "description": cdp.dedent("""
+        This scoping review explores the hibernation physiology of the
+        woolly dormouse, drawing on data collected over a 10-year period
+        along the Taurus Mountain range in Turkey.
+        """),
+    "id": "123-abc-123",
+    "created": "2014-05-14T05:00:01+00:00",
+    "version": "1.0.0",
+    "licenses": [{"name": "odc-pddl"}, {"name": "mit"}],
+    "resources": [
+        {
+            "name": "woolly-dormice-2015",
+            "title": "Body fat percentage in the hibernating woolly dormouse",
+            "path": "resources/woolly-dormice-2015/data.parquet",
+        }
+    ],
+}
+
+config = cdp.Config(rules=[license_rule])
+issues = cdp.check(descriptor=package_descriptor, config=config)
+print(issues)
+```
+
+We can see that the custom rule was applied: `check()` returned one
+issue flagging the first license attached to the Data Package.
+
+## Strict mode
+
+The Data Package standard has both required and recommended rules. By
+default, `check()` checks only required rules. Recommended rules can be
+turned on by setting the `strict` argument to `True`. The example below
+violates the recommendation that the package `name` should contain no
+special characters.
+
+```{python}
+package_descriptor = {
+    "name": "Woolly Dormice (Toros Dağları)",
+    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
+    "description": cdp.dedent("""
+        This scoping review explores the hibernation physiology of the
+        woolly dormouse, drawing on data collected over a 10-year period
+        along the Taurus Mountain range in Turkey.
+        """),
+    "id": "123-abc-123",
+    "created": "2014-05-14T05:00:01+00:00",
+    "version": "1.0.0",
+    "licenses": [{"name": "odc-pddl"}],
+    "resources": [
+        {
+            "name": "woolly-dormice-2015",
+            "title": "Body fat percentage in the hibernating woolly dormouse",
+            "path": "resources/woolly-dormice-2015/data.parquet",
+        }
+    ],
+}
+
+issues = cdp.check(descriptor=package_descriptor, strict=True)
+print(issues)
+```
