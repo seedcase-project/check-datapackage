@@ -15,8 +15,8 @@ License](https://img.shields.io/github/license/seedcase-project/check-datapackag
 Release](https://img.shields.io/github/v/release/seedcase-project/check-datapackage.svg)](https://github.com/seedcase-project/check-datapackage/releases/latest)
 [![Build
 documentation](https://github.com/seedcase-project/check-datapackage/actions/workflows/build-website.yml/badge.svg)](https://github.com/seedcase-project/check-datapackage/actions/workflows/build-website.yml)
-[![Build
-package](https://github.com/seedcase-project/check-datapackage/actions/workflows/build-package.yml/badge.svg)](https://github.com/seedcase-project/check-datapackage/actions/workflows/build-package.yml)
+[![Check
+package](https://github.com/seedcase-project/check-datapackage/actions/workflows/check-package.yml/badge.svg)](https://github.com/seedcase-project/check-datapackage/actions/workflows/check-package.yml)
 [![OpenSSF
 Scorecard](https://api.scorecard.dev/projects/github.com/seedcase-project/check-datapackage/badge?raw=true.svg)](https://scorecard.dev/viewer/?uri=github.com/seedcase-project/check-datapackage)
 [![CodeQL](https://github.com/seedcase-project/check-datapackage/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/seedcase-project/check-datapackage/actions/workflows/github-code-scanning/codeql)
@@ -106,7 +106,12 @@ requests :tada:
 
 [@lwjohnst86](https://github.com/lwjohnst86),
 [@signekb](https://github.com/signekb),
-[@martonvago](https://github.com/martonvago)
+[@martonvago](https://github.com/martonvago) The following people have
+contributed to this project by submitting pull requests :tada:
+
+[@lwjohnst86](https://github.com/lwjohnst86),
+[@martonvago](https://github.com/martonvago),
+[@signekb](https://github.com/signekb)
 
 ## Licensing
 
