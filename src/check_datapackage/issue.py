@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class Issue:
     """An issue found while checking a Data Package descriptor.
 
@@ -11,9 +11,9 @@ class Issue:
         location (string): A [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
             format pointing to the field in the input object where the issue is located.
             For example, `$.resources[2].name`.
-        message (string): A description of what exactly the issue is.
         type (string): The type of the check that failed. Used mostly for excluding
             specific types of issues.
+        message (string): A description of what exactly the issue is.
 
     Examples:
         ```{python}
@@ -21,12 +21,12 @@ class Issue:
 
         issue = cdp.Issue(
             location="$.resources[2].title",
-            message="The `title` field is required but missing at the given location.",
             type="required",
+            message="The `title` field is required but missing at the given location.",
         )
         ```
     """
 
     location: str
-    message: str
     type: str
+    message: str
