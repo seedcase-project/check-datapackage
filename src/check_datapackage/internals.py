@@ -5,13 +5,13 @@ from typing import Any, Iterator
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
-from check_datapackage.check_error import CheckError
 from check_datapackage.constants import (
     COMPLEX_VALIDATORS,
     NAME_PATTERN,
     PACKAGE_RECOMMENDED_FIELDS,
     SEMVER_PATTERN,
 )
+from check_datapackage.issue import Issue
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -74,31 +74,31 @@ def _add_resource_recommendations(schema: dict[str, Any]) -> dict[str, Any]:
 
 def _check_object_against_json_schema(
     json_object: dict[str, Any], schema: dict[str, Any]
-) -> list[CheckError]:
+) -> list[Issue]:
     """Checks that `json_object` matches the given JSON schema.
 
     Structural, type and format constraints are all checked. All schema violations are
-    collected before errors are returned.
+    collected before issues are returned.
 
     Args:
         json_object: The JSON object to check.
         schema: The JSON schema to check against.
 
     Returns:
-        A list of errors. An empty list, if no errors are found.
+        A list of issues. An empty list, if no issues are found.
 
     Raises:
         jsonschema.exceptions.SchemaError: If the given schema is invalid.
     """
     Draft7Validator.check_schema(schema)
     validator = Draft7Validator(schema, format_checker=FormatChecker())
-    return _validation_errors_to_check_errors(validator.iter_errors(json_object))
+    return _validation_errors_to_issues(validator.iter_errors(json_object))
 
 
-def _validation_errors_to_check_errors(
+def _validation_errors_to_issues(
     validation_errors: Iterator[ValidationError],
-) -> list[CheckError]:
-    """Transforms `jsonschema.ValidationError`s to more compact `CheckError`s.
+) -> list[Issue]:
+    """Transforms `jsonschema.ValidationError`s to more compact `Issue`s.
 
     The list of errors is:
 
@@ -111,18 +111,18 @@ def _validation_errors_to_check_errors(
         validation_errors: The `jsonschema.ValidationError`s to transform.
 
     Returns:
-        A list of `CheckError`s.
+        A list of `Issue`s.
     """
-    check_errors = [
-        CheckError(
+    issues = [
+        Issue(
             message=error.message,
-            json_path=_get_full_json_path_from_error(error),
-            validator=str(error.validator),
+            location=_get_full_json_path_from_error(error),
+            type=str(error.validator),
         )
         for error in _unwrap_errors(list(validation_errors))
         if str(error.validator) not in COMPLEX_VALIDATORS
     ]
-    return sorted(set(check_errors))
+    return sorted(set(issues))
 
 
 def _unwrap_errors(errors: list[ValidationError]) -> list[ValidationError]:
