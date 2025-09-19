@@ -70,6 +70,7 @@ quartodoc:
     - name: Config
     - name: Exclude
     - name: Rule
+    - name: Issue
 
 metadata-files:
   - docs/reference/_sidebar.yml

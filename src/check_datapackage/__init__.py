@@ -12,11 +12,13 @@ from .constants import (
 )
 from .exclude import Exclude
 from .exclude_matching_errors import exclude_matching_errors
+from .issue import Issue
 from .rule import Rule
 
 __all__ = [
     "Config",
     "Exclude",
+    "Issue",
     "Rule",
     "CheckError",
     "CheckErrorMatcher",
