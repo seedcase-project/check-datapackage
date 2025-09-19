@@ -25,32 +25,32 @@ def test_fails_descriptor_without_resources():
     """Should fail descriptor without resources."""
     descriptor = {"name": "a name with spaces"}
 
-    errors = check(descriptor)
+    issues = check(descriptor)
 
-    assert len(errors) == 1
-    assert errors[0].validator == "required"
-    assert errors[0].json_path == "$.resources"
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+    assert issues[0].location == "$.resources"
 
 
 @mark.parametrize(
-    "resources, json_path, num_errors",
+    "resources, location, num_issues",
     [
         ([], "$.resources", 1),
         ([{}], "$.resources[0].data", 3),
         ([{"name": "a name", "path": "/a/bad/path"}], "$.resources[0].path", 2),
     ],
 )
-def test_fails_descriptor_with_bad_resources(resources, json_path, num_errors):
+def test_fails_descriptor_with_bad_resources(resources, location, num_issues):
     """Should fail descriptor with malformed resources."""
     descriptor = {
         "name": "a name with spaces",
         "resources": resources,
     }
 
-    errors = check(descriptor)
+    issues = check(descriptor)
 
-    assert len(errors) == num_errors
-    assert errors[0].json_path == json_path
+    assert len(issues) == num_issues
+    assert issues[0].location == location
 
 
 def test_fails_descriptor_with_missing_required_fields():
@@ -61,11 +61,11 @@ def test_fails_descriptor_with_missing_required_fields():
         "licenses": [{"title": "my license"}],
     }
 
-    errors = check(descriptor)
+    issues = check(descriptor)
 
-    assert len(errors) == 2
-    assert all(error.validator == "required" for error in errors)
-    assert {error.json_path for error in errors} == {
+    assert len(issues) == 2
+    assert all(issue.type == "required" for issue in issues)
+    assert {issue.location for issue in issues} == {
         "$.licenses[0].name",
         "$.licenses[0].path",
     }
@@ -77,11 +77,11 @@ def test_fails_descriptor_with_bad_type():
         "name": 123,
         "resources": [{"name": "a name", "path": "data.csv"}],
     }
-    errors = check(descriptor)
+    issues = check(descriptor)
 
-    assert len(errors) == 1
-    assert errors[0].validator == "type"
-    assert errors[0].json_path == "$.name"
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].location == "$.name"
 
 
 def test_fails_descriptor_with_bad_format():
@@ -92,11 +92,11 @@ def test_fails_descriptor_with_bad_format():
         "homepage": "not a URL",
     }
 
-    errors = check(descriptor)
+    issues = check(descriptor)
 
-    assert len(errors) == 1
-    assert errors[0].validator == "format"
-    assert errors[0].json_path == "$.homepage"
+    assert len(issues) == 1
+    assert issues[0].type == "format"
+    assert issues[0].location == "$.homepage"
 
 
 def test_fails_descriptor_with_pattern_mismatch():
@@ -107,11 +107,11 @@ def test_fails_descriptor_with_pattern_mismatch():
         "contributors": [{"path": "/a/bad/path"}],
     }
 
-    errors = check(descriptor)
+    issues = check(descriptor)
 
-    assert len(errors) == 1
-    assert errors[0].validator == "pattern"
-    assert errors[0].json_path == "$.contributors[0].path"
+    assert len(issues) == 1
+    assert issues[0].type == "pattern"
+    assert issues[0].location == "$.contributors[0].path"
 
 
 # With recommendations
@@ -140,10 +140,10 @@ def test_fails_descriptor_with_missing_required_fields_with_recommendations():
         "resources": [{"name": "a-name-with-no-spaces", "path": "data.csv"}],
     }
 
-    errors = check(descriptor, config=Config(strict=True))
+    issues = check(descriptor, config=Config(strict=True))
 
-    assert len(errors) == 3
-    assert all(error.validator == "required" for error in errors)
+    assert len(issues) == 3
+    assert all(issue.type == "required" for issue in issues)
 
 
 def test_fails_descriptor_violating_recommendations():
@@ -158,10 +158,10 @@ def test_fails_descriptor_violating_recommendations():
         "resources": [{"name": "a name with spaces", "path": "data.csv"}],
     }
 
-    errors = check(descriptor, config=Config(strict=True))
+    issues = check(descriptor, config=Config(strict=True))
 
-    assert len(errors) == 5
-    assert {error.json_path for error in errors} == {
+    assert len(issues) == 5
+    assert {issue.location for issue in issues} == {
         "$.name",
         "$.version",
         "$.contributors[0].title",

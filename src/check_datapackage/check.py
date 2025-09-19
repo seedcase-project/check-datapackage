@@ -1,6 +1,5 @@
 from typing import Any
 
-from check_datapackage.check_error import CheckError
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH
 from check_datapackage.internals import (
@@ -9,11 +8,12 @@ from check_datapackage.internals import (
     _check_object_against_json_schema,
     _read_json,
 )
+from check_datapackage.issue import Issue
 
 
 def check(
     descriptor: dict[str, Any], config: Config = Config(), error: bool = False
-) -> list[CheckError]:
+) -> list[Issue]:
     """Checks a Data Package descriptor against the Data Package standard.
 
     Args:
