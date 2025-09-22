@@ -11,11 +11,13 @@ from .constants import (
     RequiredFieldType,
 )
 from .exclude import Exclude
+from .issue import Issue
 from .rule import Rule
 
 __all__ = [
     "Config",
     "Exclude",
+    "Issue",
     "Rule",
     "CheckError",
     "CheckErrorMatcher",
