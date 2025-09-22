@@ -54,7 +54,7 @@ def exclude(issues: list[CheckError], excludes: list[Exclude]) -> list[CheckErro
 
 
 def _exclude_any_type(issue: CheckError, excludes: list[Exclude]) -> bool:
-    """List any issue that has no exclusions as True"""
+    """List any issue that has no exclusions as True."""
     any_types = list(map(lambda exclude: _has_type(issue, exclude), excludes))
     return not any(any_types)
 
