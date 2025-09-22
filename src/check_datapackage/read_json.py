@@ -19,7 +19,7 @@ def read_json(path: Path) -> dict[str, Any]:
             dictionary.
     """
     try:
-        descriptor: dict[str, Any] = loads(path.read_text())
+        descriptor: Any = loads(path.read_text())
     except JSONDecodeError as err:
         raise JSONDecodeError(
             f"We couldn't parse the path {path} as JSON. Is there a typo or other "
