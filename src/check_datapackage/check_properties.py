@@ -6,8 +6,8 @@ from check_datapackage.internals import (
     _add_package_recommendations,
     _add_resource_recommendations,
     _check_object_against_json_schema,
-    _read_json,
 )
+from check_datapackage.read_json import read_json
 
 
 def check_properties(
@@ -31,7 +31,7 @@ def check_properties(
     Returns:
         A list of errors. An empty list, if no errors are found.
     """
-    schema = _read_json(DATA_PACKAGE_SCHEMA_PATH)
+    schema = read_json(DATA_PACKAGE_SCHEMA_PATH)
 
     if check_recommendations:
         _add_package_recommendations(schema)

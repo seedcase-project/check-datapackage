@@ -14,6 +14,7 @@ from .constants import (
 )
 from .exclude import Exclude
 from .exclude_matching_errors import exclude_matching_errors
+from .read_json import read_json
 from .rule import Rule
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "RESOURCE_REQUIRED_FIELDS",
     "RequiredFieldType",
     "exclude_matching_errors",
+    "read_json",
 ]

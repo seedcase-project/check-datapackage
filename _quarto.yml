@@ -69,6 +69,7 @@ quartodoc:
     - name: Config
     - name: Exclude
     - name: Rule
+    - name: read_json
 
 metadata-files:
   - docs/reference/_sidebar.yml
