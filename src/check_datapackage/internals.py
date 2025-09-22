@@ -6,7 +6,6 @@ from typing import Any, Iterator
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.constants import (
-    COMPLEX_VALIDATORS,
     NAME_PATTERN,
     PACKAGE_RECOMMENDED_FIELDS,
     SEMVER_PATTERN,
@@ -100,46 +99,62 @@ def _validation_errors_to_issues(
 ) -> list[Issue]:
     """Transforms `jsonschema.ValidationError`s to more compact `Issue`s.
 
-    The list of errors is:
-
-      - flattened
-      - filtered for summary-type errors
-      - filtered for duplicates
-      - sorted by error location
-
     Args:
         validation_errors: The `jsonschema.ValidationError`s to transform.
 
     Returns:
         A list of `Issue`s.
     """
-    issues = [
-        Issue(
-            message=error.message,
-            location=_get_full_json_path_from_error(error),
-            type=str(error.validator),
-        )
-        for error in _unwrap_errors(list(validation_errors))
-        if str(error.validator) not in COMPLEX_VALIDATORS
-    ]
-    return sorted(set(issues))
+    return sorted(
+        {
+            issue
+            for error in validation_errors
+            for issue in _validation_error_to_issues(error)
+        }
+    )
 
 
-def _unwrap_errors(errors: list[ValidationError]) -> list[ValidationError]:
-    """Recursively extracts all errors into a flat list of errors.
+def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
+    """Maps a `ValidationError` to one or more `Issue`s."""
+    # Handle issues at $.resources[x]
+    if _schema_path_ends_in(error, ["resources", "items", "oneOf"]):
+        if not error.context:
+            return [
+                Issue(
+                    message=(
+                        "This resource has both the `path` or `data` fields set. "
+                        "Only one of them may be provided."
+                    ),
+                    location=error.json_path,
+                    type="oneOf",
+                )
+            ]
+        return [
+            Issue(
+                message=(
+                    "This resource has no `path` or `data` field. "
+                    "One of them must be provided."
+                ),
+                location=error.json_path,
+                type="required",
+            )
+        ]
 
-    Args:
-        errors: A nested list of errors.
+    return [_create_issue(error)]
 
-    Returns:
-        A flat list of errors.
-    """
-    unwrapped = []
-    for error in errors:
-        unwrapped.append(error)
-        if error.context:
-            unwrapped.extend(_unwrap_errors(error.context))
-    return unwrapped
+
+def _schema_path_ends_in(error: ValidationError, target: list[str]) -> bool:
+    """Check if the schema path of a validation error ends in the given sequence."""
+    return list(error.schema_path)[-len(target) :] == target
+
+
+def _create_issue(error: ValidationError) -> Issue:
+    """Create an `Issue` from a `ValidationError`."""
+    return Issue(
+        message=error.message,
+        location=_get_full_json_path_from_error(error),
+        type=str(error.validator),
+    )
 
 
 def _get_full_json_path_from_error(error: ValidationError) -> str:
