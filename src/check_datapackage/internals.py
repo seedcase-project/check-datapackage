@@ -116,19 +116,11 @@ def _validation_errors_to_issues(
 
 def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
     """Maps a `ValidationError` to one or more `Issue`s."""
+    if not error.context:
+        return [_create_issue(error)]
+
     # Handle issues at $.resources[x]
     if _schema_path_ends_in(error, ["resources", "items", "oneOf"]):
-        if not error.context:
-            return [
-                Issue(
-                    message=(
-                        "This resource has both the `path` or `data` fields set. "
-                        "Only one of them may be provided."
-                    ),
-                    location=error.json_path,
-                    type="oneOf",
-                )
-            ]
         return [
             Issue(
                 message=(
@@ -140,7 +132,7 @@ def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
             )
         ]
 
-    return [_create_issue(error)]
+    return [_create_issue(sub_error) for sub_error in error.context]
 
 
 def _schema_path_ends_in(error: ValidationError, target: list[str]) -> bool:
