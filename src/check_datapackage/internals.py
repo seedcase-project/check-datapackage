@@ -118,6 +118,7 @@ def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
     """Maps a `ValidationError` to one or more `Issue`s."""
     if not error.context:
         return [_create_issue(error)]
+    sub_errors = error.context
 
     # Handle issues at $.resources[x]
     if _schema_path_ends_in(error, ["resources", "items", "oneOf"]):
@@ -132,7 +133,33 @@ def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
             )
         ]
 
-    return [_create_issue(sub_error) for sub_error in error.context]
+    # Handle issues at $.resources[x].path
+    if _schema_path_ends_in(
+        error,
+        [
+            "resources",
+            "items",
+            "properties",
+            "path",
+            "oneOf",
+        ],
+    ):
+        non_type_errors = [
+            sub
+            for sub in sub_errors
+            if not (str(sub.validator) == "type" and sub.absolute_path[-1] == "path")
+        ]
+        if non_type_errors:
+            return [_create_issue(err) for err in non_type_errors]
+        return [
+            Issue(
+                message="The `path` property must be either a string or an array.",
+                location=error.json_path,
+                type="type",
+            )
+        ]
+
+    return [_create_issue(sub_error) for sub_error in sub_errors]
 
 
 def _schema_path_ends_in(error: ValidationError, target: list[str]) -> bool:

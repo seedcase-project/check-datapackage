@@ -1,3 +1,5 @@
+from pytest import mark
+
 from check_datapackage.check import check
 from check_datapackage.examples import example_package_descriptor
 
@@ -37,3 +39,27 @@ def test_fail_with_both_resource_path_and_data_present():
 
     assert len(issues) == 1
     assert issues[0].type == "oneOf"
+
+
+# Issues at $.resources[x].path
+
+
+@mark.parametrize(
+    "path, location, type",
+    [
+        (123, "$.resources[0].path", "type"),
+        ("/bad/path", "$.resources[0].path", "pattern"),
+        ([], "$.resources[0].path", "minItems"),
+        ([123], "$.resources[0].path[0]", "type"),
+        (["/bad/path"], "$.resources[0].path[0]", "pattern"),
+    ],
+)
+def test_fail_with_bad_resource_path(path, location, type):
+    descriptor = example_package_descriptor()
+    descriptor["resources"][0]["path"] = path
+
+    issues = check(descriptor)
+
+    assert len(issues) == 1
+    assert issues[0].type == type
+    assert issues[0].location == location
