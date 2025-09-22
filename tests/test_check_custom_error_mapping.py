@@ -20,15 +20,18 @@ def test_pass_with_resource_path_missing():
     assert check(descriptor) == []
 
 
-def test_fail_with_resource_path_and_data_missing():
+def test_fail_with_resource_name_path_and_data_missing():
     descriptor = example_package_descriptor()
+    del descriptor["resources"][0]["name"]
     del descriptor["resources"][0]["path"]
 
     issues = check(descriptor)
 
-    assert len(issues) == 1
-    assert issues[0].location == "$.resources[0]"
+    assert len(issues) == 2
+    assert issues[0].location == "$.resources[0].name"
     assert issues[0].type == "required"
+    assert issues[1].location == "$.resources[0]"
+    assert issues[1].type == "required"
 
 
 def test_fail_with_both_resource_path_and_data_present():
