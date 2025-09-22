@@ -34,7 +34,7 @@ website:
       style: "floating"
       contents:
         - docs/index.qmd
-        - CHANGELOG.qmd
+        - CHANGELOG.md
         - CONTRIBUTING.md
     - id: design
       contents:
