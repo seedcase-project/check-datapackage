@@ -2,7 +2,6 @@
 
 from .check import check
 from .check_error import CheckError
-from .check_error_matcher import CheckErrorMatcher
 from .config import Config
 from .constants import (
     PACKAGE_RECOMMENDED_FIELDS,
@@ -11,7 +10,6 @@ from .constants import (
     RequiredFieldType,
 )
 from .exclude import Exclude
-from .exclude_matching_errors import exclude_matching_errors
 from .issue import Issue
 from .rule import Rule
 
@@ -21,11 +19,9 @@ __all__ = [
     "Issue",
     "Rule",
     "CheckError",
-    "CheckErrorMatcher",
     "check",
     "PACKAGE_RECOMMENDED_FIELDS",
     "PACKAGE_REQUIRED_FIELDS",
     "RESOURCE_REQUIRED_FIELDS",
     "RequiredFieldType",
-    "exclude_matching_errors",
 ]
