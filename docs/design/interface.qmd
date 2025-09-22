@@ -155,7 +155,7 @@ This class represents an issue that is found when checking a Data
 Package.
 
 See the help documentation with
-[`help(Issue)`](/docs/reference/issue.qmd) for more details.
+[`help(Issue)`](/docs/reference/Issue.qmd) for more details.
 
 ## Flow
 

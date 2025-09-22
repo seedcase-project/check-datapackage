@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from check_datapackage.check_error import CheckError
+from check_datapackage.issue import Issue
 
 
 @dataclass
@@ -36,7 +36,7 @@ class Exclude:
     type: str | None = None
 
 
-def exclude(issues: list[CheckError], excludes: list[Exclude]) -> list[CheckError]:
+def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     """Exclude issues by JSON type.
 
     Args:
@@ -53,12 +53,12 @@ def exclude(issues: list[CheckError], excludes: list[Exclude]) -> list[CheckErro
     return list(excluded_types)
 
 
-def _exclude_any_type(issue: CheckError, excludes: list[Exclude]) -> bool:
+def _exclude_any_type(issue: Issue, excludes: list[Exclude]) -> bool:
     """List any issue that has no exclusions as True."""
     any_types = list(map(lambda exclude: _has_type(issue, exclude), excludes))
     return not any(any_types)
 
 
-def _has_type(issue: CheckError, exclude: Exclude) -> bool:
+def _has_type(issue: Issue, exclude: Exclude) -> bool:
     """Logic for when an issue matches an exclude by type."""
-    return exclude.type is None or exclude.type == issue.validator
+    return exclude.type is None or exclude.type == issue.type
