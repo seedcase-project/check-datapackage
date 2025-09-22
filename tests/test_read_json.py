@@ -11,9 +11,7 @@ def test_reads(tmp_path: Path) -> None:
     json_path = tmp_path / "datapackage.json"
     json_path.write_text('{"name": "example", "resources": []}')
     descriptor = read_json(json_path)
-    assert isinstance(descriptor, dict)
-    assert descriptor["name"] == "example"
-    assert descriptor["resources"] == []
+    assert descriptor == {"name": "example", "resources": []}
 
 
 def test_not_a_dict(tmp_path: Path) -> None:

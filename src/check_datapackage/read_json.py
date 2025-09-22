@@ -19,7 +19,7 @@ def read_json(path: Path) -> dict[str, Any]:
             dictionary.
     """
     try:
-        descriptor: dict[str, Any] = loads(path.read_text())
+        descriptor: Any = loads(path.read_text())
     except JSONDecodeError as err:
         raise JSONDecodeError(
             f"We couldn't parse the path {path} as JSON. Is there a typo or other "
@@ -28,7 +28,7 @@ def read_json(path: Path) -> dict[str, Any]:
             pos=err.pos,
         ) from None  # To hide the original traceback
 
-    if not isinstance(descriptor, dict):  # type: ignore[reportNecessaryIsInstance, unused-ignore]
+    if not isinstance(descriptor, dict):
         raise TypeError(
             f"The file {path} should only have a dictionary (`dict`) object "
             f"but we found it has the type `{type(descriptor)}`. Are there "
