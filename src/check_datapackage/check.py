@@ -3,6 +3,7 @@ from typing import Any
 from check_datapackage.check_error import CheckError
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH
+from check_datapackage.exclude import exclude
 from check_datapackage.internals import (
     _add_package_recommendations,
     _add_resource_recommendations,
@@ -36,4 +37,11 @@ def check(
         _add_package_recommendations(schema)
         _add_resource_recommendations(schema)
 
-    return _check_object_against_json_schema(descriptor, schema)
+    issues = _check_object_against_json_schema(descriptor, schema)
+    if config.exclude:
+        issues = exclude(issues, config.exclude)
+
+    if not issues:
+        return []
+
+    return issues

@@ -11,7 +11,6 @@ from .constants import (
     RequiredFieldType,
 )
 from .exclude import Exclude
-from .exclude_matching_errors import exclude_matching_errors
 from .rule import Rule
 
 __all__ = [
@@ -25,5 +24,4 @@ __all__ = [
     "PACKAGE_REQUIRED_FIELDS",
     "RESOURCE_REQUIRED_FIELDS",
     "RequiredFieldType",
-    "exclude_matching_errors",
 ]

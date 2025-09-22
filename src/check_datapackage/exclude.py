@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from check_datapackage.check_error import CheckError
+
 
 @dataclass
 class Exclude:
@@ -14,9 +16,9 @@ class Exclude:
             e.g., `$.resources[*].name`. Needs to point to the location in the
             descriptor of the issue to ignore. If not provided, issues of the given
             `type` will be excluded for all fields.
-        type (str | None): The type of the issue to ignore (e.g., "required" or
-            "pattern").  If not provided, all types of issues will be ignored for
-            the given `target`.
+        type (str | None): The type of the issue to ignore (e.g., "required",
+            "pattern", or "format").  If not provided, all types of issues will be
+            ignored for the given `target`.
 
     Examples:
         ```{python}
@@ -32,3 +34,31 @@ class Exclude:
 
     target: str | None = None
     type: str | None = None
+
+
+def exclude(issues: list[CheckError], excludes: list[Exclude]) -> list[CheckError]:
+    """Exclude issues by JSON type.
+
+    Args:
+        issues: The issue to filter.
+        excludes: The exclusions to the issues.
+
+    Returns:
+        The filtered issues.
+    """
+    # excluded_targets = filter(
+    #     lambda issue: _exclude_any_target(issue, excludes), issues
+    # )
+    excluded_types = filter(lambda issue: _exclude_any_type(issue, excludes), issues)
+    return list(excluded_types)
+
+
+def _exclude_any_type(issue: CheckError, excludes: list[Exclude]) -> bool:
+    """List any issue that has no exclusions as True"""
+    any_types = list(map(lambda exclude: _has_type(issue, exclude), excludes))
+    return not any(any_types)
+
+
+def _has_type(issue: CheckError, exclude: Exclude) -> bool:
+    """Logic for when an issue matches an exclude by type."""
+    return exclude.type is None or exclude.type == issue.validator
