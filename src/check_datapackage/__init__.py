@@ -10,6 +10,7 @@ from .constants import (
     RESOURCE_REQUIRED_FIELDS,
     RequiredFieldType,
 )
+from .examples import example_package_descriptor, example_resource_descriptor
 from .exclude import Exclude
 from .exclude_matching_errors import exclude_matching_errors
 from .issue import Issue
@@ -20,6 +21,8 @@ __all__ = [
     "Exclude",
     "Issue",
     "Rule",
+    "example_package_descriptor",
+    "example_resource_descriptor",
     "CheckError",
     "CheckErrorMatcher",
     "check",
