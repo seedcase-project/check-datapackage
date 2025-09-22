@@ -1,3 +1,10 @@
 ---
 title: "Guide"
+description: "A guide on using `check-datapackage` on your `datapackage.json` file."
+listing:
+    contents: .
+    type: grid
+    sort: "order"
+    fields:
+        - title
 ---
