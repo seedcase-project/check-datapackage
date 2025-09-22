@@ -91,7 +91,7 @@ def explain(issues: list[Issue]) -> list[str]:
 ### {{< var wip >}} `read_json()`
 
 This is a simple helper function to read the `datapackage.json` file
-into a Python dictionary. See [`?read_json`](/docs/reference/read_json.qmd)
+into a Python dictionary. See [`help(read_json)`](/docs/reference/read_json.qmd)
 for more details.
 
 ### {{< var wip >}} `read_config()`
