@@ -28,9 +28,9 @@ def test_fail_with_resource_name_path_and_data_missing():
     issues = check(descriptor)
 
     assert len(issues) == 2
-    assert issues[0].location == "$.resources[0].name"
+    assert issues[0].location == "$.resources[0]"
     assert issues[0].type == "required"
-    assert issues[1].location == "$.resources[0]"
+    assert issues[1].location == "$.resources[0].name"
     assert issues[1].type == "required"
 
 

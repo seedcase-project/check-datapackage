@@ -122,16 +122,7 @@ def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
 
     # Handle issues at $.resources[x]
     if _schema_path_ends_in(error, ["resources", "items", "oneOf"]):
-        return [
-            Issue(
-                message=(
-                    "This resource has no `path` or `data` field. "
-                    "One of them must be provided."
-                ),
-                location=error.json_path,
-                type="required",
-            )
-        ]
+        return _handle_S_resources_x(sub_errors)
 
     # Handle issues at $.resources[x].path
     if _schema_path_ends_in(
@@ -144,22 +135,60 @@ def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
             "oneOf",
         ],
     ):
-        non_type_errors = [
-            sub
-            for sub in sub_errors
-            if not (str(sub.validator) == "type" and sub.absolute_path[-1] == "path")
-        ]
-        if non_type_errors:
-            return [_create_issue(err) for err in non_type_errors]
-        return [
-            Issue(
-                message="The `path` property must be either a string or an array.",
-                location=error.json_path,
-                type="type",
-            )
-        ]
+        return _handle_S_resources_x_path(sub_errors)
 
     return [_create_issue(sub_error) for sub_error in sub_errors]
+
+
+def _handle_S_resources_x(sub_errors: list[ValidationError]) -> list[Issue]:
+    """Do not flag missing `path` and `data` separately."""
+    issues: list[Issue] = []
+    path_or_data_required_error: ValidationError | None = None
+
+    for error in sub_errors:
+        path = _get_full_json_path_from_error(error)
+
+        if str(error.validator) == "required" and path.endswith(("path", "data")):
+            path_or_data_required_error = error
+        else:
+            issues.append(_create_issue(error))
+
+    if path_or_data_required_error:
+        issues.append(
+            Issue(
+                message=(
+                    "This resource has no `path` or `data` field. "
+                    "One of them must be provided."
+                ),
+                location=path_or_data_required_error.json_path,
+                type="required",
+            )
+        )
+
+    return issues
+
+
+def _handle_S_resources_x_path(sub_errors: list[ValidationError]) -> list[Issue]:
+    """Only flag errors for the relevant type.
+
+    If `path` is a string, flag errors for the string-based schema.
+    If `path` is an array, flag errors for the array-based schema.
+    """
+    non_type_errors = [
+        error
+        for error in sub_errors
+        if not (str(error.validator) == "type" and error.absolute_path[-1] == "path")
+    ]
+    if non_type_errors:
+        return [_create_issue(err) for err in non_type_errors]
+
+    return [
+        Issue(
+            message="The `path` property must be either a string or an array.",
+            location=sub_errors[0].json_path,
+            type="type",
+        )
+    ]
 
 
 def _schema_path_ends_in(error: ValidationError, target: list[str]) -> bool:
