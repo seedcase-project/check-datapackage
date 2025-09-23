@@ -37,8 +37,8 @@ available, run:
 just
 ```
 
-As you contribute, make sure your changes pass our tests by opening
-a terminal with the working directory set to the root of this project's
+As you contribute, make sure your changes pass our tests by opening a
+terminal with the working directory set to the root of this project's
 repository. Then run:
 
 ``` bash
@@ -46,8 +46,8 @@ just run-all
 ```
 
 When committing changes, please follow the [Conventional
-Commits](https://decisions.seedcase-project.org/why-conventional-commits) standard for
-Git messages. Using this convention allows us to be able to
+Commits](https://decisions.seedcase-project.org/why-conventional-commits)
+standard for Git messages. Using this convention allows us to be able to
 automatically create a release based on the commit message with
 [Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen).
 If you don't use Conventional Commits when making a commit, we will
