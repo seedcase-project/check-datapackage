@@ -41,7 +41,7 @@ def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     """Keep only issues that don't match an exclusion rule.
 
     Args:
-        issues: The issues to keep.
+        issues: The issues to filter.
         excludes: The exclusion rules to apply to the issues.
 
     Returns:
