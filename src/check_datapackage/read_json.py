@@ -22,7 +22,7 @@ def read_json(path: Path) -> dict[str, Any]:
         descriptor: Any = loads(path.read_text())
     except JSONDecodeError as err:
         raise JSONDecodeError(
-            f"We couldn't parse the path {path} as JSON. Is there a typo or other "
+            f"The path {path} couldn't be parsed as JSON. Is there a typo or other "
             "issue in the file?",
             doc=err.doc,
             pos=err.pos,
@@ -31,9 +31,8 @@ def read_json(path: Path) -> dict[str, Any]:
     if not isinstance(descriptor, dict):
         raise TypeError(
             f"The file {path} should parse into a Python dictionary (`dict`) "
-            f"but it converts to the type `{type(descriptor)}`. Is there "
-            "a missing curly bracket `{` at the start or `}` at the end "
-            "of the file?"
+            f"but it converts to the type `{type(descriptor)}`. Is the file"
+            "missing a curly bracket `{` at the beginning or `}` at the end?"
         )
 
     return descriptor
