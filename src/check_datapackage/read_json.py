@@ -20,12 +20,12 @@ def read_json(path: Path) -> dict[str, Any]:
     """
     try:
         descriptor: Any = loads(path.read_text())
-    except JSONDecodeError as err:
+    except JSONDecodeError as error:
         raise JSONDecodeError(
             f"The path {path} couldn't be parsed as JSON. Is there a typo or other "
             "issue in the file?",
-            doc=err.doc,
-            pos=err.pos,
+            doc=error.doc,
+            pos=error.pos,
         ) from None  # To hide the original traceback
 
     if not isinstance(descriptor, dict):
