@@ -31,7 +31,7 @@ def read_json(path: Path) -> dict[str, Any]:
     if not isinstance(descriptor, dict):
         raise TypeError(
             f"The file {path} should parse into a Python dictionary (`dict`) "
-            f"but it converts to the type `{type(descriptor)}`. Is the file"
+            f"but it converts to the type `{type(descriptor)}`. Is the file "
             "missing a curly bracket `{` at the beginning or `}` at the end?"
         )
 
