@@ -66,6 +66,7 @@ quartodoc:
     desc: Classes and functions in `check_datapackage`.
     contents:
     - name: check
+    - name: read_json
     - name: Config
     - name: Exclude
     - name: Rule

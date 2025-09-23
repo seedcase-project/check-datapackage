@@ -11,6 +11,7 @@ from .constants import (
 )
 from .exclude import Exclude
 from .issue import Issue
+from .read_json import read_json
 from .rule import Rule
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "PACKAGE_REQUIRED_FIELDS",
     "RESOURCE_REQUIRED_FIELDS",
     "RequiredFieldType",
+    "read_json",
 ]

@@ -91,19 +91,8 @@ def explain(issues: list[Issue]) -> list[str]:
 ### {{< var wip >}} `read_json()`
 
 This is a simple helper function to read the `datapackage.json` file
-into a Python dictionary.
-
-``` python
-def read_json(path: Path) -> dict:
-    """Reads `datapackage.json` into a Python dictionary.
-
-    Args:
-        path: The path to the `datapackage.json` file to read.
-
-    Returns:
-        The contents of the JSON file as a Python dictionary.
-    """
-```
+into a Python dictionary. See [`help(read_json)`](/docs/reference/read_json.qmd)
+for more details.
 
 ### {{< var wip >}} `read_config()`
 
