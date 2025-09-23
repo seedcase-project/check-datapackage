@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from typing import Any, Callable
+
+from check_datapackage.issue import Issue
 
 
 @dataclass
@@ -14,9 +17,9 @@ class Exclude:
             e.g., `$.resources[*].name`. Needs to point to the location in the
             descriptor of the issue to ignore. If not provided, issues of the given
             `type` will be excluded for all fields.
-        type (str | None): The type of the issue to ignore (e.g., "required" or
-            "pattern").  If not provided, all types of issues will be ignored for
-            the given `target`.
+        type (str | None): The type of the issue to ignore (e.g., "required",
+            "pattern", or "format").  If not provided, all types of issues will be
+            ignored for the given `target`.
 
     Examples:
         ```{python}
@@ -32,3 +35,46 @@ class Exclude:
 
     target: str | None = None
     type: str | None = None
+
+
+def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
+    """Keep only issues that don't match an exclusion rule.
+
+    Args:
+        issues: The issues to filter.
+        excludes: The exclusion rules to apply to the issues.
+
+    Returns:
+        The issues that are kept after applying the exclusion rules.
+    """
+    # kept_issues = _filter(
+    #     issues,
+    #     lambda issue: _drop_any_target(issue, excludes)
+    # )
+    kept_issues: list[Issue] = _drop_any_matching_types(issues, excludes)
+    return kept_issues
+
+
+def _drop_any_matching_types(
+    issues: list[Issue], excludes: list[Exclude]
+) -> list[Issue]:
+    return _filter(issues, lambda issue: not _any_matching_types(issue, excludes))
+
+
+def _any_matching_types(issue: Issue, excludes: list[Exclude]) -> bool:
+    has_matching_types: list[bool] = _map(
+        excludes, lambda exclude: _same_type(issue, exclude)
+    )
+    return any(has_matching_types)
+
+
+def _same_type(issue: Issue, exclude: Exclude) -> bool:
+    return exclude.type == issue.type
+
+
+def _filter(x: Any, fn: Callable[[Any], bool]) -> list[Any]:
+    return list(filter(fn, x))
+
+
+def _map(x: Any, fn: Callable[[Any], Any]) -> list[Any]:
+    return list(map(fn, x))
