@@ -37,10 +37,10 @@ class Exclude:
 
 
 def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
-    """Exclude issues by JSON type.
+    """Exclude issues by rule type.
 
     Args:
-        issues: The issue to filter.
+        issues: The issues to filter.
         excludes: The exclusions to the issues.
 
     Returns:
@@ -49,7 +49,7 @@ def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     # excluded_targets = filter(
     #     lambda issue: _exclude_any_target(issue, excludes), issues
     # )
-    excluded_types = filter(lambda issue: _exclude_any_type(issue, excludes), issues)
+    filtered_by_type = filter(lambda issue: _exclude_any_type(issue, excludes), issues)
     return list(excluded_types)
 
 
@@ -61,4 +61,4 @@ def _exclude_any_type(issue: Issue, excludes: list[Exclude]) -> bool:
 
 def _has_type(issue: Issue, exclude: Exclude) -> bool:
     """Logic for when an issue matches an exclude by type."""
-    return exclude.type is None or exclude.type == issue.type
+    return exclude.type == issue.type

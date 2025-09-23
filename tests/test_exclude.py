@@ -1,6 +1,5 @@
 from typing import Any
 
-# from pytest import mark
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.exclude import Exclude
@@ -19,14 +18,14 @@ def test_exclude_required_type():
 
 def test_exclude_format_type():
     """Exclude type with the format value."""
-    # created is required and must match a date format
+    # created must match a date format
     descriptor = {"created": "20240614"}
 
     exclude = [Exclude(type="format")]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
 
-    # Only one, since created is required (but also "format")
+    # One issue: missing resources
     assert len(issues) == 1
 
 
