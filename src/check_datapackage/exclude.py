@@ -58,11 +58,7 @@ def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
 def _drop_any_matching_types(
     issues: list[Issue], excludes: list[Exclude]
 ) -> list[Issue]:
-    kept_issues: list[Issue] = _filter(
-        issues, lambda issue: not _any_matching_types(issue, excludes)
-    )
-
-    return kept_issues
+    return _filter(issues, lambda issue: not _any_matching_types(issue, excludes))
 
 
 def _any_matching_types(issue: Issue, excludes: list[Exclude]) -> bool:
