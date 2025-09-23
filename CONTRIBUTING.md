@@ -5,21 +5,21 @@
 The easiest way to contribute is to report issues or bugs that you might
 find while using `check-datapackage`. You can do this by creating a
 [new](https://github.com/seedcase-project/check-datapackage/issues/new/choose)
-issue on our GitHub repository.
+issue on the GitHub repository.
 
 ## Adding or modifying content :pencil2:
 
 If you would like to contribute content, please check out our
 [guidebook](https://guidebook.seedcase-project.org/) for more specific
 details on how we work and develop. It is a regularly evolving document,
-so is at various states of completion.
+so it's at various states of completion.
 
 To contribute to `check-datapackage`, you first need to install
 [uv](https://docs.astral.sh/uv/) and
 [justfile](https://just.systems/man/en/packages.html). We use uv and
-justfile to manage our project, such as to run checks and test the
-template. Both the uv and justfile websites have a more detailed guide
-on using uv, but below are some simple instructions to get you started.
+justfile to manage our project, such as to run checks and tests. Both uv
+and justfile have documentation with more detailed guides on how to use
+them, but below are some simple instructions to get you started.
 
 It's easiest to install uv and justfile using
 [pipx](https://pypa.github.io/pipx/), so install that first. Then,
@@ -37,18 +37,18 @@ available, run:
 just
 ```
 
-As you contribute, make sure your changes will pass our tests by opening
-a terminal so that the working directory is the root of this project's
-repository and running:
+As you contribute, make sure your changes pass our tests by opening
+a terminal with the working directory set to the root of this project's
+repository. Then run:
 
 ``` bash
 just run-all
 ```
 
-When committing changes, please try to follow [Conventional
-Commits](https://decisions.seedcase-project.org/why-conventional-commits)
-as Git messages. Using this convention allows us to be able to
-automatically create a release based on the commit message by using
+When committing changes, please follow the [Conventional
+Commits](https://decisions.seedcase-project.org/why-conventional-commits) standard for
+Git messages. Using this convention allows us to be able to
+automatically create a release based on the commit message with
 [Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen).
 If you don't use Conventional Commits when making a commit, we will
 revise the pull request title to follow that format, as we use [squash
