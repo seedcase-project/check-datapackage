@@ -141,35 +141,10 @@ See the help documentation with `help(Rule)` for more details.
 ### {{< var wip >}} `Issue`
 
 This class represents an issue that is found when checking a Data
-Package, with the following interface:
+Package.
 
-``` python
-@dataclass
-class Issue:
-    """An issue found while checking a Data Package descriptor
-
-    One Issue object represents one failed check on one field within the descriptor.
-
-    Attributes:
-        location (string): A [JSON path](https://en.wikipedia.org/wiki/JSONPath)
-            format, pointing to the field in the input object where the issue is located.
-            For example, `"$.resources[2].name"`.
-        message (string): A description of what exactly the issue is.
-        type (string): The type of the check that failed.
-            Used mostly for excluding specific types of issues.
-
-    Methods:
-        __str__(): Return a user-friendly, human-readable message of the issue, with more
-            details than the `message` attribute and more context. Used when running
-            `explain()` on the issues.
-    """
-    location: str
-    message: str
-    type: str
-
-    def __str__(self) -> str:
-        """Return a user-friendly, human-readable string representation of the issue."""
-```
+See the help documentation with
+[`help(Issue)`](/docs/reference/issue.qmd) for more details.
 
 ## Flow
 
