@@ -154,7 +154,8 @@ See the help documentation with `help(Rule)` for more details.
 This class represents an issue that is found when checking a Data
 Package.
 
-See the help documentation with `help(Issue)` for more details.
+See the help documentation with
+[`help(Issue)`](/docs/reference/issue.qmd) for more details.
 
 ## Flow
 
