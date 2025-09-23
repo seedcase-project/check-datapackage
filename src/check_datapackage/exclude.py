@@ -51,11 +51,11 @@ def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     #     issues,
     #     lambda issue: _drop_any_target(issue, excludes)
     # )
-    kept_issues = _drop_any_matching_type(issues, excludes)
+    kept_issues: list[Issue] = _drop_any_matching_types(issues, excludes)
     return kept_issues
 
 
-def _drop_any_matching_type(
+def _drop_any_matching_types(
     issues: list[Issue], excludes: list[Exclude]
 ) -> list[Issue]:
     kept_issues: list[Issue] = _filter(
