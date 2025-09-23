@@ -40,6 +40,7 @@ helping you ensure that your metadata is both correct and compliant.
     in your `datapackage.json` against the Data Package standard.
 -   Enables you to configure which components of the descriptor that
     should or should not be checked.
+-   Enables you to turn off specific checks defined in the standard.
 -   Supports user-defined, custom checks.
 -   Provides clear and user-friendly messages that point directly to
     where issues occur in the descriptor.
