@@ -36,19 +36,19 @@ helping you ensure that your metadata is both correct and compliant.
 ## Key features :sparkles:
 
 -   Checks the
-    [descriptor(s)](https://datapackage.org/standard/glossary/#descriptor)
+    [descriptor](https://datapackage.org/standard/glossary/#descriptor)
     in your `datapackage.json` against the Data Package standard.
--   Enables you to configure which components of the descriptor(s) that
+-   Enables you to configure which components of the descriptor that
     should or should not be checked.
 -   Supports user-defined, custom checks.
 -   Provides clear and user-friendly messages that point directly to
-    where issues occur in the descriptor(s).
+    where issues occur in the descriptor.
 -   Supports a strict mode that enforces full compliance with the
     standard, including all recommended fields.
 
-:warning: Note that `check-datapackage` only checks the descriptor(s)
+:warning: Note that `check-datapackage` only checks the descriptor
 against the Data Package standard---it does not check the data itself
-against its descriptor(s).
+against its descriptor.
 :::
 ::::
 :::::
