@@ -65,9 +65,7 @@ def _any_matching_types(issue: Issue, excludes: list[Exclude]) -> bool:
     has_matching_types: list[bool] = _map(
         excludes, lambda exclude: _same_type(issue, exclude)
     )
-    any_matching_types: bool = any(has_matching_types)
-
-    return any_matching_types
+    return any(has_matching_types)
 
 
 def _same_type(issue: Issue, exclude: Exclude) -> bool:
