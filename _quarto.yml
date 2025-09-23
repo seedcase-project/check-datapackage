@@ -9,9 +9,8 @@ website:
   navbar:
     pinned: true
     title: false
-    # TODO: add logo specific to check-datapackage
-    logo: "_extensions/seedcase-project/seedcase-theme/logos/seedcase-logo.svg"
-    logo-alt: "check-datapackage logo: Main page"
+    logo: "_extensions/seedcase-project/seedcase-theme/logos/navbar-logo-check-datapackage.svg"
+    logo-alt: "check-datapackage: Main page"
     left:
       - text: "Overview"
         href: docs/index.qmd
