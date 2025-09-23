@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any, Callable
 
 from check_datapackage.issue import Issue
 
@@ -37,28 +38,49 @@ class Exclude:
 
 
 def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
-    """Exclude issues by rule type.
+    """Keep only issues that don't match an exclusion rule.
 
     Args:
-        issues: The issues to filter.
-        excludes: The exclusions to the issues.
+        issues: The issues to keep.
+        excludes: The exclusion rules to apply to the issues.
 
     Returns:
-        The filtered issues.
+        The issues that are kept after applying the exclusion rules.
     """
-    # excluded_targets = filter(
-    #     lambda issue: _exclude_any_target(issue, excludes), issues
+    # kept_issues = _filter(
+    #     issues,
+    #     lambda issue: _drop_any_target(issue, excludes)
     # )
-    filtered_by_type = filter(lambda issue: _exclude_any_type(issue, excludes), issues)
-    return list(excluded_types)
+    kept_issues = _drop_any_matching_type(issues, excludes)
+    return kept_issues
 
 
-def _exclude_any_type(issue: Issue, excludes: list[Exclude]) -> bool:
-    """List any issue that has no exclusions as True."""
-    any_types = list(map(lambda exclude: _has_type(issue, exclude), excludes))
-    return not any(any_types)
+def _drop_any_matching_type(
+    issues: list[Issue], excludes: list[Exclude]
+) -> list[Issue]:
+    kept_issues: list[Issue] = _filter(
+        issues, lambda issue: not _any_matching_types(issue, excludes)
+    )
+
+    return kept_issues
 
 
-def _has_type(issue: Issue, exclude: Exclude) -> bool:
-    """Logic for when an issue matches an exclude by type."""
+def _any_matching_types(issue: Issue, excludes: list[Exclude]) -> bool:
+    has_matching_types: list[bool] = _map(
+        excludes, lambda exclude: _same_type(issue, exclude)
+    )
+    any_matching_types: bool = any(has_matching_types)
+
+    return any_matching_types
+
+
+def _same_type(issue: Issue, exclude: Exclude) -> bool:
     return exclude.type == issue.type
+
+
+def _filter(x: Any, fn: Callable[[Any], bool]) -> list[Any]:
+    return list(filter(fn, x))
+
+
+def _map(x: Any, fn: Callable[[Any], Any]) -> list[Any]:
+    return list(map(fn, x))
