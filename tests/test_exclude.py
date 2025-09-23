@@ -5,6 +5,20 @@ from check_datapackage.config import Config
 from check_datapackage.exclude import Exclude
 
 
+def test_exclude_none_type():
+    descriptor: dict[str, Any] = {
+        "name": "a name",
+        "resources": [{"name": "a name", "path": "data.csv"}],
+        "contributors": [{"path": "/a/bad/path"}],
+    }
+
+    exclude = [Exclude()]
+    config = Config(exclude=exclude)
+    issues = check(descriptor, config=config)
+
+    assert len(issues) == 1
+
+
 def test_exclude_required_type():
     """Exclude type with the required value."""
     descriptor = {"name": "a name with spaces"}
