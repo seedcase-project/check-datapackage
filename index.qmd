@@ -80,7 +80,7 @@ data.
 ::: hero-text
 ## Want to contribute?
 
-We would love your feedback or contributions! Head over to our [GitHub
+We would love your feedback or contributions! Head over to the [GitHub
 repository](https://github.com/seedcase-project/check-datapackage) to
 share your ideas or contribute code. Your input makes us better!
 :::
