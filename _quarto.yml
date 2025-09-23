@@ -71,6 +71,8 @@ quartodoc:
     - name: Exclude
     - name: Rule
     - name: Issue
+    - name: example_package_descriptor
+    - name: example_resource_descriptor
 
 metadata-files:
   - docs/reference/_sidebar.yml
