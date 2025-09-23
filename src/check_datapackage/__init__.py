@@ -9,6 +9,7 @@ from .constants import (
     RESOURCE_REQUIRED_FIELDS,
     RequiredFieldType,
 )
+from .examples import example_package_descriptor, example_resource_descriptor
 from .exclude import Exclude
 from .issue import Issue
 from .read_json import read_json
@@ -19,6 +20,8 @@ __all__ = [
     "Exclude",
     "Issue",
     "Rule",
+    "example_package_descriptor",
+    "example_resource_descriptor",
     "CheckError",
     "check",
     "PACKAGE_RECOMMENDED_FIELDS",

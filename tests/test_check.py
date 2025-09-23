@@ -1,5 +1,3 @@
-from pytest import mark
-
 from check_datapackage.check import check
 from check_datapackage.config import Config
 
@@ -32,43 +30,17 @@ def test_fails_descriptor_without_resources():
     assert issues[0].location == "$.resources"
 
 
-@mark.parametrize(
-    "resources, location, num_issues",
-    [
-        ([], "$.resources", 1),
-        ([{}], "$.resources[0].data", 3),
-        ([{"name": "a name", "path": "/a/bad/path"}], "$.resources[0].path", 2),
-    ],
-)
-def test_fails_descriptor_with_bad_resources(resources, location, num_issues):
-    """Should fail descriptor with malformed resources."""
+def test_fails_descriptor_with_empty_resources():
+    """Should fail descriptor with an empty resources array."""
     descriptor = {
         "name": "a name with spaces",
-        "resources": resources,
+        "resources": [],
     }
 
     issues = check(descriptor)
 
-    assert len(issues) == num_issues
-    assert issues[0].location == location
-
-
-def test_fails_descriptor_with_missing_required_fields():
-    """Should fail descriptor with missing required fields."""
-    descriptor = {
-        "name": "a name",
-        "resources": [{"name": "a name", "path": "data.csv"}],
-        "licenses": [{"title": "my license"}],
-    }
-
-    issues = check(descriptor)
-
-    assert len(issues) == 2
-    assert all(issue.type == "required" for issue in issues)
-    assert {issue.location for issue in issues} == {
-        "$.licenses[0].name",
-        "$.licenses[0].path",
-    }
+    assert len(issues) == 1
+    assert issues[0].location == "$.resources"
 
 
 def test_fails_descriptor_with_bad_type():

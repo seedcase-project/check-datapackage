@@ -4,7 +4,6 @@ from typing import Any, Iterator
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.constants import (
-    COMPLEX_VALIDATORS,
     NAME_PATTERN,
     PACKAGE_RECOMMENDED_FIELDS,
     SEMVER_PATTERN,
@@ -76,46 +75,110 @@ def _validation_errors_to_issues(
 ) -> list[Issue]:
     """Transforms `jsonschema.ValidationError`s to more compact `Issue`s.
 
-    The list of errors is:
-
-      - flattened
-      - filtered for summary-type errors
-      - filtered for duplicates
-      - sorted by error location
-
     Args:
         validation_errors: The `jsonschema.ValidationError`s to transform.
 
     Returns:
         A list of `Issue`s.
     """
-    issues = [
-        Issue(
-            message=error.message,
-            location=_get_full_json_path_from_error(error),
-            type=str(error.validator),
+    return sorted(
+        {
+            issue
+            for error in validation_errors
+            for issue in _validation_error_to_issues(error)
+        }
+    )
+
+
+def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
+    """Maps a `ValidationError` to one or more `Issue`s."""
+    if not error.context:
+        return [_create_issue(error)]
+    sub_errors = error.context
+
+    # Handle issues at $.resources[x]
+    if _schema_path_ends_in(error, ["resources", "items", "oneOf"]):
+        return _handle_S_resources_x(sub_errors)
+
+    # Handle issues at $.resources[x].path
+    if _schema_path_ends_in(
+        error,
+        [
+            "resources",
+            "items",
+            "properties",
+            "path",
+            "oneOf",
+        ],
+    ):
+        return _handle_S_resources_x_path(sub_errors)
+
+    return [_create_issue(sub_error) for sub_error in sub_errors]
+
+
+def _handle_S_resources_x(sub_errors: list[ValidationError]) -> list[Issue]:
+    """Do not flag missing `path` and `data` separately."""
+    issues: list[Issue] = []
+    path_or_data_required_error: ValidationError | None = None
+
+    for error in sub_errors:
+        path = _get_full_json_path_from_error(error)
+
+        if str(error.validator) == "required" and path.endswith(("path", "data")):
+            path_or_data_required_error = error
+        else:
+            issues.append(_create_issue(error))
+
+    if path_or_data_required_error:
+        issues.append(
+            Issue(
+                message=(
+                    "This resource has no `path` or `data` field. "
+                    "One of them must be provided."
+                ),
+                location=path_or_data_required_error.json_path,
+                type="required",
+            )
         )
-        for error in _unwrap_errors(list(validation_errors))
-        if str(error.validator) not in COMPLEX_VALIDATORS
-    ]
-    return sorted(set(issues))
+
+    return issues
 
 
-def _unwrap_errors(errors: list[ValidationError]) -> list[ValidationError]:
-    """Recursively extracts all errors into a flat list of errors.
+def _handle_S_resources_x_path(sub_errors: list[ValidationError]) -> list[Issue]:
+    """Only flag errors for the relevant type.
 
-    Args:
-        errors: A nested list of errors.
-
-    Returns:
-        A flat list of errors.
+    If `path` is a string, flag errors for the string-based schema.
+    If `path` is an array, flag errors for the array-based schema.
     """
-    unwrapped = []
-    for error in errors:
-        unwrapped.append(error)
-        if error.context:
-            unwrapped.extend(_unwrap_errors(error.context))
-    return unwrapped
+    non_type_errors = [
+        error
+        for error in sub_errors
+        if not (str(error.validator) == "type" and error.absolute_path[-1] == "path")
+    ]
+    if non_type_errors:
+        return [_create_issue(err) for err in non_type_errors]
+
+    return [
+        Issue(
+            message="The `path` property must be either a string or an array.",
+            location=sub_errors[0].json_path,
+            type="type",
+        )
+    ]
+
+
+def _schema_path_ends_in(error: ValidationError, target: list[str]) -> bool:
+    """Check if the schema path of a validation error ends in the given sequence."""
+    return list(error.schema_path)[-len(target) :] == target
+
+
+def _create_issue(error: ValidationError) -> Issue:
+    """Create an `Issue` from a `ValidationError`."""
+    return Issue(
+        message=error.message,
+        location=_get_full_json_path_from_error(error),
+        type=str(error.validator),
+    )
 
 
 def _get_full_json_path_from_error(error: ValidationError) -> str:
