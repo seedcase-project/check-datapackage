@@ -2,15 +2,14 @@
 title: "Design"
 ---
 
-The purpose of these documents is to describe the design of
-`check-datapackage` in enough detail to help us develop it in a way that
-is sustainable (i.e., maintainable over the long term) and that ensures
-we as a team have a shared understanding of what the package is and is
-not.
+The purpose of these design documents is to describe the design of
+`check-datapackage` in enough detail to guide a sustainable implementation
+(i.e., maintainable in the long term) and to ensure that
+the team has a shared understanding of the package's scope and architecture before starting the development.
 
 `check-datapackage`'s design builds off of our overall Seedcase [design
-principles and patterns](https://design.seedcase-project.org/), in that
-any design we create for `check-datapackage` should strongly follow the
+principles and patterns](https://design.seedcase-project.org/), and
+strongly follows the
 same design principles and patterns described there.
 
 ## Purpose
@@ -31,14 +30,16 @@ Specifically, `check-datapackage` should:
 
 Overall, `check-datapackage` must:
 
--   Check Data Package descriptors against the Data Package standard.
+-   Check Data Package descriptors against the Data Package standard, specifically the Data Package [profiles](https://datapackage.org/standard/glossary/#profile).
 -   Allow configuration to check or not check certain components of the
     descriptor.
 -   Support turning off specific checks defined in the standard.
 -   Support custom, user-defined checks in addition to those in the
     standard.
--   Provide informative, user-friendly, and structured messages about
+-   Provide clear, user-friendly, and structured messages about
     any issues, identifying where in the descriptor the issues occur.
+-   Provide a strict mode that enforces all aspects of the Data
+    Package standard, including all recommendations.
 -   Be designed in a way that can be extended as a command-line
     interface (CLI) in the future.
 
