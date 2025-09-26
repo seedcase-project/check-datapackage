@@ -15,8 +15,8 @@ there.
 
 ## Purpose
 
-The overall aim of `check-datapackage` is to check the
-compliance of [Data Package
+The overall aim of `check-datapackage` is to check the compliance of
+[Data Package
 descriptors](https://datapackage.org/standard/glossary/#descriptor)
 (i.e., the contents of `datapackage.json`) against the [Data Package
 standard](https://datapackage.org/).
