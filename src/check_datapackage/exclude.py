@@ -1,23 +1,24 @@
 from dataclasses import dataclass
-from typing import Any, Callable
+from re import Match, Pattern, search
+from typing import Any, Callable, Optional
 
 from check_datapackage.issue import Issue
 
 
 @dataclass
 class Exclude:
-    """Exclude issues when checking a Data Package descriptor.
+    r"""Exclude issues when checking a Data Package descriptor.
 
     When both `target` and `type` are provided, an issue has to match both to be
     excluded.
 
     Attributes:
-        target (str | None): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
+        target (Optional[Pattern[str] | str]): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
             to the field or fields in the input object where issues should be ignored,
-            e.g., `$.resources[*].name`. Needs to point to the location in the
+            e.g., `\$\.resources\[*\]\.name`. Needs to point to the location in the
             descriptor of the issue to ignore. If not provided, issues of the given
             `type` will be excluded for all fields.
-        type (str | None): The type of the issue to ignore (e.g., "required",
+        type (Optional[str]): The type of the issue to ignore (e.g., "required",
             "pattern", or "format").  If not provided, all types of issues will be
             ignored for the given `target`.
 
@@ -33,8 +34,8 @@ class Exclude:
         ```
     """
 
-    target: str | None = None
-    type: str | None = None
+    target: Optional[Pattern[str] | str] = None
+    type: Optional[str] = None
 
 
 def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
@@ -47,25 +48,38 @@ def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     Returns:
         The issues that are kept after applying the exclusion rules.
     """
-    # kept_issues = _filter(
-    #     issues,
-    #     lambda issue: _drop_any_target(issue, excludes)
-    # )
-    kept_issues: list[Issue] = _drop_any_matching_types(issues, excludes)
-    return kept_issues
+    targets_dropped: list[Issue] = _drop_targets(issues, excludes)
+    return _drop_types(targets_dropped, excludes)
 
 
-def _drop_any_matching_types(
-    issues: list[Issue], excludes: list[Exclude]
+def _drop_targets(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
+    return _drop_any_matches(issues, excludes, _same_target)
+
+
+def _drop_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
+    return _drop_any_matches(issues, excludes, _same_type)
+
+
+def _drop_any_matches(
+    issues: list[Issue], excludes: list[Exclude], fn: Callable[[Issue, Exclude], bool]
 ) -> list[Issue]:
-    return _filter(issues, lambda issue: not _any_matching_types(issue, excludes))
+    return _filter(issues, lambda issue: not _any_matches_on_issue(issue, excludes, fn))
 
 
-def _any_matching_types(issue: Issue, excludes: list[Exclude]) -> bool:
-    has_matching_types: list[bool] = _map(
-        excludes, lambda exclude: _same_type(issue, exclude)
+def _any_matches_on_issue(
+    issue: Issue, excludes: list[Exclude], fn: Callable[[Issue, Exclude], bool]
+) -> bool:
+    has_match: list[bool] = _map(excludes, lambda exclude: fn(issue, exclude))
+    return any(has_match)
+
+
+def _same_target(issue: Issue, exclude: Exclude) -> bool:
+    if exclude.target is None:
+        return False
+    matches_in_issue: Optional[Match[str]] = search(
+        pattern=exclude.target, string=issue.location
     )
-    return any(has_matching_types)
+    return matches_in_issue is not None
 
 
 def _same_type(issue: Issue, exclude: Exclude) -> bool:
