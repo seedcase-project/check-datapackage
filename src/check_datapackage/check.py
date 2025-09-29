@@ -38,4 +38,4 @@ def check(
         _add_resource_recommendations(schema)
 
     issues = _check_object_against_json_schema(descriptor, schema)
-    return exclude(issues, config.exclude)
+    return exclude(issues, config.exclude, descriptor)
