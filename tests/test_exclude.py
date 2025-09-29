@@ -83,7 +83,7 @@ def test_exclude_target_explicit():
     descriptor = example_package_descriptor()
     descriptor["created"] = "20240614"
 
-    exclude = [Exclude(target=r"\$\.created")]
+    exclude = [Exclude(target="$.created")]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
 
@@ -95,7 +95,7 @@ def test_exclude_target_pattern():
     descriptor = example_package_descriptor()
     descriptor["created"] = "20240614"
 
-    exclude = [Exclude(target="created")]
+    exclude = [Exclude(target="$.created")]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
 
@@ -107,15 +107,7 @@ def test_exclude_target_nested():
     descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
 
     exclude = [
-        Exclude(target=r"\$\.contributors\[.*\]\.path"),
-    ]
-    config = Config(exclude=exclude)
-    issues = check(descriptor, config=config)
-
-    assert len(issues) == 0
-
-    exclude = [
-        Exclude(target=r"path"),
+        Exclude(target="$.contributors[0].path"),
     ]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
@@ -129,8 +121,8 @@ def test_exclude_target_multiple():
     descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
 
     exclude = [
-        Exclude(target=r"\$\.contributors\[.*\]\.path"),
-        Exclude(target=r"created"),
+        Exclude(target="$.contributors[0].path"),
+        Exclude(target="$.created"),
     ]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
@@ -153,7 +145,7 @@ def test_exclude_target_and_type():
     assert len(issues) == 1
 
     exclude = [
-        Exclude(target=r"path", type="format"),
+        Exclude(target="$.contributors[0].path", type="format"),
     ]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
@@ -161,7 +153,7 @@ def test_exclude_target_and_type():
     assert len(issues) == 0
 
     exclude = [
-        Exclude(target=r"path"),
+        Exclude(target="$.contributors[0].path"),
         Exclude(type="format"),
     ]
     config = Config(exclude=exclude)

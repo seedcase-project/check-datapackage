@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from re import Match, Pattern, search
 from typing import Any, Callable, Optional
 
 from check_datapackage.issue import Issue
@@ -13,12 +12,12 @@ class Exclude:
     excluded.
 
     Attributes:
-        target (Optional[Pattern[str] | str]): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
+        target (Optional[str]): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
             to the field or fields in the input object where issues should be ignored.
-            Must be a regular expression `Pattern`, e.g., `\$\.resources\[*\]\.name`.
-            Needs to point to the location in the descriptor of the issue to
-            ignore. If not provided, issues of the given `type` will be excluded
-            for all fields.
+            Must be an explicit path, e.g., `$.resources[0].name`.  Needs to
+            point to the location in the descriptor of the issue to ignore. If
+            not provided, issues of the given `type` will be excluded for all
+            fields.
         type (Optional[str]): The type of the issue to ignore (e.g., "required",
             "pattern", or "format").  If not provided, all types of issues will be
             ignored for the given `target`.
@@ -35,7 +34,7 @@ class Exclude:
         ```
     """
 
-    target: Optional[Pattern[str] | str] = None
+    target: Optional[str] = None
     type: Optional[str] = None
 
 
@@ -78,12 +77,7 @@ def _any_matches_on_issue(
 
 
 def _same_target(issue: Issue, exclude: Exclude) -> bool:
-    if exclude.target is None:
-        return False
-    matches_in_issue: Optional[Match[str]] = search(
-        pattern=exclude.target, string=issue.location
-    )
-    return matches_in_issue is not None
+    return issue.location == exclude.target
 
 
 def _same_type(issue: Issue, exclude: Exclude) -> bool:
