@@ -2,7 +2,6 @@
 
 from .check import check
 from .check_error import CheckError
-from .check_error_matcher import CheckErrorMatcher
 from .config import Config
 from .constants import (
     PACKAGE_RECOMMENDED_FIELDS,
@@ -12,8 +11,8 @@ from .constants import (
 )
 from .examples import example_package_descriptor, example_resource_descriptor
 from .exclude import Exclude
-from .exclude_matching_errors import exclude_matching_errors
 from .issue import Issue
+from .read_json import read_json
 from .rule import Rule
 
 __all__ = [
@@ -24,11 +23,10 @@ __all__ = [
     "example_package_descriptor",
     "example_resource_descriptor",
     "CheckError",
-    "CheckErrorMatcher",
     "check",
     "PACKAGE_RECOMMENDED_FIELDS",
     "PACKAGE_REQUIRED_FIELDS",
     "RESOURCE_REQUIRED_FIELDS",
     "RequiredFieldType",
-    "exclude_matching_errors",
+    "read_json",
 ]

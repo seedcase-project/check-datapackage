@@ -2,13 +2,14 @@ from typing import Any
 
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH
+from check_datapackage.exclude import exclude
 from check_datapackage.internals import (
     _add_package_recommendations,
     _add_resource_recommendations,
     _check_object_against_json_schema,
-    _read_json,
 )
 from check_datapackage.issue import Issue
+from check_datapackage.read_json import read_json
 
 
 def check(
@@ -30,10 +31,11 @@ def check(
             while checking the descriptor. If no issues are found, an empty list
             is returned.
     """
-    schema = _read_json(DATA_PACKAGE_SCHEMA_PATH)
+    schema = read_json(DATA_PACKAGE_SCHEMA_PATH)
 
     if config.strict:
         _add_package_recommendations(schema)
         _add_resource_recommendations(schema)
 
-    return _check_object_against_json_schema(descriptor, schema)
+    issues = _check_object_against_json_schema(descriptor, schema)
+    return exclude(issues, config.exclude)
