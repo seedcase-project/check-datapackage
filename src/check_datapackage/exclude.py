@@ -14,10 +14,11 @@ class Exclude:
 
     Attributes:
         target (Optional[Pattern[str] | str]): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
-            to the field or fields in the input object where issues should be ignored,
-            e.g., `\$\.resources\[*\]\.name`. Needs to point to the location in the
-            descriptor of the issue to ignore. If not provided, issues of the given
-            `type` will be excluded for all fields.
+            to the field or fields in the input object where issues should be ignored.
+            Must be a regular expression `Pattern`, e.g., `\$\.resources\[*\]\.name`.
+            Needs to point to the location in the descriptor of the issue to
+            ignore. If not provided, issues of the given `type` will be excluded
+            for all fields.
         type (Optional[str]): The type of the issue to ignore (e.g., "required",
             "pattern", or "format").  If not provided, all types of issues will be
             ignored for the given `target`.
@@ -58,6 +59,9 @@ def _drop_targets(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
 
 def _drop_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     return _drop_any_matches(issues, excludes, _same_type)
+
+
+# Generic functions to build up the exclusion by either type or target
 
 
 def _drop_any_matches(
