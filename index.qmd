@@ -45,7 +45,7 @@ helping you ensure that your metadata is compliant.
 -   Provides clear and user-friendly messages that point directly to
     where issues occur in the descriptor.
 -   Supports a strict mode that enforces full compliance with the
-    standard, including all recommended fields.
+    standard, including all recommendations.
 
 :warning: Note that `check-datapackage` only checks the descriptor
 against the Data Package standard---it does not check the data itself
