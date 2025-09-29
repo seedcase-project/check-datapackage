@@ -82,9 +82,8 @@ def _validation_errors_to_issues(
     Returns:
         A list of `Issue`s.
     """
-    return sorted(
-        set(chain.from_iterable(map(_validation_error_to_issues, validation_errors)))
-    )
+    issue_groups = map(_validation_error_to_issues, validation_errors)
+    return sorted(set(chain.from_iterable(issue_groups)))
 
 
 def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
@@ -115,10 +114,9 @@ def _validation_error_to_issues(error: ValidationError) -> list[Issue]:
 
 def _handle_S_resources_x(sub_errors: list[ValidationError]) -> list[Issue]:
     """Do not flag missing `path` and `data` separately."""
-    path_or_data_required_errors, other_errors = _partition(
-        sub_errors,
-        lambda error: str(error.validator) == "required"
-        and _get_full_json_path_from_error(error).endswith(("path", "data")),
+    path_or_data_required_errors = _filter(sub_errors, _is_path_or_data_required_error)
+    other_errors = _filter(
+        sub_errors, lambda error: not _is_path_or_data_required_error(error)
     )
 
     issues = _map(other_errors, _create_issue)
@@ -138,17 +136,20 @@ def _handle_S_resources_x(sub_errors: list[ValidationError]) -> list[Issue]:
     return issues
 
 
+def _is_path_or_data_required_error(error: ValidationError) -> bool:
+    return (
+        _get_full_json_path_from_error(error).endswith(("path", "data"))
+        and str(error.validator) == "required"
+    )
+
+
 def _handle_S_resources_x_path(sub_errors: list[ValidationError]) -> list[Issue]:
     """Only flag errors for the relevant type.
 
     If `path` is a string, flag errors for the string-based schema.
     If `path` is an array, flag errors for the array-based schema.
     """
-    non_type_errors = _filter(
-        sub_errors,
-        lambda error: str(error.validator) != "type"
-        or error.absolute_path[-1] != "path",
-    )
+    non_type_errors = _filter(sub_errors, _is_not_type_or_path_error)
     if non_type_errors:
         return _map(non_type_errors, _create_issue)
 
@@ -161,13 +162,17 @@ def _handle_S_resources_x_path(sub_errors: list[ValidationError]) -> list[Issue]
     ]
 
 
+def _is_not_type_or_path_error(error: ValidationError) -> bool:
+    return str(error.validator) != "type" or error.absolute_path[-1] != "path"
+
+
 def _schema_path_ends_in(error: ValidationError, target: list[str]) -> bool:
     """Check if the schema path of a validation error ends in the given sequence."""
-    return list(error.schema_path)[-len(target) :] == target
+    ending_sequence: list[str | int] = list(error.schema_path)[-len(target) :]
+    return ending_sequence == target
 
 
 def _create_issue(error: ValidationError) -> Issue:
-    """Create an `Issue` from a `ValidationError`."""
     return Issue(
         message=error.message,
         location=_get_full_json_path_from_error(error),
@@ -203,13 +208,3 @@ def _filter(x: Iterable[In], fn: Callable[[In], bool]) -> list[In]:
 
 def _map(x: Iterable[In], fn: Callable[[In], Out]) -> list[Out]:
     return list(map(fn, x))
-
-
-def _partition(
-    items: Iterable[In], condition: Callable[[In], bool]
-) -> tuple[list[In], list[In]]:
-    """Split items into two lists based on a condition."""
-    return (
-        _filter(items, condition),
-        _filter(items, lambda item: not condition(item)),
-    )
