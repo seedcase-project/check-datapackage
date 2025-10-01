@@ -81,7 +81,7 @@ def test_exclude_multiple_types():
 
 
 @mark.parametrize(
-    "target, num_issues",
+    "jsonpath, num_issues",
     [
         # TODO: This should work but doesn't
         # ("$", 0),
@@ -103,7 +103,7 @@ def test_exclude_multiple_types():
         ("$.resources[0].path", 2),
     ],
 )
-def test_exclude_target(target: str, num_issues: int) -> None:
+def test_exclude_jsonpath(jsonpath: str, num_issues: int) -> None:
     descriptor = example_package_descriptor()
     # Total 4 issues
     descriptor["created"] = "20240614"
@@ -111,7 +111,7 @@ def test_exclude_target(target: str, num_issues: int) -> None:
     descriptor["resources"][0]["path"] = "/a/bad/path"
     descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
 
-    exclude = [Exclude(target=target)]
+    exclude = [Exclude(jsonpath=jsonpath)]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
     print(issues)
@@ -119,14 +119,14 @@ def test_exclude_target(target: str, num_issues: int) -> None:
     assert len(issues) == num_issues
 
 
-def test_exclude_target_multiple():
+def test_exclude_jsonpath_multiple():
     descriptor = example_package_descriptor()
     descriptor["created"] = "20240614"
     descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
 
     exclude = [
-        Exclude(target="$.contributors[0].path"),
-        Exclude(target="$.created"),
+        Exclude(jsonpath="$.contributors[0].path"),
+        Exclude(jsonpath="$.created"),
     ]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
@@ -134,7 +134,7 @@ def test_exclude_target_multiple():
     assert len(issues) == 0
 
 
-def test_exclude_target_and_type():
+def test_exclude_jsonpath_and_type():
     descriptor = example_package_descriptor()
     descriptor["created"] = "20240614"
     descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
@@ -149,7 +149,7 @@ def test_exclude_target_and_type():
     assert len(issues) == 1
 
     exclude = [
-        Exclude(target="$.contributors[0].path", type="format"),
+        Exclude(jsonpath="$.contributors[0].path", type="format"),
     ]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
@@ -157,7 +157,7 @@ def test_exclude_target_and_type():
     assert len(issues) == 0
 
     exclude = [
-        Exclude(target="$.contributors[0].path"),
+        Exclude(jsonpath="$.contributors[0].path"),
         Exclude(type="format"),
     ]
     config = Config(exclude=exclude)

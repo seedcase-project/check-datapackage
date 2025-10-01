@@ -12,19 +12,16 @@ from check_datapackage.issue import Issue
 class Exclude:
     r"""Exclude issues when checking a Data Package descriptor.
 
-    When both `jsonpath` and `type` are provided, an issue has to match both to be
-    excluded.
+    When you use both `jsonpath` and `type`, any issue that matches either of them
+    will be excluded. Mean it isn't an `AND` logic, it's an `OR` logic.
 
     Attributes:
         jsonpath (Optional[str]): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
             to the field or fields in the input object where issues should be ignored.
-            Must be an explicit path, e.g., `$.resources[0].name`.  Needs to
-            point to the location in the descriptor of the issue to ignore. If
-            not provided, issues of the given `type` will be excluded for all
-            fields.
+            Uses JSON path syntax for queries, e.g., `$.resources[0].name`, to ignore
+            issues related to that path.
         type (Optional[str]): The type of the issue to ignore (e.g., "required",
-            "pattern", or "format").  If not provided, all types of issues will be
-            ignored for the given `jsonpath`.
+            "pattern", or "format").
 
     Examples:
         ```{python}
@@ -55,7 +52,7 @@ def exclude_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     return _drop_types(issues, excludes)
 
 
-def exclude_target(
+def exclude_jsonpath(
     issues: list[Issue], descriptor: dict[str, Any], excludes: list[Exclude]
 ) -> list[Issue]:
     """Keep only issues that don't match an exclusion rule.
@@ -69,16 +66,16 @@ def exclude_target(
         The issues that are kept after applying the exclusion rules.
     """
     jsonpaths_to_exclude = _flat_map2(
-        excludes, [descriptor], _get_any_matches_on_target
+        excludes, [descriptor], _get_any_matches_on_jsonpath
     )
-    return _filter(issues, lambda issue: issue.location not in jsonpaths_to_exclude)
+    return _filter(issues, lambda issue: issue.jsonpath not in jsonpaths_to_exclude)
 
 
 def _drop_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     return _drop_any_matches(issues, excludes, _same_type)
 
 
-# Generic functions to build up the exclusion by either type or target
+# Generic functions to build up the exclusion by either type or jsonpath
 
 
 def _drop_any_matches(
@@ -117,16 +114,16 @@ def _flat_map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> lis
     return list(chain.from_iterable(_map2(x, y, fn)))
 
 
-def _get_any_matches_on_target(
+def _get_any_matches_on_jsonpath(
     exclude: Exclude, descriptor: dict[Any, str]
 ) -> list[str]:
-    if exclude.target is None:
+    if exclude.jsonpath is None:
         return []
-    matches = finditer(exclude.target, descriptor)
-    paths = _map(matches, _get_jsonpath)
+    matches = finditer(exclude.jsonpath, descriptor)
+    paths = _map(matches, _get_match_jsonpath)
     return paths
 
 
-def _get_jsonpath(match: JSONPathMatch) -> str:
+def _get_match_jsonpath(match: JSONPathMatch) -> str:
     cleaned: str = sub(r"\['", ".", match.path)
     return sub(r"'\]", "", cleaned)
