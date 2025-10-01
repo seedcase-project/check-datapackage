@@ -29,18 +29,18 @@ def test_fails_descriptor_without_resources():
 
     assert len(issues) == 1
     assert issues[0].type == "required"
-    assert issues[0].location == "$.resources"
+    assert issues[0].jsonpath == "$.resources"
 
 
 @mark.parametrize(
-    "resources, location, num_issues",
+    "resources, jsonpath, num_issues",
     [
         ([], "$.resources", 1),
         ([{}], "$.resources[0].data", 3),
         ([{"name": "a name", "path": "/a/bad/path"}], "$.resources[0].path", 2),
     ],
 )
-def test_fails_descriptor_with_bad_resources(resources, location, num_issues):
+def test_fails_descriptor_with_bad_resources(resources, jsonpath, num_issues):
     """Should fail descriptor with malformed resources."""
     descriptor = {
         "name": "a name with spaces",
@@ -50,7 +50,7 @@ def test_fails_descriptor_with_bad_resources(resources, location, num_issues):
     issues = check(descriptor)
 
     assert len(issues) == num_issues
-    assert issues[0].location == location
+    assert issues[0].jsonpath == jsonpath
 
 
 def test_fails_descriptor_with_missing_required_fields():
@@ -65,7 +65,7 @@ def test_fails_descriptor_with_missing_required_fields():
 
     assert len(issues) == 2
     assert all(issue.type == "required" for issue in issues)
-    assert {issue.location for issue in issues} == {
+    assert {issue.jsonpath for issue in issues} == {
         "$.licenses[0].name",
         "$.licenses[0].path",
     }
@@ -81,7 +81,7 @@ def test_fails_descriptor_with_bad_type():
 
     assert len(issues) == 1
     assert issues[0].type == "type"
-    assert issues[0].location == "$.name"
+    assert issues[0].jsonpath == "$.name"
 
 
 def test_fails_descriptor_with_bad_format():
@@ -96,7 +96,7 @@ def test_fails_descriptor_with_bad_format():
 
     assert len(issues) == 1
     assert issues[0].type == "format"
-    assert issues[0].location == "$.homepage"
+    assert issues[0].jsonpath == "$.homepage"
 
 
 def test_fails_descriptor_with_pattern_mismatch():
@@ -111,7 +111,7 @@ def test_fails_descriptor_with_pattern_mismatch():
 
     assert len(issues) == 1
     assert issues[0].type == "pattern"
-    assert issues[0].location == "$.contributors[0].path"
+    assert issues[0].jsonpath == "$.contributors[0].path"
 
 
 # With recommendations
@@ -161,7 +161,7 @@ def test_fails_descriptor_violating_recommendations():
     issues = check(descriptor, config=Config(strict=True))
 
     assert len(issues) == 5
-    assert {issue.location for issue in issues} == {
+    assert {issue.jsonpath for issue in issues} == {
         "$.name",
         "$.version",
         "$.contributors[0].title",
