@@ -49,7 +49,7 @@ def exclude_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     Returns:
         The issues that are kept after applying the exclusion rules.
     """
-    return _drop_types(issues, excludes)
+    return _drop_any_matching_types(issues, excludes)
 
 
 def exclude_jsonpath(
@@ -71,23 +71,17 @@ def exclude_jsonpath(
     return _filter(issues, lambda issue: issue.jsonpath not in jsonpaths_to_exclude)
 
 
-def _drop_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
-    return _drop_any_matches(issues, excludes, _same_type)
-
-
 # Generic functions to build up the exclusion by either type or jsonpath
 
 
-def _drop_any_matches(
-    issues: list[Issue], excludes: list[Exclude], fn: Callable[[Issue, Exclude], bool]
+def _drop_any_matching_types(
+    issues: list[Issue], excludes: list[Exclude]
 ) -> list[Issue]:
-    return _filter(issues, lambda issue: not _any_matches_on_issue(issue, excludes, fn))
+    return _filter(issues, lambda issue: not _any_matches_on_issue(issue, excludes))
 
 
-def _any_matches_on_issue(
-    issue: Issue, excludes: list[Exclude], fn: Callable[[Issue, Exclude], bool]
-) -> bool:
-    has_match: list[bool] = _map(excludes, lambda exclude: fn(issue, exclude))
+def _any_matches_on_issue(issue: Issue, excludes: list[Exclude]) -> bool:
+    has_match: list[bool] = _map(excludes, lambda exclude: _same_type(issue, exclude))
     return any(has_match)
 
 
