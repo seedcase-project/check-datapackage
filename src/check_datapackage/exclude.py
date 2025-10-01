@@ -1,5 +1,9 @@
 from dataclasses import dataclass
+from itertools import chain, repeat
+from re import sub
 from typing import Any, Callable, Optional
+
+from jsonpath import JSONPathMatch, finditer
 
 from check_datapackage.issue import Issue
 
@@ -38,7 +42,7 @@ class Exclude:
     type: Optional[str] = None
 
 
-def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
+def exclude_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     """Keep only issues that don't match an exclusion rule.
 
     Args:
@@ -48,12 +52,16 @@ def exclude(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     Returns:
         The issues that are kept after applying the exclusion rules.
     """
-    targets_dropped: list[Issue] = _drop_targets(issues, excludes)
-    return _drop_types(targets_dropped, excludes)
+    return _drop_types(issues, excludes)
 
 
-def _drop_targets(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
-    return _drop_any_matches(issues, excludes, _same_target)
+def exclude_target(
+    issues: list[Issue], descriptor: dict[str, Any], excludes: list[Exclude]
+) -> list[Issue]:
+    jsonpaths_to_exclude = _flat_map2(
+        excludes, [descriptor], _get_any_matches_on_target
+    )
+    return _filter(issues, lambda issue: issue.location not in jsonpaths_to_exclude)
 
 
 def _drop_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
@@ -76,10 +84,6 @@ def _any_matches_on_issue(
     return any(has_match)
 
 
-def _same_target(issue: Issue, exclude: Exclude) -> bool:
-    return issue.location == exclude.target
-
-
 def _same_type(issue: Issue, exclude: Exclude) -> bool:
     return exclude.type == issue.type
 
@@ -90,3 +94,29 @@ def _filter(x: Any, fn: Callable[[Any], bool]) -> list[Any]:
 
 def _map(x: Any, fn: Callable[[Any], Any]) -> list[Any]:
     return list(map(fn, x))
+
+
+def _map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
+    if len(y) == 1:
+        y = list(repeat(y[0], len(x)))
+    return list(map(fn, x, y))
+
+
+def _flat_map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
+    """Uses map and flattens the result by one level."""
+    return list(chain.from_iterable(_map2(x, y, fn)))
+
+
+def _get_any_matches_on_target(
+    exclude: Exclude, descriptor: dict[Any, str]
+) -> list[str]:
+    if exclude.target is None:
+        return []
+    matches = finditer(exclude.target, descriptor)
+    paths = _map(matches, _get_jsonpath)
+    return paths
+
+
+def _get_jsonpath(match: JSONPathMatch) -> str:
+    cleaned: str = sub(r"\['", ".", match.path)
+    return sub(r"'\]", "", cleaned)
