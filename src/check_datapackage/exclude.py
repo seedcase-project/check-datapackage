@@ -77,10 +77,10 @@ def exclude_jsonpath(
 def _drop_any_matching_types(
     issues: list[Issue], excludes: list[Exclude]
 ) -> list[Issue]:
-    return _filter(issues, lambda issue: not _any_matches_on_issue(issue, excludes))
+    return _filter(issues, lambda issue: not _get_any_matches_on_type(issue, excludes))
 
 
-def _any_matches_on_issue(issue: Issue, excludes: list[Exclude]) -> bool:
+def _get_any_matches_on_type(issue: Issue, excludes: list[Exclude]) -> bool:
     has_match: list[bool] = _map(excludes, lambda exclude: _same_type(issue, exclude))
     return any(has_match)
 
