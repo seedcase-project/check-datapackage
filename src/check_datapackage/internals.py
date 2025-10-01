@@ -92,7 +92,7 @@ def _validation_errors_to_issues(
     issues = [
         Issue(
             message=error.message,
-            location=_get_full_json_path_from_error(error),
+            jsonpath=_get_full_json_path_from_error(error),
             type=str(error.validator),
         )
         for error in _unwrap_errors(list(validation_errors))
