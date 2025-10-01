@@ -26,7 +26,7 @@ class Config:
         exclude_required = cdp.Exclude(type="required")
         license_rule = cdp.Rule(
             type="only-mit",
-            target="$.licenses[*].name",
+            jsonpath="$.licenses[*].name",
             message="Data Packages may only be licensed under MIT.",
             check=lambda license_name: license_name == "mit",
         )
