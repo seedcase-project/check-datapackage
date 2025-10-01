@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from itertools import chain, repeat
 from re import sub
 from typing import Any, Callable, Optional
 
 from jsonpath import JSONPathMatch, finditer
 
+from check_datapackage.internals import _flat_map2
 from check_datapackage.issue import Issue
 
 
@@ -101,17 +101,6 @@ def _filter(x: Any, fn: Callable[[Any], bool]) -> list[Any]:
 
 def _map(x: Any, fn: Callable[[Any], Any]) -> list[Any]:
     return list(map(fn, x))
-
-
-def _map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
-    if len(y) == 1:
-        y = list(repeat(y[0], len(x)))
-    return list(map(fn, x, y))
-
-
-def _flat_map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
-    """Uses map and flattens the result by one level."""
-    return list(chain.from_iterable(_map2(x, y, fn)))
 
 
 def _get_any_matches_on_jsonpath(

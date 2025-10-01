@@ -1,5 +1,6 @@
 import re
-from typing import Any, Iterator
+from itertools import chain, repeat
+from typing import Any, Callable, Iterator
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
@@ -134,3 +135,14 @@ def _get_full_json_path_from_error(error: ValidationError) -> str:
         if match:
             return f"{error.json_path}.{match.group(1)}"
     return error.json_path
+
+
+def _map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
+    if len(y) == 1:
+        y = list(repeat(y[0], len(x)))
+    return list(map(fn, x, y))
+
+
+def _flat_map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
+    """Uses map and flattens the result by one level."""
+    return list(chain.from_iterable(_map2(x, y, fn)))
