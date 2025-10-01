@@ -22,7 +22,7 @@ class Issue:
         issue = cdp.Issue(
             jsonpath="$.resources[2].title",
             type="required",
-            message="The `title` field is required but missing at the given jsonpath.",
+            message="The `title` field is required but missing at the given JSON path.",
         )
         ```
     """
