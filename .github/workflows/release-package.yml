@@ -50,7 +50,7 @@ jobs:
       # - https://www.andrlik.org/dispatches/til-use-uv-for-build-and-publish-github-actions/
       # - https://github.com/astral-sh/trusted-publishing-examples
       - name: Set up uv
-        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # v6.6.1
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
 
       - name: Build distributions
         # Builds dists from source and stores them in the dist/ directory.
