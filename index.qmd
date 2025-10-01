@@ -38,8 +38,8 @@ helping you ensure that your metadata is compliant.
 -   Checks the
     [descriptor](https://datapackage.org/standard/glossary/#descriptor)
     in your `datapackage.json` against the Data Package standard.
--   Enables you to configure which components of the descriptor
-    should or should not be checked.
+-   Enables you to configure which components of the descriptor should
+    or should not be checked.
 -   Enables you to turn off specific checks defined in the standard.
 -   Supports user-defined, custom checks.
 -   Provides clear and user-friendly messages that point directly to
