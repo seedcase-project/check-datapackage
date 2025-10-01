@@ -13,9 +13,8 @@ descriptor. An `Issue` has three attributes:
 -   `type`: The type of the check that failed and caused the issue. This
     can be a type that exists in the Data Package standard (e.g.,
     `required` or `pattern`) or a custom type.
--   `location`: The location of the field that failed the check
-    expressed in [JSON path](https://en.wikipedia.org/wiki/JSONPath)
-    notation. For example, `$.resources[2].name`.
+-   `jsonpath`: The [JSON path](https://en.wikipedia.org/wiki/JSONPath)
+    of the field that failed the check. For example, `$.resources[2].name`.
 -   `message`: An explanation of what went wrong.
 
 ## The `explain()` function
