@@ -58,6 +58,16 @@ def exclude_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
 def exclude_target(
     issues: list[Issue], descriptor: dict[str, Any], excludes: list[Exclude]
 ) -> list[Issue]:
+    """Keep only issues that don't match an exclusion rule.
+
+    Args:
+        issues: The issues to filter.
+        descriptor: The Data Package descriptor as a dictionary.
+        excludes: The exclusion rules to apply to the issues.
+
+    Returns:
+        The issues that are kept after applying the exclusion rules.
+    """
     jsonpaths_to_exclude = _flat_map2(
         excludes, [descriptor], _get_any_matches_on_target
     )
