@@ -33,10 +33,10 @@ import check_datapackage as cdp
 exclude_required = cdp.Exclude(type="required")
 ```
 
-To exclude checks applying to specific fields in the descriptor, you
-express the location of the field or fields in [JSON
-path](https://en.wikipedia.org/wiki/JSONPath) notation and define an
-`Exclude` object with the `jsonpath`. For example, you can exclude all
+To exclude checks of a specific field or fields, you
+can use a [JSON
+path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath`
+attribute of an `Exclude` object. For example, you can exclude all
 checks on the `name` field of the Data Package descriptor by writing:
 
 ```{python}
