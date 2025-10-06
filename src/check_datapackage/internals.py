@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from itertools import chain
 from typing import (
     Any,
     Callable,
@@ -219,6 +220,11 @@ def _next(items: Iterable[In], condition: Callable[[In], bool]) -> Optional[In]:
     return next(filter(condition, items), None)
 
 
+def flat_map(fn: Callable[[In], Iterable[Out]], items: Iterable[In]) -> Iterable[Out]:
+    """Maps and flattens the items by one level."""
+    return chain.from_iterable(map(fn, items))
+
+
 def _get_full_json_path_from_error(error: ValidationError) -> str:
     """Returns the full `json_path` to the error.
 
@@ -237,21 +243,18 @@ def _get_full_json_path_from_error(error: ValidationError) -> str:
     return error.json_path
 
 
+def _validation_error_to_schema_errors(error: ValidationError) -> Iterable[SchemaError]:
+    current = [_create_schema_error(error)]
+    if not error.context:
+        return current
+    return chain(
+        current,
+        flat_map(_validation_error_to_schema_errors, error.context),
+    )
+
+
 def _create_schema_errors(errors: list[ValidationError]) -> list[SchemaError]:
-    """Recursively extracts all errors into a flat list of `SchemaError`s.
-
-    Args:
-        errors: A nested list of `ValidationError`s.
-
-    Returns:
-        A flat list of `SchemaError`s.
-    """
-    unwrapped = []
-    for error in errors:
-        unwrapped.append(_create_schema_error(error))
-        if error.context:
-            unwrapped.extend(_create_schema_errors(error.context))
-    return unwrapped
+    return list(flat_map(_validation_error_to_schema_errors, errors))
 
 
 def _create_schema_error(error: ValidationError) -> SchemaError:
