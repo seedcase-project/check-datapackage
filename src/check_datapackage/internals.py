@@ -4,6 +4,7 @@ from typing import (
     Any,
     Callable,
     Iterable,
+    Iterator,
     Optional,
     TypeVar,
 )
@@ -74,7 +75,7 @@ def _check_object_against_json_schema(
     """
     Draft7Validator.check_schema(schema)
     validator = Draft7Validator(schema, format_checker=FormatChecker())
-    return _validation_errors_to_issues(list(validator.iter_errors(json_object)))
+    return _validation_errors_to_issues(validator.iter_errors(json_object))
 
 
 @dataclass
@@ -98,7 +99,7 @@ class SchemaError:
 
 
 def _validation_errors_to_issues(
-    validation_errors: list[ValidationError],
+    validation_errors: Iterator[ValidationError],
 ) -> list[Issue]:
     """Transforms `jsonschema.ValidationError`s to more compact `Issue`s.
 
@@ -108,7 +109,7 @@ def _validation_errors_to_issues(
     Returns:
         A list of `Issue`s.
     """
-    schema_errors = _create_schema_errors(validation_errors)
+    schema_errors = _create_schema_errors(list(validation_errors))
 
     # Handle issues at $.resources[x]
 
