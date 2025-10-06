@@ -1,7 +1,10 @@
 from pytest import mark
 
 from check_datapackage.check import check
-from check_datapackage.examples import example_package_descriptor
+from check_datapackage.examples import (
+    example_package_descriptor,
+    example_resource_descriptor,
+)
 
 # Issues at $.resources[x]
 
@@ -42,6 +45,18 @@ def test_fail_with_both_resource_path_and_data_present():
 
     assert len(issues) == 1
     assert issues[0].type == "oneOf"
+
+
+def test_fail_one_resource_pass_another():
+    descriptor = example_package_descriptor()
+    resource2 = example_resource_descriptor()
+    descriptor["resources"].append(resource2)
+    del descriptor["resources"][0]["path"]
+
+    issues = check(descriptor)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
 
 
 # Issues at $.resources[x].path
