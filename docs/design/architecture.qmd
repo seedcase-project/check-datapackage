@@ -14,18 +14,20 @@ workings of the package.
 
 ## User types {#user-types}
 
-This section describes the different users we expect and design for.
+This section describes the different users we expect and design for:
 
 -   **Owner:** Creates and owns the Data Package. Wants to ensure that
-    the Data Package is correct, at least at the level of the
-    properties.
+    the Data Package is compliant with the Data Package standard on a
+    general level.
 -   **Manager:** Manages and edits the properties within the Data
     Package. Wants to make sure that whenever changes are made to the
-    properties (e.g., updating the description field), they remain
-    compliant with the standard.
--   **Developer:** Contributes to building up the Data Package or the
-    infrastructure around it. Wants to ensure that changes don't impact
-    the correctness of the Data Package descriptor.
+    properties (e.g., the `description` field is updated), the Data
+    Package remains compliant with the standard.
+-   **Developer:** Contributes to building up the Data Package including
+    the data itself and/or the infrastructure around it. Wants to ensure
+    that changes don't impact the compliance of the Data Package. Might
+    add custom checks or ignore certain checks to fit the specific needs
+    of the project.
 
 ## C4 Models
 
