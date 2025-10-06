@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from check_datapackage.internals import _filter_map, _get_fields_at_jsonpath
+from check_datapackage.issue import Issue
+
 
 @dataclass
 class Rule:
@@ -34,3 +37,24 @@ class Rule:
     message: str
     check: Callable[[Any], bool]
     type: str = "custom"
+
+
+def flag_issues(rule: Rule, descriptor: dict[str, Any]) -> list[Issue]:
+    """Checks the descriptor against the rule and creates issues for fields that fail.
+
+    Args:
+        rule: The rule to apply to the descriptor.
+        descriptor: The descriptor to check.
+
+    Returns:
+        A list of `Issue`s.
+    """
+    matching_fields = _get_fields_at_jsonpath(rule.jsonpath, descriptor)
+
+    return _filter_map(
+        items=matching_fields,
+        map_fn=lambda field: Issue(
+            jsonpath=field.jsonpath, type=rule.type, message=rule.message
+        ),
+        condition=lambda field: not rule.check(field.value),
+    )

@@ -7,9 +7,11 @@ from check_datapackage.internals import (
     _add_package_recommendations,
     _add_resource_recommendations,
     _check_object_against_json_schema,
+    _flat_map,
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
+from check_datapackage.rule import flag_issues
 
 
 def check(
@@ -38,4 +40,12 @@ def check(
         _add_resource_recommendations(schema)
 
     issues = _check_object_against_json_schema(descriptor, schema)
-    return exclude(issues, config.exclude)
+
+    issues += _flat_map(
+        config.rules,
+        lambda rule: flag_issues(rule, descriptor),
+    )
+
+    issues = exclude(issues, config.exclude)
+
+    return sorted(set(issues))
