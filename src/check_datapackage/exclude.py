@@ -108,5 +108,4 @@ def _get_any_matches_on_jsonpath(
 
 
 def _get_match_jsonpath(match: JSONPathMatch) -> str:
-    cleaned: str = sub(r"\['", ".", match.path)
-    return sub(r"'\]", "", cleaned)
+    return match.path.replace("['", ".").replace("']", "")
