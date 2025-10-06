@@ -34,7 +34,7 @@ jobs:
     if: ${{ needs.release.outputs.previous_version != needs.release.outputs.current_version }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
           egress-policy: audit
 
@@ -50,7 +50,7 @@ jobs:
       # - https://www.andrlik.org/dispatches/til-use-uv-for-build-and-publish-github-actions/
       # - https://github.com/astral-sh/trusted-publishing-examples
       - name: Set up uv
-        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # v6.6.1
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
 
       - name: Build distributions
         # Builds dists from source and stores them in the dist/ directory.
