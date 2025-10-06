@@ -118,5 +118,4 @@ def _get_excluded_jsonpath(exclude: Exclude, descriptor: dict[Any, str]) -> list
 
 
 def _get_match_jsonpath(match: JSONPathMatch) -> str:
-    cleaned: str = sub(r"\['", ".", match.path)
-    return sub(r"'\]", "", cleaned)
+    return match.path.replace("['", ".").replace("']", "")
