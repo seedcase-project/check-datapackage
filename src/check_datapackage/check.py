@@ -2,7 +2,7 @@ from typing import Any
 
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH
-from check_datapackage.exclude import exclude_jsonpath, exclude_types
+from check_datapackage.exclude import exclude
 from check_datapackage.internals import (
     _add_package_recommendations,
     _add_resource_recommendations,
@@ -38,5 +38,4 @@ def check(
         _add_resource_recommendations(schema)
 
     issues = _check_object_against_json_schema(descriptor, schema)
-    issues = exclude_types(issues, config.exclude)
-    return exclude_jsonpath(issues, descriptor, config.exclude)
+    return exclude(issues, config.exclude, descriptor)

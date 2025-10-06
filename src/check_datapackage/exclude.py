@@ -39,7 +39,7 @@ class Exclude:
     type: Optional[str] = None
 
 
-def exclude_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
+def exclude_by_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     """Keep only issues that don't match an exclusion rule.
 
     Args:
@@ -52,7 +52,21 @@ def exclude_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
     return _drop_any_matching_types(issues, excludes)
 
 
-def exclude_jsonpath(
+def exclude(
+    issues: list[Issue], excludes: list[Exclude], descriptor: dict[str, Any]
+) -> list[Issue]:
+    jsonpaths_to_exclude = _flat_map2(excludes, [descriptor], _get_excluded_jsonpath)
+    print(_map(issues, lambda issue: _get_any_matches_on_type(issue, excludes)))
+    return _filter(
+        issues,
+        lambda issue: not (
+            _get_any_matches_on_type(issue, excludes)
+            and issue.jsonpath in jsonpaths_to_exclude
+        ),
+    )
+
+
+def exclude_by_jsonpath(
     issues: list[Issue], descriptor: dict[str, Any], excludes: list[Exclude]
 ) -> list[Issue]:
     """Keep only issues that don't match an exclusion rule.
@@ -65,9 +79,7 @@ def exclude_jsonpath(
     Returns:
         The issues that are kept after applying the exclusion rules.
     """
-    jsonpaths_to_exclude = _flat_map2(
-        excludes, [descriptor], _get_any_matches_on_jsonpath
-    )
+    jsonpaths_to_exclude = _flat_map2(excludes, [descriptor], _get_excluded_jsonpath)
     return _filter(issues, lambda issue: issue.jsonpath not in jsonpaths_to_exclude)
 
 
@@ -97,9 +109,7 @@ def _map(x: Any, fn: Callable[[Any], Any]) -> list[Any]:
     return list(map(fn, x))
 
 
-def _get_any_matches_on_jsonpath(
-    exclude: Exclude, descriptor: dict[Any, str]
-) -> list[str]:
+def _get_excluded_jsonpath(exclude: Exclude, descriptor: dict[Any, str]) -> list[str]:
     if exclude.jsonpath is None:
         return []
     matches = finditer(exclude.jsonpath, descriptor)

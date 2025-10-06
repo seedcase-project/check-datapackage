@@ -83,8 +83,7 @@ def test_exclude_multiple_types():
 @mark.parametrize(
     "jsonpath, num_issues",
     [
-        # TODO: This should work but doesn't
-        # ("$", 0),
+        ("$", 4),
         ("..*", 0),
         ("$.created", 3),
         ("created", 3),
@@ -93,11 +92,10 @@ def test_exclude_multiple_types():
         ("$..path", 1),
         ("contributors[0].path", 3),
         ("contributors[*].path", 3),
-        # TODO: These should work but don't
-        # ("..resources[*]", 2),
-        # ("..resources", 2),
-        # ("$.resources[*]", 2),
-        # ("$.resources[0]", 2),
+        ("..resources[*]", 4),
+        ("..resources", 4),
+        ("$.resources[*]", 4),
+        ("$.resources[0]", 4),
         ("$.resources[*].path", 2),
         ("$.resources[0].*", 2),
         ("$.resources[0].path", 2),
@@ -114,7 +112,6 @@ def test_exclude_jsonpath(jsonpath: str, num_issues: int) -> None:
     exclude = [Exclude(jsonpath=jsonpath)]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
-    print(issues)
 
     assert len(issues) == num_issues
 
@@ -139,15 +136,6 @@ def test_exclude_jsonpath_and_type():
     descriptor["created"] = "20240614"
     descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
 
-    # To confirm that one on it's own works
-    exclude = [
-        Exclude(type="format"),
-    ]
-    config = Config(exclude=exclude)
-    issues = check(descriptor, config=config)
-
-    assert len(issues) == 1
-
     exclude = [
         Exclude(jsonpath="$.contributors[0].path", type="format"),
     ]
@@ -164,3 +152,32 @@ def test_exclude_jsonpath_and_type():
     issues = check(descriptor, config=config)
 
     assert len(issues) == 0
+
+
+def test_exclude_jsonpath_resources():
+    """Exclude by jsonpath for resources."""
+    properties: dict[str, Any] = {
+        "name": "woolly-dormice",
+        "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
+        "description": "",
+        "id": "123-abc-123",
+        "created": "2014-05-14T05:00:01+00:00",
+        "version": "1.0.0",
+        "licenses": [{"name": "odc-pddl"}],
+        "resources": "this is a string",  # should be an array
+    }
+    issues = check(properties, config=Config(exclude=[Exclude(jsonpath="$.resources")]))
+    assert len(issues) == 0
+
+
+def test_exclude_both_jsonpath_and_type():
+    descriptor = example_package_descriptor()
+    # Two issues for licenses: needs either name or path
+    descriptor["licenses"][0].pop("name")
+
+    exclude = [Exclude(jsonpath="$.licenses[0].name", type="required")]
+    config = Config(exclude=exclude)
+    issues = check(descriptor, config=config)
+
+    # Should be 2 issues
+    assert len(issues) == 1
