@@ -89,7 +89,7 @@ def _validation_errors_to_issues(
     Returns:
         A list of `Issue`s.
     """
-    issues = [
+    return [
         Issue(
             message=error.message,
             jsonpath=_get_full_json_path_from_error(error),
@@ -98,7 +98,6 @@ def _validation_errors_to_issues(
         for error in _unwrap_errors(list(validation_errors))
         if str(error.validator) not in COMPLEX_VALIDATORS
     ]
-    return sorted(set(issues))
 
 
 def _unwrap_errors(errors: list[ValidationError]) -> list[ValidationError]:
