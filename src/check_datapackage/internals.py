@@ -192,7 +192,7 @@ def _handle_S_resources_x_path(
             SchemaError(
                 message="The `path` property must be either a string or an array.",
                 type="type",
-                jsonpath=type_errors[0].json_path,
+                jsonpath=type_errors[0].jsonpath,
                 schema_path=type_errors[0].schema_path,
             )
         )
