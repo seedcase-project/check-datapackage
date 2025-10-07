@@ -37,6 +37,21 @@ def test_fail_with_resource_name_path_and_data_missing():
     assert issues[1].type == "required"
 
 
+def test_fail_with_multiple_resources():
+    descriptor = example_package_descriptor()
+    descriptor["resources"].append(example_resource_descriptor())
+    del descriptor["resources"][0]["path"]
+    del descriptor["resources"][1]["path"]
+
+    issues = check(descriptor)
+
+    assert len(issues) == 2
+    assert issues[0].location == "$.resources[0]"
+    assert issues[0].type == "required"
+    assert issues[1].location == "$.resources[1]"
+    assert issues[1].type == "required"
+
+
 def test_fail_with_both_resource_path_and_data_present():
     descriptor = example_package_descriptor()
     descriptor["resources"][0]["data"] = [1, 2, 3]

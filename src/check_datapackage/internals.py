@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from functools import reduce
 from itertools import chain
 from typing import (
     Any,
@@ -112,30 +113,37 @@ def _validation_errors_to_issues(
         A list of `Issue`s.
     """
     schema_errors = _flat_map(validation_errors, _validation_error_to_schema_errors)
-
-    # Handle issues at $.resources[x]
-
-    resources_x_oneOf = _next(
-        schema_errors,
-        lambda error: error.schema_path.endswith("resources/items/oneOf"),
+    grouped_errors = _filter(
+        schema_errors, lambda error: error.type in {"oneOf", "anyOf"}
     )
-    if resources_x_oneOf:
-        schema_errors = _handle_S_resources_x(resources_x_oneOf, schema_errors)
-
-    # Handle issues at $.resources[x].path
-    resources_x_path_oneOf = _next(
-        schema_errors,
-        lambda error: error.schema_path.endswith(
-            "resources/items/properties/path/oneOf"
-        ),
-    )
-    if resources_x_path_oneOf:
-        schema_errors = _handle_S_resources_x_path(
-            resources_x_path_oneOf, schema_errors
-        )
+    schema_errors = reduce(_handle_grouped_error, grouped_errors, schema_errors)
 
     issues = _map(schema_errors, _create_issue)
     return sorted(set(issues))
+
+
+def _handle_grouped_error(
+    schema_errors: list[SchemaError], parent_error: SchemaError
+) -> list[SchemaError]:
+    """Handle grouped schema errors that need special treatment.
+
+    Args:
+        parent_error: The parent error of a group.
+        schema_errors: All remaining schema errors.
+
+    Returns:
+        The schema errors after processing.
+    """
+    # Handle issues at $.resources[x]
+
+    if parent_error.schema_path.endswith("resources/items/oneOf"):
+        schema_errors = _handle_S_resources_x(parent_error, schema_errors)
+
+    # Handle issues at $.resources[x].path
+    if parent_error.schema_path.endswith("resources/items/properties/path/oneOf"):
+        schema_errors = _handle_S_resources_x_path(parent_error, schema_errors)
+
+    return schema_errors
 
 
 def _handle_S_resources_x(
