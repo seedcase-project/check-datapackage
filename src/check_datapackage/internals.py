@@ -174,7 +174,7 @@ def _map(x: Iterable[In], fn: Callable[[In], Out]) -> list[Out]:
     return list(map(fn, x))
 
 
-def _flat_map(items: Iterable[In], fn: Callable[[In], list[Out]]) -> list[Out]:
+def _flat_map(items: Iterable[In], fn: Callable[[In], Iterable[Out]]) -> list[Out]:
     """Maps and flattens the items by one level."""
     return list(chain.from_iterable(map(fn, items)))
 
