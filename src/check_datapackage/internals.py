@@ -17,6 +17,7 @@ from check_datapackage.constants import (
     PACKAGE_RECOMMENDED_FIELDS,
     SEMVER_PATTERN,
 )
+from check_datapackage.exclude import _filter, _map
 from check_datapackage.issue import Issue
 
 
@@ -202,14 +203,6 @@ def _handle_S_resources_x_path(
 
 In = TypeVar("In")
 Out = TypeVar("Out")
-
-
-def _filter(x: Iterable[In], fn: Callable[[In], bool]) -> list[In]:
-    return list(filter(fn, x))
-
-
-def _map(x: Iterable[In], fn: Callable[[In], Out]) -> list[Out]:
-    return list(map(fn, x))
 
 
 def _next(items: Iterable[In], condition: Callable[[In], bool]) -> Optional[In]:

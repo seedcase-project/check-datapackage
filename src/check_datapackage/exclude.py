@@ -1,6 +1,6 @@
 from dataclasses import dataclass
+from typing import Any, Callable
 
-from check_datapackage.internals import _filter, _map
 from check_datapackage.issue import Issue
 
 
@@ -70,3 +70,11 @@ def _any_matching_types(issue: Issue, excludes: list[Exclude]) -> bool:
 
 def _same_type(issue: Issue, exclude: Exclude) -> bool:
     return exclude.type == issue.type
+
+
+def _filter(x: Any, fn: Callable[[Any], bool]) -> list[Any]:
+    return list(filter(fn, x))
+
+
+def _map(x: Any, fn: Callable[[Any], Any]) -> list[Any]:
+    return list(map(fn, x))
