@@ -92,7 +92,7 @@ def _validation_errors_to_issues(
     Returns:
         A list of `Issue`s.
     """
-    return [
+    issues = [
         Issue(
             message=error.message,
             jsonpath=_get_full_json_path_from_error(error),
@@ -101,6 +101,7 @@ def _validation_errors_to_issues(
         for error in _unwrap_errors(list(validation_errors))
         if str(error.validator) not in COMPLEX_VALIDATORS
     ]
+    return sorted(set(issues))
 
 
 def _unwrap_errors(errors: list[ValidationError]) -> list[ValidationError]:
@@ -174,13 +175,10 @@ def _map(x: Iterable[In], fn: Callable[[In], Out]) -> list[Out]:
     return list(map(fn, x))
 
 
+def _filter(x: Iterable[In], fn: Callable[[In], bool]) -> list[In]:
+    return list(filter(fn, x))
+
+
 def _flat_map(items: Iterable[In], fn: Callable[[In], Iterable[Out]]) -> list[Out]:
     """Maps and flattens the items by one level."""
     return list(chain.from_iterable(map(fn, items)))
-
-
-def _filter_map(
-    items: Iterable[In], map_fn: Callable[[In], Out], condition: Callable[[In], bool]
-) -> list[Out]:
-    """Filters and maps the items."""
-    return _map(filter(condition, items), map_fn)

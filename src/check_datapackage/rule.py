@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from check_datapackage.internals import _filter_map, _get_fields_at_jsonpath
+from check_datapackage.internals import (
+    _filter,
+    _get_fields_at_jsonpath,
+    _map,
+)
 from check_datapackage.issue import Issue
 
 
@@ -50,11 +54,10 @@ def apply_rule(rule: Rule, descriptor: dict[str, Any]) -> list[Issue]:
         A list of `Issue`s.
     """
     matching_fields = _get_fields_at_jsonpath(rule.jsonpath, descriptor)
-
-    return _filter_map(
-        items=matching_fields,
-        map_fn=lambda field: Issue(
+    failed_fields = _filter(matching_fields, lambda field: not rule.check(field.value))
+    return _map(
+        failed_fields,
+        lambda field: Issue(
             jsonpath=field.jsonpath, type=rule.type, message=rule.message
         ),
-        condition=lambda field: not rule.check(field.value),
     )

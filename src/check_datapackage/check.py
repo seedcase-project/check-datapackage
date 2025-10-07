@@ -46,6 +46,4 @@ def check(
         lambda rule: apply_rule(rule, descriptor),
     )
 
-    issues = exclude(issues, config.exclude)
-
-    return sorted(set(issues))
+    return exclude(issues, config.exclude)
