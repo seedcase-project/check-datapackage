@@ -110,7 +110,7 @@ def _validation_errors_to_issues(
     Returns:
         A list of `Issue`s.
     """
-    schema_errors = _create_schema_errors(list(validation_errors))
+    schema_errors = _flat_map(validation_errors, _validation_error_to_schema_errors)
 
     # Handle issues at $.resources[x]
 
@@ -220,9 +220,9 @@ def _next(items: Iterable[In], condition: Callable[[In], bool]) -> Optional[In]:
     return next(filter(condition, items), None)
 
 
-def flat_map(fn: Callable[[In], Iterable[Out]], items: Iterable[In]) -> Iterable[Out]:
+def _flat_map(items: Iterable[In], fn: Callable[[In], Iterable[Out]]) -> list[Out]:
     """Maps and flattens the items by one level."""
-    return chain.from_iterable(map(fn, items))
+    return list(chain.from_iterable(map(fn, items)))
 
 
 def _get_full_json_path_from_error(error: ValidationError) -> str:
@@ -243,18 +243,12 @@ def _get_full_json_path_from_error(error: ValidationError) -> str:
     return error.json_path
 
 
-def _validation_error_to_schema_errors(error: ValidationError) -> Iterable[SchemaError]:
+def _validation_error_to_schema_errors(error: ValidationError) -> list[SchemaError]:
     current = [_create_schema_error(error)]
     if not error.context:
         return current
-    return chain(
-        current,
-        flat_map(_validation_error_to_schema_errors, error.context),
-    )
 
-
-def _create_schema_errors(errors: list[ValidationError]) -> list[SchemaError]:
-    return list(flat_map(_validation_error_to_schema_errors, errors))
+    return current + _flat_map(error.context, _validation_error_to_schema_errors)
 
 
 def _create_schema_error(error: ValidationError) -> SchemaError:
