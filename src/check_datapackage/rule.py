@@ -39,7 +39,7 @@ class Rule:
     type: str = "custom"
 
 
-def flag_issues(rule: Rule, descriptor: dict[str, Any]) -> list[Issue]:
+def apply_rule(rule: Rule, descriptor: dict[str, Any]) -> list[Issue]:
     """Checks the descriptor against the rule and creates issues for fields that fail.
 
     Args:

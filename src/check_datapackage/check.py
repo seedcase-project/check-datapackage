@@ -11,7 +11,7 @@ from check_datapackage.internals import (
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
-from check_datapackage.rule import flag_issues
+from check_datapackage.rule import apply_rule
 
 
 def check(
@@ -43,7 +43,7 @@ def check(
 
     issues += _flat_map(
         config.rules,
-        lambda rule: flag_issues(rule, descriptor),
+        lambda rule: apply_rule(rule, descriptor),
     )
 
     issues = exclude(issues, config.exclude)
