@@ -70,7 +70,7 @@ def _check_object_against_json_schema(
     return _validation_errors_to_issues(validator.iter_errors(json_object))
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemaError:
     """A simpler representation of `ValidationError` for easier processing.
 
