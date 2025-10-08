@@ -1,5 +1,5 @@
 import re
-from typing import Any, Iterator
+from typing import Any, Callable, Iterable, Iterator, TypeVar
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
@@ -133,3 +133,15 @@ def _get_full_json_path_from_error(error: ValidationError) -> str:
         if match:
             return f"{error.json_path}.{match.group(1)}"
     return error.json_path
+
+
+In = TypeVar("In")
+Out = TypeVar("Out")
+
+
+def _map(x: Iterable[In], fn: Callable[[In], Out]) -> list[Out]:
+    return list(map(fn, x))
+
+
+def _filter(x: Iterable[In], fn: Callable[[In], bool]) -> list[In]:
+    return list(filter(fn, x))
