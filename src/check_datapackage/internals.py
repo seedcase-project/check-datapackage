@@ -118,8 +118,7 @@ def _validation_errors_to_issues(
     )
     schema_errors = reduce(_handle_grouped_error, grouped_errors, schema_errors)
 
-    issues = _map(schema_errors, _create_issue)
-    return sorted(set(issues))
+    return _map(schema_errors, _create_issue)
 
 
 def _handle_grouped_error(
@@ -273,6 +272,6 @@ def _is_path_type_error(error: SchemaError) -> bool:
 def _create_issue(error: SchemaError) -> Issue:
     return Issue(
         message=error.message,
-        location=error.jsonpath,
+        jsonpath=error.jsonpath,
         type=error.type,
     )

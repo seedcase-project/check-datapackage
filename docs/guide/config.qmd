@@ -33,27 +33,26 @@ import check_datapackage as cdp
 exclude_required = cdp.Exclude(type="required")
 ```
 
-To exclude checks applying to specific fields in the descriptor, you
-express the location of the target field or fields in [JSON
-path](https://en.wikipedia.org/wiki/JSONPath) notation and define an
-`Exclude` object with this `target`. For example, you can exclude all
+To exclude checks of a specific field or fields, you can use a [JSON
+path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath`
+attribute of an `Exclude` object. For example, you can exclude all
 checks on the `name` field of the Data Package descriptor by writing:
 
 ```{python}
-exclude_name = cdp.Exclude(target="$.name")
+exclude_name = cdp.Exclude(jsonpath="$.name")
 ```
 
 Or you can use the wildcard JSON path selector to exclude checks on the
 `path` field of **all** Data Resource descriptors:
 
 ```{python}
-exclude_path = cdp.Exclude(target="$.resources[*].path")
+exclude_path = cdp.Exclude(jsonpath="$.resources[*].path")
 ```
 
-The `type` and `target` arguments can also be combined:
+The `type` and `jsonpath` arguments can also be combined:
 
 ```{python}
-exclude_desc_required = cdp.Exclude(type="required", target="$.resources[*].description")
+exclude_desc_required = cdp.Exclude(type="required", jsonpath="$.resources[*].description")
 ```
 
 This would exclude required checks on the `description` field of Data
@@ -101,7 +100,7 @@ MIT. You can express this requirement in a `Rule` as follows:
 ```{python}
 license_rule = cdp.Rule(
     type="only-mit",
-    target="$.licenses[*].name",
+    jsonpath="$.licenses[*].name",
     message=dedent("""
         Data Packages may only be licensed under MIT. Please review
         the licenses listed in the Data Package.
@@ -115,13 +114,13 @@ Here's a breakdown of what each argument does:
 -   `type`: An identifier for your rule. This is what will show up in
     error messages and what you will use if you want to exclude your
     rule. Each `Rule` should have a unique `type`.
--   `target`: The location of the field or fields, expressed in [JSON
+-   `jsonpath`: The location of the field or fields, expressed in [JSON
     path](https://en.wikipedia.org/wiki/JSONPath) notation, to which the
     rule applies. This rule applies to the `name` field of all package
     licenses.
 -   `message`: The message that is shown when the rule is violated.
 -   `check`: A function that expresses how compliance with the rule is
-    checked. It takes the value at the `target` location as input and
+    checked. It takes the value at the `jsonpath` location as input and
     returns true if the rule is met, false if it isn't.
 
 To register your custom rules with the `check()` function, you add them

@@ -27,7 +27,7 @@ def test_fails_descriptor_without_resources():
 
     assert len(issues) == 1
     assert issues[0].type == "required"
-    assert issues[0].location == "$.resources"
+    assert issues[0].jsonpath == "$.resources"
 
 
 def test_fails_descriptor_with_empty_resources():
@@ -40,7 +40,7 @@ def test_fails_descriptor_with_empty_resources():
     issues = check(descriptor)
 
     assert len(issues) == 1
-    assert issues[0].location == "$.resources"
+    assert issues[0].jsonpath == "$.resources"
 
 
 def test_fails_descriptor_with_bad_type():
@@ -53,7 +53,7 @@ def test_fails_descriptor_with_bad_type():
 
     assert len(issues) == 1
     assert issues[0].type == "type"
-    assert issues[0].location == "$.name"
+    assert issues[0].jsonpath == "$.name"
 
 
 def test_fails_descriptor_with_bad_format():
@@ -68,7 +68,7 @@ def test_fails_descriptor_with_bad_format():
 
     assert len(issues) == 1
     assert issues[0].type == "format"
-    assert issues[0].location == "$.homepage"
+    assert issues[0].jsonpath == "$.homepage"
 
 
 def test_fails_descriptor_with_pattern_mismatch():
@@ -83,7 +83,7 @@ def test_fails_descriptor_with_pattern_mismatch():
 
     assert len(issues) == 1
     assert issues[0].type == "pattern"
-    assert issues[0].location == "$.contributors[0].path"
+    assert issues[0].jsonpath == "$.contributors[0].path"
 
 
 # With recommendations
@@ -133,7 +133,7 @@ def test_fails_descriptor_violating_recommendations():
     issues = check(descriptor, config=Config(strict=True))
 
     assert len(issues) == 5
-    assert {issue.location for issue in issues} == {
+    assert {issue.jsonpath for issue in issues} == {
         "$.name",
         "$.version",
         "$.contributors[0].title",

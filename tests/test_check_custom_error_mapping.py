@@ -31,9 +31,9 @@ def test_fail_with_resource_name_path_and_data_missing():
     issues = check(descriptor)
 
     assert len(issues) == 2
-    assert issues[0].location == "$.resources[0]"
+    assert issues[0].jsonpath == "$.resources[0]"
     assert issues[0].type == "required"
-    assert issues[1].location == "$.resources[0].name"
+    assert issues[1].jsonpath == "$.resources[0].name"
     assert issues[1].type == "required"
 
 
@@ -46,9 +46,9 @@ def test_fail_with_multiple_resources():
     issues = check(descriptor)
 
     assert len(issues) == 2
-    assert issues[0].location == "$.resources[0]"
+    assert issues[0].jsonpath == "$.resources[0]"
     assert issues[0].type == "required"
-    assert issues[1].location == "$.resources[1]"
+    assert issues[1].jsonpath == "$.resources[1]"
     assert issues[1].type == "required"
 
 
@@ -95,4 +95,4 @@ def test_fail_with_bad_resource_path(path, location, type):
 
     assert len(issues) == 1
     assert issues[0].type == type
-    assert issues[0].location == location
+    assert issues[0].jsonpath == location
