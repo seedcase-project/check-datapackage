@@ -6,7 +6,7 @@ from typing import Any, Iterator, Optional
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.config import Config
-from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH
+from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
 from check_datapackage.exclude import _filter, _map, exclude
 from check_datapackage.internals import (
     _add_package_recommendations,
@@ -102,9 +102,7 @@ def _validation_errors_to_issues(
         A list of `Issue`s.
     """
     schema_errors = _flat_map(validation_errors, _validation_error_to_schema_errors)
-    grouped_errors = _filter(
-        schema_errors, lambda error: error.type in {"oneOf", "anyOf"}
-    )
+    grouped_errors = _filter(schema_errors, lambda error: error.type in GROUP_ERRORS)
     schema_errors = reduce(_handle_grouped_error, grouped_errors, schema_errors)
 
     return _map(schema_errors, _create_issue)
