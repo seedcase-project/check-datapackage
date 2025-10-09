@@ -119,8 +119,8 @@ def _handle_grouped_error(
     """Handle grouped schema errors that need special treatment.
 
     Args:
-        parent_error: The parent error of a group.
         schema_errors: All remaining schema errors.
+        parent_error: The parent error of a group.
 
     Returns:
         The schema errors after processing.
