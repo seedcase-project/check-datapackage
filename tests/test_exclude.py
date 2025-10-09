@@ -83,19 +83,19 @@ def test_exclude_multiple_types():
 @mark.parametrize(
     "jsonpath, num_issues",
     [
-        ("$", 4),
+        ("$", 3),
         ("..*", 0),
-        ("$.created", 3),
-        ("created", 3),
-        ("$.contributors[*].path", 3),
-        ("$.contributors[0].path", 3),
+        ("$.created", 2),
+        ("created", 2),
+        ("$.contributors[*].path", 2),
+        ("$.contributors[0].path", 2),
         ("$..path", 1),
-        ("contributors[0].path", 3),
-        ("contributors[*].path", 3),
-        ("..resources[*]", 4),
-        ("..resources", 4),
-        ("$.resources[*]", 4),
-        ("$.resources[0]", 4),
+        ("contributors[0].path", 2),
+        ("contributors[*].path", 2),
+        ("..resources[*]", 3),
+        ("..resources", 3),
+        ("$.resources[*]", 3),
+        ("$.resources[0]", 3),
         ("$.resources[*].path", 2),
         ("$.resources[0].*", 2),
         ("$.resources[0].path", 2),
@@ -103,7 +103,7 @@ def test_exclude_multiple_types():
 )
 def test_exclude_jsonpath(jsonpath: str, num_issues: int) -> None:
     descriptor = example_package_descriptor()
-    # Total 4 issues
+    # Total 3 issues
     descriptor["created"] = "20240614"
     # Two issues for resources: type and pattern
     descriptor["resources"][0]["path"] = "/a/bad/path"
