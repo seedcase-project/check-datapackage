@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from itertools import chain, repeat
+from itertools import chain
 from typing import Any, Callable, Iterable, Iterator, TypeVar
 
 from jsonpath import JSONPathMatch, finditer
@@ -181,14 +181,3 @@ def _filter(x: Iterable[In], fn: Callable[[In], bool]) -> list[In]:
 def _flat_map(items: Iterable[In], fn: Callable[[In], Iterable[Out]]) -> list[Out]:
     """Maps and flattens the items by one level."""
     return list(chain.from_iterable(map(fn, items)))
-
-
-def _map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
-    if len(y) == 1:
-        y = list(repeat(y[0], len(x)))
-    return list(map(fn, x, y))
-
-
-def _flat_map2(x: list[Any], y: list[Any], fn: Callable[[Any, Any], Any]) -> list[Any]:
-    """Uses map and flattens the result by one level."""
-    return list(chain.from_iterable(_map2(x, y, fn)))
