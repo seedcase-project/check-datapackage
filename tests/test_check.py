@@ -2,7 +2,10 @@ from pytest import mark
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
-from check_datapackage.examples import example_package_descriptor
+from check_datapackage.examples import (
+    example_package_descriptor,
+    example_resource_descriptor,
+)
 from check_datapackage.exclude import Exclude
 from tests.test_rule import lowercase_rule
 
@@ -11,15 +14,7 @@ from tests.test_rule import lowercase_rule
 
 def test_passes_matching_descriptor_with_resources():
     """Should pass descriptor matching the schema."""
-    descriptor = {
-        "name": "a name with spaces",
-        "title": "A Title",
-        "created": "2024-05-14T05:00:01+00:00",
-        "version": "a version",
-        "contributors": [{"email": "jane@doe.com"}],
-        "sources": [{"email": "jane@doe.com"}],
-        "resources": [{"name": "a name", "path": "data.csv"}],
-    }
+    descriptor = example_package_descriptor()
 
     assert check(descriptor) == []
 
@@ -35,43 +30,17 @@ def test_fails_descriptor_without_resources():
     assert issues[0].jsonpath == "$.resources"
 
 
-@mark.parametrize(
-    "resources, jsonpath, num_issues",
-    [
-        ([], "$.resources", 1),
-        ([{}], "$.resources[0].data", 3),
-        ([{"name": "a name", "path": "/a/bad/path"}], "$.resources[0].path", 2),
-    ],
-)
-def test_fails_descriptor_with_bad_resources(resources, jsonpath, num_issues):
-    """Should fail descriptor with malformed resources."""
+def test_fails_descriptor_with_empty_resources():
+    """Should fail descriptor with an empty resources array."""
     descriptor = {
         "name": "a name with spaces",
-        "resources": resources,
+        "resources": [],
     }
 
     issues = check(descriptor)
 
-    assert len(issues) == num_issues
-    assert issues[0].jsonpath == jsonpath
-
-
-def test_fails_descriptor_with_missing_required_fields():
-    """Should fail descriptor with missing required fields."""
-    descriptor = {
-        "name": "a name",
-        "resources": [{"name": "a name", "path": "data.csv"}],
-        "licenses": [{"title": "my license"}],
-    }
-
-    issues = check(descriptor)
-
-    assert len(issues) == 2
-    assert all(issue.type == "required" for issue in issues)
-    assert {issue.jsonpath for issue in issues} == {
-        "$.licenses[0].name",
-        "$.licenses[0].path",
-    }
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources"
 
 
 def test_fails_descriptor_with_bad_type():
@@ -195,3 +164,89 @@ def test_exclude_excluding_rule():
     issues = check(descriptor, config=config)
 
     assert issues == []
+
+
+# Issues at $.resources[x]
+
+
+def test_pass_with_resource_path_missing():
+    descriptor = example_package_descriptor()
+    descriptor["resources"][0]["data"] = [1, 2, 3]
+    del descriptor["resources"][0]["path"]
+
+    assert check(descriptor) == []
+
+
+def test_fail_with_resource_name_path_and_data_missing():
+    descriptor = example_package_descriptor()
+    del descriptor["resources"][0]["name"]
+    del descriptor["resources"][0]["path"]
+
+    issues = check(descriptor)
+
+    assert len(issues) == 2
+    assert issues[0].jsonpath == "$.resources[0]"
+    assert issues[0].type == "required"
+    assert issues[1].jsonpath == "$.resources[0].name"
+    assert issues[1].type == "required"
+
+
+def test_fail_with_multiple_resources():
+    descriptor = example_package_descriptor()
+    descriptor["resources"].append(example_resource_descriptor())
+    del descriptor["resources"][0]["path"]
+    del descriptor["resources"][1]["path"]
+
+    issues = check(descriptor)
+
+    assert len(issues) == 2
+    assert issues[0].jsonpath == "$.resources[0]"
+    assert issues[0].type == "required"
+    assert issues[1].jsonpath == "$.resources[1]"
+    assert issues[1].type == "required"
+
+
+def test_fail_with_both_resource_path_and_data_present():
+    descriptor = example_package_descriptor()
+    descriptor["resources"][0]["data"] = [1, 2, 3]
+
+    issues = check(descriptor)
+
+    assert len(issues) == 1
+    assert issues[0].type == "oneOf"
+
+
+def test_fail_one_resource_pass_another():
+    descriptor = example_package_descriptor()
+    resource2 = example_resource_descriptor()
+    descriptor["resources"].append(resource2)
+    del descriptor["resources"][0]["path"]
+
+    issues = check(descriptor)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+
+
+# Issues at $.resources[x].path
+
+
+@mark.parametrize(
+    "path, location, type",
+    [
+        (123, "$.resources[0].path", "type"),
+        ("/bad/path", "$.resources[0].path", "pattern"),
+        ([], "$.resources[0].path", "minItems"),
+        ([123], "$.resources[0].path[0]", "type"),
+        (["/bad/path"], "$.resources[0].path[0]", "pattern"),
+    ],
+)
+def test_fail_with_bad_resource_path(path, location, type):
+    descriptor = example_package_descriptor()
+    descriptor["resources"][0]["path"] = path
+
+    issues = check(descriptor)
+
+    assert len(issues) == 1
+    assert issues[0].type == type
+    assert issues[0].jsonpath == location

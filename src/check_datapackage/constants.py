@@ -12,7 +12,7 @@ class RequiredFieldType(str, Enum):
     any = "any"
 
 
-COMPLEX_VALIDATORS = {"allOf", "anyOf", "oneOf"}
+GROUP_ERRORS = {"allOf", "anyOf", "oneOf"}
 
 DATA_PACKAGE_SCHEMA_PATH = Path(
     str(files("check_datapackage.schemas").joinpath("data-package-schema.json"))
