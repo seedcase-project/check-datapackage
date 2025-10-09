@@ -4,7 +4,6 @@ from typing import Any, Optional
 from check_datapackage.internals import (
     DescriptorField,
     _filter,
-    _flat_map2,
     _get_fields_at_jsonpath,
     _map,
 )
@@ -42,72 +41,52 @@ class Exclude:
     type: Optional[str] = None
 
 
-def exclude_by_types(issues: list[Issue], excludes: list[Exclude]) -> list[Issue]:
-    """Keep only issues that don't match an exclusion rule.
-
-    Args:
-        issues: The issues to filter.
-        excludes: The exclusion rules to apply to the issues.
-
-    Returns:
-        The issues that are kept after applying the exclusion rules.
-    """
-    return _drop_any_matching_types(issues, excludes)
-
-
 def exclude(
     issues: list[Issue], excludes: list[Exclude], descriptor: dict[str, Any]
 ) -> list[Issue]:
-    jsonpaths_to_exclude = _flat_map2(excludes, [descriptor], _get_excluded_jsonpath)
-    print(_map(issues, lambda issue: _get_any_matches_on_type(issue, excludes)))
+    """Exclude issues based on the provided configuration settings."""
     return _filter(
         issues,
-        lambda issue: not (
-            _get_any_matches_on_type(issue, excludes)
-            and issue.jsonpath in jsonpaths_to_exclude
-        ),
+        lambda issue: not _get_any_matches(issue, excludes, descriptor),
     )
 
 
-def _get_excluded_jsonpath(exclude: Exclude, descriptor: dict[Any, str]) -> list[str]:
+def _get_any_matches(
+    issue: Issue, excludes: list[Exclude], descriptor: dict[str, Any]
+) -> bool:
+    matches: list[bool] = _map(
+        excludes, lambda exclude: _get_matches(issue, exclude, descriptor)
+    )
+    return any(matches)
+
+
+def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> bool:
+    matches: list[bool] = []
+
+    both_none = exclude.jsonpath is None and exclude.type is None
+    if both_none:
+        matches.append(False)
+
+    if exclude.jsonpath is not None:
+        matches.append(_same_jsonpath(issue, exclude, descriptor))
+
+    if exclude.type is not None:
+        matches.append(_same_type(issue, exclude))
+
+    return all(matches)
+
+
+def _same_jsonpath(issue: Issue, exclude: Exclude, descriptor: dict[Any, str]) -> bool:
     if exclude.jsonpath is None:
-        return []
+        return False
     fields: list[DescriptorField] = _get_fields_at_jsonpath(
         exclude.jsonpath, descriptor
     )
-    return _map(fields, lambda field: field.jsonpath)
-
-
-def exclude_by_jsonpath(
-    issues: list[Issue], descriptor: dict[str, Any], excludes: list[Exclude]
-) -> list[Issue]:
-    """Keep only issues that don't match an exclusion rule.
-
-    Args:
-        issues: The issues to filter.
-        descriptor: The Data Package descriptor as a dictionary.
-        excludes: The exclusion rules to apply to the issues.
-
-    Returns:
-        The issues that are kept after applying the exclusion rules.
-    """
-    jsonpaths_to_exclude = _flat_map2(excludes, [descriptor], _get_excluded_jsonpath)
-    return _filter(issues, lambda issue: issue.jsonpath not in jsonpaths_to_exclude)
-
-
-# Generic functions to build up the exclusion by either type or jsonpath
-
-
-def _drop_any_matching_types(
-    issues: list[Issue], excludes: list[Exclude]
-) -> list[Issue]:
-    return _filter(issues, lambda issue: not _get_any_matches_on_type(issue, excludes))
-
-
-def _get_any_matches_on_type(issue: Issue, excludes: list[Exclude]) -> bool:
-    has_match: list[bool] = _map(excludes, lambda exclude: _same_type(issue, exclude))
-    return any(has_match)
+    jsonpaths: list[str] = _map(fields, lambda field: field.jsonpath)
+    return issue.jsonpath in jsonpaths
 
 
 def _same_type(issue: Issue, exclude: Exclude) -> bool:
-    return exclude.type == issue.type
+    if exclude.type is None:
+        return False
+    return exclude.type in issue.type

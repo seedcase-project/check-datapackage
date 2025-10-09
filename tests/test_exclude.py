@@ -137,21 +137,29 @@ def test_exclude_jsonpath_and_type():
     descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
 
     exclude = [
-        Exclude(jsonpath="$.contributors[0].path", type="format"),
+        Exclude(jsonpath="$.contributors[0].path", type="pattern"),
     ]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
 
-    assert len(issues) == 0
+    assert len(issues) == 1
+
+
+def test_exclude_jsonpath_and_type_non_overlapping():
+    descriptor = example_package_descriptor()
+    # There should be two issues
+    descriptor["created"] = "20240614"
+    descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
 
     exclude = [
         Exclude(jsonpath="$.contributors[0].path"),
-        Exclude(type="format"),
+        Exclude(type="pattern"),
     ]
     config = Config(exclude=exclude)
     issues = check(descriptor, config=config)
 
-    assert len(issues) == 0
+    # For the created field
+    assert len(issues) == 1
 
 
 def test_exclude_jsonpath_resources():
@@ -168,16 +176,3 @@ def test_exclude_jsonpath_resources():
     }
     issues = check(properties, config=Config(exclude=[Exclude(jsonpath="$.resources")]))
     assert len(issues) == 0
-
-
-def test_exclude_both_jsonpath_and_type():
-    descriptor = example_package_descriptor()
-    # Two issues for licenses: needs either name or path
-    descriptor["licenses"][0].pop("name")
-
-    exclude = [Exclude(jsonpath="$.licenses[0].name", type="required")]
-    config = Config(exclude=exclude)
-    issues = check(descriptor, config=config)
-
-    # Should be 2 issues
-    assert len(issues) == 1
