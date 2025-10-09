@@ -180,7 +180,7 @@ def _handle_S_resources_x_path(
         schema_errors.remove(parent_error)
 
     # If the only error is that $.resources[x].path is of the wrong type,
-    # add a a more informative error
+    # add a more informative error
     if only_type_errors:
         schema_errors.append(
             SchemaError(
