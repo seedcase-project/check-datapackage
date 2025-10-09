@@ -7,11 +7,13 @@ from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
-from check_datapackage.exclude import _filter, _map, exclude
+from check_datapackage.exclude import exclude
 from check_datapackage.internals import (
     _add_package_recommendations,
     _add_resource_recommendations,
+    _filter,
     _flat_map,
+    _map,
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
