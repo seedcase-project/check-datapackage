@@ -3,6 +3,7 @@ from typing import Any, Callable
 
 from check_datapackage.internals import (
     _filter,
+    _flat_map,
     _get_fields_at_jsonpath,
     _map,
 )
@@ -43,7 +44,23 @@ class Rule:
     type: str = "custom"
 
 
-def apply_rule(rule: Rule, descriptor: dict[str, Any]) -> list[Issue]:
+def apply_rules(rules: list[Rule], descriptor: dict[str, Any]) -> list[Issue]:
+    """Checks the descriptor for all rules and creates issues for fields that fail.
+
+    Args:
+        rules: The rules to apply to the descriptor.
+        descriptor: The descriptor to check.
+
+    Returns:
+        A list of `Issue`s.
+    """
+    return _flat_map(
+        rules,
+        lambda rule: _apply_rule(rule, descriptor),
+    )
+
+
+def _apply_rule(rule: Rule, descriptor: dict[str, Any]) -> list[Issue]:
     """Checks the descriptor against the rule and creates issues for fields that fail.
 
     Args:
