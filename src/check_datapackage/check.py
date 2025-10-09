@@ -10,6 +10,7 @@ from check_datapackage.internals import (
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
+from check_datapackage.rule import apply_rules
 
 
 def check(
@@ -38,4 +39,7 @@ def check(
         _add_resource_recommendations(schema)
 
     issues = _check_object_against_json_schema(descriptor, schema)
-    return exclude(issues, config.exclude, descriptor)
+    issues += apply_rules(config.rules, descriptor)
+    issues = exclude(issues, config.exclude, descriptor)
+
+    return sorted(set(issues))

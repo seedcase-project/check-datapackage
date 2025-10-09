@@ -9,6 +9,24 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.7.0 (2025-10-09)
+
+### Feat
+
+- :sparkles: implement rule logic (#108)
+
+## 0.6.3 (2025-10-09)
+
+### Refactor
+
+- :recycle: move functionals to internals (#110)
+
+## 0.6.2 (2025-10-07)
+
+### Refactor
+
+- :recycle: sort issues and remove duplicates at the very end (#109)
+
 ## 0.6.1 (2025-10-01)
 
 ### Refactor

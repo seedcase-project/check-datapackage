@@ -1,10 +1,13 @@
 from dataclasses import dataclass
-from re import sub
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
-from jsonpath import JSONPathMatch, finditer
-
-from check_datapackage.internals import _flat_map2
+from check_datapackage.internals import (
+    DescriptorField,
+    _filter,
+    _flat_map2,
+    _get_fields_at_jsonpath,
+    _map,
+)
 from check_datapackage.issue import Issue
 
 
@@ -66,6 +69,15 @@ def exclude(
     )
 
 
+def _get_excluded_jsonpath(exclude: Exclude, descriptor: dict[Any, str]) -> list[str]:
+    if exclude.jsonpath is None:
+        return []
+    fields: list[DescriptorField] = _get_fields_at_jsonpath(
+        exclude.jsonpath, descriptor
+    )
+    return _map(fields, lambda field: field.jsonpath)
+
+
 def exclude_by_jsonpath(
     issues: list[Issue], descriptor: dict[str, Any], excludes: list[Exclude]
 ) -> list[Issue]:
@@ -99,23 +111,3 @@ def _get_any_matches_on_type(issue: Issue, excludes: list[Exclude]) -> bool:
 
 def _same_type(issue: Issue, exclude: Exclude) -> bool:
     return exclude.type == issue.type
-
-
-def _filter(x: Any, fn: Callable[[Any], bool]) -> list[Any]:
-    return list(filter(fn, x))
-
-
-def _map(x: Any, fn: Callable[[Any], Any]) -> list[Any]:
-    return list(map(fn, x))
-
-
-def _get_excluded_jsonpath(exclude: Exclude, descriptor: dict[Any, str]) -> list[str]:
-    if exclude.jsonpath is None:
-        return []
-    matches = finditer(exclude.jsonpath, descriptor)
-    paths = _map(matches, _get_match_jsonpath)
-    return paths
-
-
-def _get_match_jsonpath(match: JSONPathMatch) -> str:
-    return match.path.replace("['", ".").replace("']", "")
