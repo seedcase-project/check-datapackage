@@ -26,16 +26,6 @@ PACKAGE_RECOMMENDED_FIELDS = {
     "licenses": RequiredFieldType.list,
 }
 
-PACKAGE_REQUIRED_FIELDS = {
-    "resources": RequiredFieldType.list,
-}
-
-RESOURCE_REQUIRED_FIELDS = {
-    "name": RequiredFieldType.str,
-    "path": RequiredFieldType.str,
-    "data": RequiredFieldType.any,
-}
-
 # From https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 SEMVER_PATTERN = (
     r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
