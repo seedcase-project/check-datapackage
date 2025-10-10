@@ -1,6 +1,6 @@
 [project]
 name = "check-datapackage"
-version = "0.7.1"
+version = "0.7.2"
 # TODO: Add a description of the package.
 description = ""
 authors = [

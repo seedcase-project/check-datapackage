@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.7.2 (2025-10-10)
+
+### Refactor
+
+- :fire: remove leftover code (#112)
+
 ## 0.7.1 (2025-10-09)
 
 ### Refactor
