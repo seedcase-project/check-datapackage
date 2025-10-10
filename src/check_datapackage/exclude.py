@@ -14,15 +14,16 @@ from check_datapackage.issue import Issue
 class Exclude:
     r"""Exclude issues when checking a Data Package descriptor.
 
-    When you use both `jsonpath` and `type`, any issue that matches either of them
-    will be excluded. Mean it isn't an `AND` logic, it's an `OR` logic.
+    When you use both `jsonpath` and `type` in the same `Exclude`, only issues that
+    match *both* will be excluded. Mean it is an `AND` logic. If you want `OR` logic,
+    use multiple `Exclude` objects in the `Config`.
 
     Attributes:
         jsonpath (Optional[str]): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
             to the field or fields in the input object where issues should be ignored.
             Uses JSON path syntax for queries, e.g., `$.resources[0].name`, to ignore
             issues related to that path.
-        type (Optional[str]): The type of the issue to ignore (e.g., "required",
+        type (Optional[str]): The type of the issue to ignore (e.g., "required", "type",
             "pattern", or "format").
 
     Examples:
@@ -32,7 +33,8 @@ class Exclude:
         exclude_required = cdp.Exclude(type="required")
         exclude_name = cdp.Exclude(jsonpath="$.name")
         exclude_desc_required = cdp.Exclude(
-            type="required", jsonpath="$.resources[*].description"
+            type="required",
+            jsonpath="$.resources[*].description"
         )
         ```
     """
