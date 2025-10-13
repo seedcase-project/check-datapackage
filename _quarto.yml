@@ -70,6 +70,7 @@ quartodoc:
     - name: Config
     - name: Exclude
     - name: Rule
+    - name: RequiredRule
     - name: Issue
     - name: example_package_descriptor
     - name: example_resource_descriptor

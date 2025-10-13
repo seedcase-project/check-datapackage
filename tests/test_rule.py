@@ -1,3 +1,5 @@
+from pytest import raises
+
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.examples import (
@@ -5,7 +7,7 @@ from check_datapackage.examples import (
     example_resource_descriptor,
 )
 from check_datapackage.issue import Issue
-from check_datapackage.rule import Rule
+from check_datapackage.rule import RequiredRule, Rule
 
 lowercase_rule = Rule(
     jsonpath="$.name",
@@ -57,8 +59,20 @@ def test_multiple_rules():
     descriptor = example_package_descriptor()
     descriptor["name"] = "ALLCAPS"
     descriptor["resources"][0]["name"] = "not starting with woolly"
+    del descriptor["version"]
 
-    config = Config(rules=[lowercase_rule, resource_name_rule])
+    version_rule = RequiredRule(
+        jsonpath="$.version",
+        message="Version is required.",
+    )
+
+    config = Config(
+        rules=[
+            lowercase_rule,
+            resource_name_rule,
+            version_rule,
+        ]
+    )
     issues = check(descriptor, config=config)
 
     assert issues == [
@@ -71,6 +85,11 @@ def test_multiple_rules():
             jsonpath="$.resources[0].name",
             type=resource_name_rule.type,
             message=resource_name_rule.message,
+        ),
+        Issue(
+            jsonpath=version_rule.jsonpath,
+            type="required",
+            message=version_rule.message,
         ),
     ]
 
@@ -97,3 +116,39 @@ def test_no_matching_jsonpath():
     issues = check(descriptor, config=config)
 
     assert issues == []
+
+
+def test_required_rule_indirect_jsonpath():
+    descriptor = example_package_descriptor()
+    descriptor["contributors"] = [
+        {"path": "a/path"},
+        {"path": "a/path"},
+        {"path": "a/path", "name": "a name"},
+    ]
+    rule = RequiredRule(
+        jsonpath="$.contributors[*].name",
+        message="Contributor name is required.",
+    )
+    config = Config(rules=[rule])
+    issues = check(descriptor, config=config)
+
+    assert issues == [
+        Issue(
+            jsonpath="$.contributors[0].name",
+            type=rule.type,
+            message=rule.message,
+        ),
+        Issue(
+            jsonpath="$.contributors[1].name",
+            type=rule.type,
+            message=rule.message,
+        ),
+    ]
+
+
+def test_required_rule_cannot_apply_to_array_item():
+    with raises(ValueError):
+        RequiredRule(
+            jsonpath="$.resources[*]",
+            message="This should fail.",
+        )
