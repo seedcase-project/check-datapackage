@@ -117,4 +117,3 @@ flowchart LR
     ext_dp_schema --> check
     in_dp_json --> check
 ```
-
