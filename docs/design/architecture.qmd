@@ -56,19 +56,31 @@ compliance with the standard.
 
 ```{mermaid}
 %%| label: fig-c4-context
-%%| fig-cap: "C4 Context diagram showing a very basic overview of `check-datapackage` and its anticipated users."
+%%| fig-cap: "C4 system context diagram showing the anticipated users and the external system (the Data Package standard) `check-datapackage` interacts with."
 flowchart LR
-    user_owner(["Owner<br>[person]"])
-    user_manager(["Manager<br>[person]"])
-    user_developer(["Developer<br>[person]"])
-    ext_dp_schema(["Data Package standard<br>[standard]"])
-    check
 
-    ext_dp_schema --> check
-    user_owner --> check
-    user_manager --> check
-    user_developer --> check
+    subgraph "Users"
+        user_owner("Owner<br>[person]")
+        user_manager("Manager<br>[person]")
+        user_developer("Developer<br>[person]")
+    end
+
+    dp_standard("Data Package V2<br>[standard]")
+    check("check-datapackage<br>[Python package]")
+
+
+    dp_standard --"Definition of the standard<br>and its recommendations"--> check
+    Users --"Checks the compliance of<br>their Data Package's<br>descriptor"--> check
+
+    %% Styling
+    style Users fill:#FFFFFF, color:#000000
 ```
+
+::: callout-caution
+For some reason, these diagrams don't display well on some browsers, for
+example Firefox. If you can't see them on this page, try using a
+different browser like Chrome or Edge.
+:::
 
 ### Container
 
