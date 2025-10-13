@@ -29,6 +29,39 @@ This section describes the different users we expect and design for:
     add custom checks or ignore certain checks to fit the specific needs
     of the project.
 
+## Naming
+
+This section contains a naming scheme for `check-datapackage` that is
+inspired by the [Data Package standard](https://datapackage.org/).
+
+Overall, we follow the Data Package terminology where possible to keep
+things consistent. However, we also introduce some new terms and
+concepts specific to `check-datapackage`. The main objects and actions
+used throughout the package can be found in the tables below.
+
+### Objects
+
+| Object | Description |
+|----------------------------|--------------------------------------------|
+| package | A Data Package that contains a collection of related data resources and descriptor(s). |
+| resource | A single data file within a package including its properties. |
+| descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
+| properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
+| schema | The JSON schema defining the Data Package standard. |
+| config | An object containing settings for modifying the behaviour and output of the check mechanism. |
+
+: Objects used throughout `check-datapackage`.
+
+### Actions
+
+| Action | Description |
+|----------------------------|--------------------------------------------|
+| check | Check that a descriptor conforms to the Data Package standard. |
+| explain | Explain issues flagged by the check action in more detail using non-technical language. |
+| read | Read various files, such as a Data Package descriptor or a configuration file. |
+
+: Actions that `check-datapackage` can perform.
+
 ## C4 Models
 
 This section contains the [C4 Models](https://c4model.com/) for
@@ -85,35 +118,3 @@ flowchart LR
     in_dp_json --> check
 ```
 
-## Naming
-
-This section contains a naming scheme for `check-datapackage` that is
-inspired by the [Data Package standard](https://datapackage.org/).
-
-Overall, we follow the Data Package terminology where possible to keep
-things consistent. However, we also introduce some new terms and
-concepts specific to `check-datapackage`. The main objects and actions
-used throughout the package can be found in the tables below.
-
-### Objects
-
-| Object | Description |
-|----------------------------|--------------------------------------------|
-| package | A Data Package that contains a collection of related data resources and descriptor(s). |
-| resource | A single data file within a package including its properties. |
-| descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
-| properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
-| schema | The JSON schema defining the Data Package standard. |
-| config | An object containing settings for modifying the behaviour and output of the check mechanism. |
-
-: Objects used throughout `check-datapackage`.
-
-### Actions
-
-| Action | Description |
-|----------------------------|--------------------------------------------|
-| check | Check that a descriptor conforms to the Data Package standard. |
-| explain | Explain issues flagged by the check action in more detail using non-technical language. |
-| read | Read various files, such as a Data Package descriptor or a configuration file. |
-
-: Actions that `check-datapackage` can perform.
