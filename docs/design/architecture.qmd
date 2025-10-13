@@ -90,24 +90,20 @@ flowchart LR
 This section contains a naming scheme for `check-datapackage` that is
 inspired by the [Data Package standard](https://datapackage.org/).
 
-Following Data Package terminology, we simplify "data package" to
-"package" and "data resource" to "resource". The Data Package standard
-calls a standalone and complete metadata structure
-["descriptor"](https://datapackage.org/standard/glossary/#descriptor).
-Descriptors are JSON objects contained in JSON files (e.g.,
-`datapackage.json` contains the Data Package descriptor). We adopt this
-usage, but may also use the word "properties" to refer to the metadata
-as a whole.
+Overall, we follow the Data Package terminology where possible to keep
+things consistent. However, we also introduce some new terms and
+concepts specific to `check-datapackage`. The main objects and actions
+used throughout the package can be found in the tables below.
 
 ### Objects
 
 | Object | Description |
 |----------------------------|--------------------------------------------|
-| package | A Data Package that contains a collection of related data resources and properties. |
+| package | A Data Package that contains a collection of related data resources and descriptor(s). |
 | resource | A single data file within a package including its properties. |
-| descriptor | The standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
-| properties | Individual elements of the metadata structure or the structure as a whole. |
-| standard | The JSON schema defining the Data Package standard. |
+| descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
+| properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
+| schema | The JSON schema defining the Data Package standard. |
 | config | An object containing settings for modifying the behaviour and output of the check mechanism. |
 
 : Objects used throughout `check-datapackage`.
@@ -117,7 +113,7 @@ as a whole.
 | Action | Description |
 |----------------------------|--------------------------------------------|
 | check | Check that a descriptor conforms to the Data Package standard. |
-| explain | Explain issues flagged by the check mechanism in more detail using non-technical language. |
-| read | Read various files, such as the Data Package descriptor or configuration files. |
+| explain | Explain issues flagged by the check action in more detail using non-technical language. |
+| read | Read various files, such as a Data Package descriptor or a configuration file. |
 
 : Actions that `check-datapackage` can perform.
