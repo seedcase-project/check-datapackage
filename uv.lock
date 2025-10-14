@@ -337,7 +337,7 @@ wheels = [
 
 [[package]]
 name = "check-datapackage"
-version = "0.7.1"
+version = "0.7.3"
 source = { editable = "." }
 dependencies = [
     { name = "jsonschema" },
