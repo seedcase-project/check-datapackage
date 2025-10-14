@@ -107,14 +107,19 @@ flowchart LR
     style Users fill:#FFFFFF, color:#000000
 ```
 
-
 ### Container
 
-In C4, a [container diagram](https://c4model.com/diagrams/container) zooms in on the system boundary to show the
-*containers* within it, such as web applications or databases. This diagram displays the main containers of `check-datapackage`, their
-responsibilities, and how they interact, including the technologies used for each.
+In C4, a [container diagram](https://c4model.com/diagrams/container)
+zooms in on the system boundary to show the *containers* within it, such
+as web applications or databases. This diagram displays the main
+containers of `check-datapackage`, their responsibilities, and how they
+interact, including the technologies used for each.
 
-Currently, we build `check-datapackage` with a single container---the core Python package---but we've designed it to be extendable as a command line interface (CLI) in the future. With a CLI, we want to ease the process of implementing the checks in e.g., continuous integration pipelines.
+Currently, we build `check-datapackage` with a single container---the
+core Python package---but we've designed it to be extendable as a
+command line interface (CLI) in the future. With a CLI, we want to ease
+the process of implementing the checks in e.g., continuous integration
+pipelines.
 
 ```{mermaid}
 %%| label: fig-c4-container
