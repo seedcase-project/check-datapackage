@@ -70,7 +70,7 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
         return False
 
     if exclude.jsonpath:
-        matches.append(_same_jsonpath(issue, exclude, descriptor))
+        matches.append(_same_jsonpath(issue, exclude.jsonpath, descriptor))
 
     if exclude.type:
         matches.append(_same_type(issue, exclude))
@@ -78,13 +78,8 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
     return all(matches)
 
 
-def _same_jsonpath(issue: Issue, exclude: Exclude, descriptor: dict[Any, str]) -> bool:
-    # To fix mypy error
-    if exclude.jsonpath is None:
-        return False
-    fields: list[DescriptorField] = _get_fields_at_jsonpath(
-        exclude.jsonpath, descriptor
-    )
+def _same_jsonpath(issue: Issue, jsonpath: str, descriptor: dict[Any, str]) -> bool:
+    fields: list[DescriptorField] = _get_fields_at_jsonpath(jsonpath, descriptor)
     jsonpaths: list[str] = _map(fields, lambda field: field.jsonpath)
     return issue.jsonpath in jsonpaths
 
