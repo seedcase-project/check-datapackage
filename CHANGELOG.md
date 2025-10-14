@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.8.0 (2025-10-14)
+
+### Feat
+
+- :sparkles: add exclusion by `jsonpath` (#85)
+
 ## 0.7.3 (2025-10-10)
 
 ### Refactor

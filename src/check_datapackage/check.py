@@ -47,7 +47,7 @@ def check(
 
     issues = _check_object_against_json_schema(descriptor, schema)
     issues += apply_rules(config.rules, descriptor)
-    issues = exclude(issues, config.exclude)
+    issues = exclude(issues, config.exclude, descriptor)
 
     return sorted(set(issues))
 
