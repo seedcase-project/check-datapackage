@@ -85,4 +85,4 @@ def _same_jsonpath(issue: Issue, jsonpath: str, descriptor: dict[Any, str]) -> b
 
 
 def _same_type(issue: Issue, type: str) -> bool:
-    return type in issue.type
+    return type == issue.type
