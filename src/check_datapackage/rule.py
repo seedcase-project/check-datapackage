@@ -6,6 +6,7 @@ from check_datapackage.internals import (
     DescriptorField,
     _filter,
     _flat_map,
+    _get_direct_jsonpaths,
     _get_fields_at_jsonpath,
     _map,
 )
@@ -55,7 +56,15 @@ class Rule:
             A list of `Issue`s.
         """
         matching_fields = _get_fields_at_jsonpath(self.jsonpath, descriptor)
-        return _get_issues(self, matching_fields)
+        failed_fields = _filter(
+            matching_fields, lambda field: not self.check(field.value)
+        )
+        return _map(
+            failed_fields,
+            lambda field: Issue(
+                jsonpath=field.jsonpath, type=self.type, message=self.message
+            ),
+        )
 
 
 class RequiredRule(Rule):
@@ -81,7 +90,7 @@ class RequiredRule(Rule):
 
     def __init__(self, jsonpath: str, message: str):
         """Initializes the `RequiredRule`."""
-        field_name_match = re.search(r"\.(\w+)$", jsonpath)
+        field_name_match = re.search(r"(\.\w+)$", jsonpath)
         if not field_name_match:
             raise ValueError(
                 "A `RequiredRule` must point to an object field that is not an array"
@@ -105,31 +114,21 @@ class RequiredRule(Rule):
         Returns:
             A list of `Issue`s.
         """
-        matching_fields = _get_fields_at_jsonpath(self.jsonpath, descriptor)
-        matching_paths = _map(matching_fields, lambda field: field.jsonpath)
-        parent_path = self.jsonpath.rstrip(f".{self._field_name}")
-        matching_parents = _get_fields_at_jsonpath(parent_path, descriptor)
-        parent_paths = _map(
-            matching_parents, lambda parent: f"{parent.jsonpath}.{self._field_name}"
+        matching_paths = _get_direct_jsonpaths(self.jsonpath, descriptor)
+        indirect_parent_path = self.jsonpath.rstrip(self._field_name)
+        direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, descriptor)
+        missing_paths = _filter(
+            direct_parent_paths,
+            lambda path: f"{path}{self._field_name}" not in matching_paths,
         )
-        missing_paths = _filter(parent_paths, lambda path: path not in matching_paths)
-        missing_fields = _map(
+        return _map(
             missing_paths,
-            lambda path: DescriptorField(jsonpath=path, value=None),
+            lambda path: Issue(
+                jsonpath=path + self._field_name,
+                type=self.type,
+                message=self.message,
+            ),
         )
-
-        return _get_issues(self, matching_fields + missing_fields)
-
-
-def _get_issues(rule: Rule, matching_fields: list[DescriptorField]) -> list[Issue]:
-    """Checks matching fields against the rule and creates issues on failure."""
-    failed_fields = _filter(matching_fields, lambda field: not rule.check(field.value))
-    return _map(
-        failed_fields,
-        lambda field: Issue(
-            jsonpath=field.jsonpath, type=rule.type, message=rule.message
-        ),
-    )
 
 
 def apply_rules(rules: list[Rule], descriptor: dict[str, Any]) -> list[Issue]:
