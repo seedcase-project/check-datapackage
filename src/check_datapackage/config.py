@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from check_datapackage.exclude import Exclude
-from check_datapackage.rule import Rule
+from check_datapackage.rule import CustomCheck
 
 
 @dataclass
@@ -24,17 +24,17 @@ class Config:
         import check_datapackage as cdp
 
         exclude_required = cdp.Exclude(type="required")
-        license_rule = cdp.Rule(
+        license_check = cdp.CustomCheck(
             type="only-mit",
             jsonpath="$.licenses[*].name",
             message="Data Packages may only be licensed under MIT.",
             check=lambda license_name: license_name == "mit",
         )
-        config = cdp.Config(exclude=[exclude_required], rules=[license_rule])
+        config = cdp.Config(exclude=[exclude_required], rules=[license_check])
         ```
     """
 
     exclude: list[Exclude] = field(default_factory=list)
-    rules: list[Rule] = field(default_factory=list)
+    custom_checks: list[CustomCheck] = field(default_factory=list)
     strict: bool = False
     version: Literal["v1", "v2"] = "v2"

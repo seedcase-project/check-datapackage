@@ -11,25 +11,26 @@ from check_datapackage.issue import Issue
 
 
 @dataclass
-class Rule:
+class CustomCheck:
     """A custom check to be done on a Data Package descriptor.
 
     Attributes:
-        jsonpath (str): The location of the field or fields, expressed in [JSON
-            path](https://jg-rp.github.io/python-jsonpath/syntax/) notation, to which
-            the rule applies (e.g., `$.resources[*].name`).
-        message (str): The message that is shown when the rule is violated.
-        check (Callable[[Any], bool]): A function that expresses how compliance with the
-            rule is checked. It takes the value at the `jsonpath` location as input and
-            returns true if the rule is met, false if it isn't.
-        type (str): An identifier for the rule. It will be shown in error messages and
-            can be used to exclude the rule. Each rule should have a unique `type`.
+        jsonpath (str): The location of the field or fields the custom check applies to,
+            expressed in [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
+            notation (e.g., `$.resources[*].name`).
+        message (str): The message shown when the check is violated.
+        check (Callable[[Any], bool]): A function that expresses the custom check.
+            It takes the value at the `jsonpath` location as input and
+            returns true if the check is met, false if it isn't.
+        type (str): An identifier for the custom check. It will be shown in error
+            messages and can be used to exclude the check. Each custom check
+            should have a unique `type`.
 
     Examples:
         ```{python}
         import check_datapackage as cdp
 
-        license_rule = cdp.Rule(
+        license_check = cdp.CustomCheck(
             type="only-mit",
             jsonpath="$.licenses[*].name",
             message="Data Packages may only be licensed under MIT.",
@@ -44,37 +45,48 @@ class Rule:
     type: str = "custom"
 
 
-def apply_rules(rules: list[Rule], descriptor: dict[str, Any]) -> list[Issue]:
-    """Checks the descriptor for all rules and creates issues for fields that fail.
+def apply_custom_checks(
+    custom_checks: list[CustomCheck], descriptor: dict[str, Any]
+) -> list[Issue]:
+    """Checks the descriptor for all custom_checks and creates issues for fields that fail.
 
     Args:
-        rules: The rules to apply to the descriptor.
+        custom_checks: The custom checks to apply to the descriptor.
         descriptor: The descriptor to check.
 
     Returns:
         A list of `Issue`s.
     """
     return _flat_map(
-        rules,
-        lambda rule: _apply_rule(rule, descriptor),
+        custom_checks,
+        lambda custom_check: _apply_custom_check(custom_check, descriptor),
     )
 
 
-def _apply_rule(rule: Rule, descriptor: dict[str, Any]) -> list[Issue]:
-    """Checks the descriptor against the rule and creates issues for fields that fail.
+def _apply_custom_check(
+    custom_check: CustomCheck, descriptor: dict[str, Any]
+) -> list[Issue]:
+    """Applies the custom check to the descriptor.
+
+    If any fields fail the custom check, this function creates a list of issues
+    for those fields.
 
     Args:
-        rule: The rule to apply to the descriptor.
+        custom_check: The custom check to apply to the descriptor.
         descriptor: The descriptor to check.
 
     Returns:
         A list of `Issue`s.
     """
-    matching_fields = _get_fields_at_jsonpath(rule.jsonpath, descriptor)
-    failed_fields = _filter(matching_fields, lambda field: not rule.check(field.value))
+    matching_fields = _get_fields_at_jsonpath(custom_check.jsonpath, descriptor)
+    failed_fields = _filter(
+        matching_fields, lambda field: not custom_check.check(field.value)
+    )
     return _map(
         failed_fields,
         lambda field: Issue(
-            jsonpath=field.jsonpath, type=rule.type, message=rule.message
+            jsonpath=field.jsonpath,
+            type=custom_check.type,
+            message=custom_check.message,
         ),
     )

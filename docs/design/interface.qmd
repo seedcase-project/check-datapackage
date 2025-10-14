@@ -132,11 +132,11 @@ A subitem of `Config` for expressing checks to ignore.
 
 See the help documentation with `help(Exclude)` for more details.
 
-#### {{< var wip >}} `Rule`
+#### {{< var wip >}} `CustomCheck`
 
 Expresses a custom check.
 
-See the help documentation with `help(Rule)` for more details.
+See the help documentation with `help(CustomCheck)` for more details.
 
 ### {{< var wip >}} `Issue`
 
@@ -163,7 +163,7 @@ flowchart TD
     read_config["read_config()"]
 
     config[/Config/]
-    rules[/Rules/]
+    custom_check[/CustomCheck/]
     exclude[/Exclude/]
     check["check()"]
     issues[/"list[Issue]"/]
@@ -173,8 +173,8 @@ flowchart TD
 
     descriptor_file --> read_json --> descriptor
     config_file --> read_config --> config
-    rules & exclude --> config
-    rules & exclude -.-> config_file
+    custom_check & exclude --> config
+    custom_check & exclude -.-> config_file
 
     descriptor & config --> check --> issues --> explain --> messages
 ```
