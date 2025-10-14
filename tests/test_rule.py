@@ -1,4 +1,4 @@
-from pytest import raises
+from pytest import mark, raises
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
@@ -118,7 +118,20 @@ def test_no_matching_jsonpath():
     assert issues == []
 
 
-def test_required_rule_indirect_jsonpath():
+def test_required_rule_wildcard():
+    descriptor = example_package_descriptor()
+    rule = RequiredRule(
+        jsonpath="$.*.id",
+        message="All fields must have an id.",
+    )
+    config = Config(rules=[rule])
+
+    issues = check(descriptor, config=config)
+
+    assert len(issues) == 8
+
+
+def test_required_rule_array_wildcard():
     descriptor = example_package_descriptor()
     descriptor["contributors"] = [
         {"path": "a/path"},
@@ -146,9 +159,21 @@ def test_required_rule_indirect_jsonpath():
     ]
 
 
-def test_required_rule_cannot_apply_to_array_item():
+@mark.parametrize(
+    "jsonpath",
+    [
+        "$",
+        "..*",
+        "created",
+        "$..path",
+        "..resources",
+        "$.resources[0].*",
+        "$.resources[*]",
+    ],
+)
+def test_required_rule_cannot_apply_to_ambiguous_path(jsonpath):
     with raises(ValueError):
         RequiredRule(
-            jsonpath="$.resources[*]",
+            jsonpath=jsonpath,
             message="This should fail.",
         )

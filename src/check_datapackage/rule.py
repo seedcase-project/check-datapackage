@@ -89,11 +89,14 @@ class RequiredRule(Rule):
 
     def __init__(self, jsonpath: str, message: str):
         """Initializes the `RequiredRule`."""
-        field_name_match = re.search(r"(\.\w+)$", jsonpath)
+        field_name_match = re.search(r"(?<!\.)(\.\w+)$", jsonpath)
         if not field_name_match:
             raise ValueError(
-                "A `RequiredRule` must point to an object field that is not an array"
-                " item, e.g., `$.title` or `$.resources[*].name`."
+                f"Cannot define `RequiredRule` for JSON path `{jsonpath}`."
+                " A `RequiredRule` must target a concrete object field (e.g.,"
+                " `$.title`) or set of fields (e.g., `$.resources[*].title`)."
+                " Ambiguous paths (e.g., `$..title`) or paths pointing to array items"
+                " (e.g., `$.resources[0]`) are not allowed."
             )
 
         self._field_name = field_name_match.group(1)
@@ -114,7 +117,7 @@ class RequiredRule(Rule):
             A list of `Issue`s.
         """
         matching_paths = _get_direct_jsonpaths(self.jsonpath, descriptor)
-        indirect_parent_path = self.jsonpath.rstrip(self._field_name)
+        indirect_parent_path = self.jsonpath.removesuffix(self._field_name)
         direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, descriptor)
         missing_paths = _filter(
             direct_parent_paths,
