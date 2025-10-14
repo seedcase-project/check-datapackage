@@ -44,7 +44,6 @@ used throughout the package can be found in the tables below.
 | Object | Description |
 |----------------------------|--------------------------------------------|
 | package | A Data Package that contains a collection of related data resources and descriptor(s). |
-| resource | A single data file within a package including its properties. |
 | descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
 | properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
 | schema | The JSON schema defining the Data Package standard. |
