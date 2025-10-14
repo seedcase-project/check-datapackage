@@ -15,7 +15,7 @@ class Exclude:
     r"""Exclude issues when checking a Data Package descriptor.
 
     When you use both `jsonpath` and `type` in the same `Exclude`, only issues that
-    match *both* will be excluded. Mean it is an `AND` logic. If you want `OR` logic,
+    match *both* will be excluded, meaning it is an `AND` logic. If you want `OR` logic,
     use multiple `Exclude` objects in the `Config`.
 
     Attributes:
@@ -67,12 +67,12 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
 
     both_none = exclude.jsonpath is None and exclude.type is None
     if both_none:
-        matches.append(False)
+        return False
 
-    if exclude.jsonpath is not None:
+    if exclude.jsonpath:
         matches.append(_same_jsonpath(issue, exclude, descriptor))
 
-    if exclude.type is not None:
+    if exclude.type:
         matches.append(_same_type(issue, exclude))
 
     return all(matches)
