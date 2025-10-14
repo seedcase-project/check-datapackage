@@ -7,7 +7,7 @@ from check_datapackage.examples import (
     example_resource_descriptor,
 )
 from check_datapackage.exclude import Exclude
-from tests.test_rule import lowercase_check
+from tests.test_custom_check import lowercase_check
 
 # Without recommendations
 

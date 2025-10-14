@@ -48,7 +48,7 @@ class CustomCheck:
 def apply_custom_checks(
     custom_checks: list[CustomCheck], descriptor: dict[str, Any]
 ) -> list[Issue]:
-    """Checks the descriptor for all custom_checks and creates issues for fields that fail.
+    """Checks the descriptor for all custom checks and creates issues if any fail.
 
     Args:
         custom_checks: The custom checks to apply to the descriptor.

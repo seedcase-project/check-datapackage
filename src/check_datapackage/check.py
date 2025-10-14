@@ -7,6 +7,7 @@ from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
+from check_datapackage.custom_check import apply_custom_checks
 from check_datapackage.exclude import exclude
 from check_datapackage.internals import (
     _add_package_recommendations,
@@ -17,7 +18,6 @@ from check_datapackage.internals import (
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
-from check_datapackage.rule import apply_custom_checks
 
 
 def check(

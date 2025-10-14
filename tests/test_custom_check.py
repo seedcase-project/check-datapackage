@@ -1,11 +1,11 @@
 from check_datapackage.check import check
 from check_datapackage.config import Config
+from check_datapackage.custom_check import CustomCheck
 from check_datapackage.examples import (
     example_package_descriptor,
     example_resource_descriptor,
 )
 from check_datapackage.issue import Issue
-from check_datapackage.rule import CustomCheck
 
 lowercase_check = CustomCheck(
     jsonpath="$.name",
