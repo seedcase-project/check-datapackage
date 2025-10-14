@@ -1,8 +1,6 @@
 ---
 title: "Checking a Data Package descriptor"
 jupyter: python3
-# TODO: eval when implemented
-eval: false
 ---
 
 The structure and content of the Data Package descriptor follow the
@@ -52,8 +50,7 @@ package_descriptor = {
     ],
 }
 
-issues = cdp.check(descriptor=package_descriptor)
-print(issues)
+cdp.check(descriptor=package_descriptor)
 ```
 
 Now let's remove the required `description` field from the descriptor
@@ -76,8 +73,7 @@ package_descriptor = {
     ],
 }
 
-issues = cdp.check(descriptor=package_descriptor)
-print(issues)
+cdp.check(descriptor=package_descriptor)
 ```
 
 The output now lists two issues: one for the missing `description` field
@@ -91,6 +87,7 @@ execution, you can achieve this by setting the `error` argument of
 
 ```{python}
 #| error: true
+#| eval: false
 package_descriptor = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",

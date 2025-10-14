@@ -1,8 +1,6 @@
 ---
 title: "Configuring the checks"
 jupyter: python3
-# TODO: eval when implemented
-eval: false
 ---
 
 You can pass a `Config` object to `check()` to customise the checks done
@@ -79,8 +77,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(exclude=[exclude_required, exclude_name, exclude_path])
-issues = cdp.check(descriptor=package_descriptor, config=config)
-print(issues)
+cdp.check(descriptor=package_descriptor, config=config)
 ```
 
 In the example above, we would expect four `Issue` items: the package
@@ -149,8 +146,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(rules=[license_rule])
-issues = cdp.check(descriptor=package_descriptor, config=config)
-print(issues)
+cdp.check(descriptor=package_descriptor, config=config)
 ```
 
 We can see that the custom rule was applied: `check()` returned one
@@ -165,6 +161,7 @@ violates the recommendation that the package `name` should contain no
 special characters.
 
 ```{python}
+#| eval: false
 package_descriptor = {
     "name": "Woolly Dormice (Toros Dağları)",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
@@ -186,6 +183,5 @@ package_descriptor = {
     ],
 }
 
-issues = cdp.check(descriptor=package_descriptor, strict=True)
-print(issues)
+cdp.check(descriptor=package_descriptor, strict=True)
 ```
