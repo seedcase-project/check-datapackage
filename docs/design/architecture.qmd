@@ -102,8 +102,7 @@ flowchart LR
 
 
     dp_standard --"Definition of the standard<br>and its recommendations"--> check
-    Users --"Checks the compliance of<br>their Data Package's<br>descriptor"--> check
-
+    Users --"Check the compliance of<br>a Data Package's<br>descriptor"--> check
     %% Styling
     style Users fill:#FFFFFF, color:#000000
 ```
