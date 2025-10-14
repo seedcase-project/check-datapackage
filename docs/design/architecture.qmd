@@ -111,20 +111,32 @@ flowchart LR
 
 ### Container
 
-The Container diagram shows the larger parts of the system, what they
-are responsible for, and how they interact with each other. It also
-shows the technology choices for each container.
+In C4, a [container diagram](https://c4model.com/diagrams/container) zooms in on the system boundary to show the
+*containers* within it, such as web applications or databases. This diagram displays the main containers of `check-datapackage`, their
+responsibilities, and how they interact, including the technologies used for each.
+
+Currently, we build `check-datapackage` with a single container---the core Python package---but we've designed it to be extendable as a command line interface (CLI) in the future. With a CLI, we want to ease the process of implementing the checks in e.g., continuous integration pipelines.
 
 ```{mermaid}
 %%| label: fig-c4-container
-%%| fig-cap: "C4 Container diagram showing larger parts of `check-datapackage` and their connections."
+%%| fig-cap: "C4 container diagram showing the core Python package in `check-datapackage` and the future command line interface (displayed dashed)."
 flowchart LR
-    ext_dp_schema(["Data Package standard<br>[JSON]<br><br>Define descriptor<br>structure and contents."])
-    in_dp_json(["Descriptor<br>[Python]<br><br>Describe Data Package<br>or Data Resource."])
-    config(["Config<br>[Python]<br><br>Configure check<br>behaviour and output."])
-    check
 
-    config --> check
-    ext_dp_schema --> check
-    in_dp_json --> check
+    users("Users<br>[person]")
+    dp_standard("Data Package V2<br>[standard]")
+
+    subgraph "check-datapackage"
+        python("Core Python Package<br>[Python, JSON schema]")
+        cli("CLI<br>[TBD technology]")
+
+    python -. "Provides<br>functionality" .-> cli
+    end
+
+    dp_standard --"Definition of the standard<br>and its recommendations"--> python
+    users --"Programmatically check<br>the compliance of<br>a Data Package's<br>descriptor"--> python
+    users -. "Check the compliance of<br>a Data Package's<br>descriptor via the<br>command line" .-> cli
+
+    %% Styling
+    style check-datapackage fill:#FFFFFF, color:#000000
+    style cli fill:#FFFFFF, stroke-dasharray: 5 5
 ```
