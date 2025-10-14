@@ -73,7 +73,7 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
         matches.append(_same_jsonpath(issue, exclude.jsonpath, descriptor))
 
     if exclude.type:
-        matches.append(_same_type(issue, exclude))
+        matches.append(_same_type(issue, exclude.type))
 
     return all(matches)
 
@@ -84,7 +84,5 @@ def _same_jsonpath(issue: Issue, jsonpath: str, descriptor: dict[Any, str]) -> b
     return issue.jsonpath in jsonpaths
 
 
-def _same_type(issue: Issue, exclude: Exclude) -> bool:
-    if exclude.type is None:
-        return False
-    return exclude.type in issue.type
+def _same_type(issue: Issue, type: str) -> bool:
+    return type in issue.type
