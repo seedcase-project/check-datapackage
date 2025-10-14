@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from check_datapackage.internals import (
-    DescriptorField,
     _filter,
     _flat_map,
     _get_direct_jsonpaths,
