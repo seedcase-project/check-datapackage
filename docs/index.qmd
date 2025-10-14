@@ -19,7 +19,7 @@ Data Packages, including a Python package called
 [`frictionless`](https://pypi.org/project/frictionless/). However, the
 `frictionless` package is a large package that does many things, and it
 can be difficult to navigate the documentation and interface to find and
-use the specific functionality you need. It also 
+use the specific functionality you need. It also
 still implements Data Package
 version 1, while the latest is version 2.
 
