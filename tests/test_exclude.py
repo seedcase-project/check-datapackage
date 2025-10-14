@@ -133,8 +133,7 @@ def test_exclude_jsonpath_multiple():
 
 def test_exclude_jsonpath_and_type():
     descriptor = example_package_descriptor()
-    descriptor["created"] = "20240614"
-    descriptor.update({"contributors": [{"path": "/a/bad/path"}]})
+    descriptor["contributors"] = [{"path": "/a/bad/path"}, {"path": "/a/bad/path"}]
 
     exclude = [
         Exclude(jsonpath="$.contributors[0].path", type="pattern"),
