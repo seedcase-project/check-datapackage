@@ -76,11 +76,6 @@ flowchart LR
     style Users fill:#FFFFFF, color:#000000
 ```
 
-::: callout-caution
-For some reason, these diagrams don't display well on some browsers, for
-example Firefox. If you can't see them on this page, try using a
-different browser like Chrome or Edge.
-:::
 
 ### Container
 
