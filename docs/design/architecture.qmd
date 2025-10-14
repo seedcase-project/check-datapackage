@@ -34,36 +34,48 @@ This section describes the different users we expect and design for:
 This section contains the [C4 Models](https://c4model.com/) for
 `check-datapackage`. The C4 Model is an established visualisation
 approach to describe the architecture of a software system. It breaks
-the system down into four levels of architectural abstraction: Context,
-Containers, Components, and Code. For our case, the **Context** and
-**Containers** diagrams are the most useful.
+the system down into four levels of architectural abstraction: System
+context, containers, components, and code.
 
-### Context
+### System context
 
-The Context diagram shows the users and any external systems that
-interact with `check-datapackage`. This includes the user types
-described in the [User types](#user-types) section.
+The system context diagram shows the users and any external systems that
+interact with `check-datapackage`. This includes the user types and the
+Data Package standard.
 
-::: callout-caution
-For some reason, these diagrams don't display well on some browsers like
-Firefox. To see them, try using a different browser like Chrome or Edge.
-:::
+`check-datapackage` receives the definitions of the Data Package
+descriptor's structure---including required properties, their formats,
+and recommended fields---from the Data Package standard (version 2). The
+standard provides this information through versioned JSON Schema
+profiles that define required properties and textual descriptions that
+outline recommendations.
+
+The users, described in the [User types](#user-types) section, provide
+`check-datapackage` with their Data Package's descriptor to check its
+compliance with the standard.
 
 ```{mermaid}
 %%| label: fig-c4-context
-%%| fig-cap: "C4 Context diagram showing a very basic overview of `check-datapackage` and its anticipated users."
+%%| fig-cap: "C4 system context diagram showing the anticipated users and the external system (the Data Package standard) `check-datapackage` interacts with."
 flowchart LR
-    user_owner(["Owner<br>[person]"])
-    user_manager(["Manager<br>[person]"])
-    user_developer(["Developer<br>[person]"])
-    ext_dp_schema(["Data Package standard<br>[standard]"])
-    check
 
-    ext_dp_schema --> check
-    user_owner --> check
-    user_manager --> check
-    user_developer --> check
+    subgraph "Users"
+        user_owner("Owner<br>[person]")
+        user_manager("Manager<br>[person]")
+        user_developer("Developer<br>[person]")
+    end
+
+    dp_standard("Data Package V2<br>[standard]")
+    check("check-datapackage<br>[Python package]")
+
+
+    dp_standard --"Definition of the standard<br>and its recommendations"--> check
+    Users --"Checks the compliance of<br>their Data Package's<br>descriptor"--> check
+
+    %% Styling
+    style Users fill:#FFFFFF, color:#000000
 ```
+
 
 ### Container
 
