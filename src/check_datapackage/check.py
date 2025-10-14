@@ -6,11 +6,12 @@ from typing import Any, Iterator, Optional
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.config import Config
-from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
+from check_datapackage.constants import (
+    DATA_PACKAGE_SCHEMA_PATH,
+    GROUP_ERRORS,
+)
 from check_datapackage.exclude import exclude
 from check_datapackage.internals import (
-    _add_package_recommendations,
-    _add_resource_recommendations,
     _filter,
     _flat_map,
     _map,
@@ -42,14 +43,38 @@ def check(
     schema = read_json(DATA_PACKAGE_SCHEMA_PATH)
 
     if config.strict:
-        _add_package_recommendations(schema)
-        _add_resource_recommendations(schema)
+        _set_should_to_required(schema)
 
     issues = _check_object_against_json_schema(descriptor, schema)
     issues += apply_rules(config.rules, descriptor)
     issues = exclude(issues, config.exclude)
 
     return sorted(set(issues))
+
+
+def _set_should_to_required(schema: dict[str, Any]) -> dict[str, Any]:
+    """Set 'SHOULD' fields to 'REQUIRED' in the schema."""
+    SHOULD_FIELDS = {"name": "str", "id": "str", "licenses": "list"}
+    NAME_PATTERN = r"^[a-z0-9._-]+$"
+
+    # From https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    SEMVER_PATTERN = (
+        r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
+        r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0"
+        r"|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>"
+        r"[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+    )
+
+    # Convert to required
+    schema["required"].extend(SHOULD_FIELDS.keys())
+    schema["properties"]["name"]["pattern"] = NAME_PATTERN
+    schema["properties"]["version"]["pattern"] = SEMVER_PATTERN
+    schema["properties"]["contributors"]["items"]["required"] = ["title"]
+    schema["properties"]["sources"]["items"]["required"] = ["title"]
+    schema["properties"]["resources"]["items"]["properties"]["name"]["pattern"] = (
+        NAME_PATTERN
+    )
+    return schema
 
 
 def _check_object_against_json_schema(
