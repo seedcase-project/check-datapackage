@@ -1,6 +1,7 @@
 ---
 title: "Understanding issues"
 jupyter: python3
+order: 2
 # TODO: eval when implemented
 eval: false
 ---
