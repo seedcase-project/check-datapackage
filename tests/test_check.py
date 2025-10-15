@@ -142,7 +142,7 @@ def test_fails_descriptor_violating_recommendations():
     }
 
 
-def test_exclude_not_excluding_rule():
+def test_exclude_not_excluding_custom_check():
     descriptor = example_package_descriptor()
     descriptor["name"] = "ALLCAPS"
     del descriptor["resources"]
@@ -155,7 +155,7 @@ def test_exclude_not_excluding_rule():
     assert issues[0].type == "lowercase"
 
 
-def test_exclude_excluding_rule():
+def test_exclude_excluding_custom_check():
     descriptor = example_package_descriptor()
     descriptor["name"] = "ALLCAPS"
     exclude_lowercase = Exclude(type=lowercase_check.type)

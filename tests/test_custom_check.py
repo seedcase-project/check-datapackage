@@ -53,7 +53,7 @@ def test_indirect_jsonpath():
     ]
 
 
-def test_multiple_rules():
+def test_multiple_custom_checks():
     descriptor = example_package_descriptor()
     descriptor["name"] = "ALLCAPS"
     descriptor["resources"][0]["name"] = "not starting with woolly"
@@ -75,7 +75,7 @@ def test_multiple_rules():
     ]
 
 
-def test_rules_and_default_checks():
+def test_custom_checks_and_default_checks():
     descriptor = example_package_descriptor()
     descriptor["name"] = "ALLCAPS"
     del descriptor["resources"]
@@ -87,13 +87,13 @@ def test_rules_and_default_checks():
 
 def test_no_matching_jsonpath():
     descriptor = example_package_descriptor()
-    rule = CustomCheck(
+    custom_check = CustomCheck(
         jsonpath="$.missing",
         message="This check always fails.",
         check=lambda value: False,
         type="always-fail",
     )
-    config = Config(custom_checks=[rule])
+    config = Config(custom_checks=[custom_check])
     issues = check(descriptor, config=config)
 
     assert issues == []
