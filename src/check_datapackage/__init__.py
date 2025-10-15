@@ -2,17 +2,17 @@
 
 from .check import check
 from .config import Config
+from .custom_check import CustomCheck
 from .examples import example_package_descriptor, example_resource_descriptor
 from .exclude import Exclude
 from .issue import Issue
 from .read_json import read_json
-from .rule import Rule
 
 __all__ = [
     "Config",
     "Exclude",
     "Issue",
-    "Rule",
+    "CustomCheck",
     "example_package_descriptor",
     "example_resource_descriptor",
     "check",

@@ -7,7 +7,7 @@ from check_datapackage.examples import (
     example_resource_descriptor,
 )
 from check_datapackage.exclude import Exclude
-from tests.test_rule import lowercase_rule
+from tests.test_custom_check import lowercase_check
 
 # Without recommendations
 
@@ -142,12 +142,12 @@ def test_fails_descriptor_violating_recommendations():
     }
 
 
-def test_exclude_not_excluding_rule():
+def test_exclude_not_excluding_custom_check():
     descriptor = example_package_descriptor()
     descriptor["name"] = "ALLCAPS"
     del descriptor["resources"]
     exclude_required = Exclude(type="required")
-    config = Config(rules=[lowercase_rule], exclude=[exclude_required])
+    config = Config(custom_checks=[lowercase_check], exclude=[exclude_required])
 
     issues = check(descriptor, config=config)
 
@@ -155,11 +155,11 @@ def test_exclude_not_excluding_rule():
     assert issues[0].type == "lowercase"
 
 
-def test_exclude_excluding_rule():
+def test_exclude_excluding_custom_check():
     descriptor = example_package_descriptor()
     descriptor["name"] = "ALLCAPS"
-    exclude_lowercase = Exclude(type=lowercase_rule.type)
-    config = Config(rules=[lowercase_rule], exclude=[exclude_lowercase])
+    exclude_lowercase = Exclude(type=lowercase_check.type)
+    config = Config(custom_checks=[lowercase_check], exclude=[exclude_lowercase])
 
     issues = check(descriptor, config=config)
 
