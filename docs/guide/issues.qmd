@@ -2,8 +2,6 @@
 title: "Understanding issues"
 jupyter: python3
 order: 2
-# TODO: eval when implemented
-eval: false
 ---
 
 ## The `Issue` class
@@ -37,8 +35,7 @@ package_descriptor = {
     "licenses": [{"name": "odc-pddl"}],
 }
 
-issues = cdp.check(descriptor=package_descriptor)
-print(cdp.explain(issues))
+cdp.check(descriptor=package_descriptor)
 ```
 
 When setting `error=True` in `check()`, error messages will be generated
