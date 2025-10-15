@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.8.1 (2025-10-15)
+
+### Refactor
+
+- 🚚 `Rule` to `CustomCheck` (#133)
+
 ## 0.8.0 (2025-10-14)
 
 ### Feat
