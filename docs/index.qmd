@@ -11,7 +11,7 @@ specification](https://datapackage.org/standard/data-package/).
 
 ## Why use it?
 
-The [Frictionless Data](https://frictionlessdata.io), who initially
+[Frictionless Data](https://frictionlessdata.io), who initially
 started and developed the Data Package specification, has several tools
 (listed on the [Frictionless](https://frictionlessdata.io/universe/) and
 [Data Package](https://datapackage.org/overview/software/) websites) for
@@ -36,7 +36,7 @@ This website contains documentation on `check-datapackage`'s design, how
 to use it, and details about the interface.
 
 -   [How-to guide](/docs/guide/index.qmd): The guide section provides a
-    step-by-step introduction to using `check-datapackage`, including
+    step-by-step introduction to `check-datapackage`, including
     installing and using it.
 -   [Reference](/docs/reference/index.qmd): The reference section
     contains detailed information about the `check-datapackage` API,
