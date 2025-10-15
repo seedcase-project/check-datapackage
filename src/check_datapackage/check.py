@@ -40,7 +40,7 @@ def check(
     schema = read_json(DATA_PACKAGE_SCHEMA_PATH)
 
     if config.strict:
-        _set_should_to_required(schema)
+        _set_should_fields_to_required(schema)
 
     issues = _check_object_against_json_schema(descriptor, schema)
     issues += apply_custom_checks(config.custom_checks, descriptor)
@@ -49,13 +49,13 @@ def check(
     return sorted(set(issues))
 
 
-def _set_should_to_required(schema: dict[str, Any]) -> dict[str, Any]:
+def _set_should_fields_to_required(schema: dict[str, Any]) -> dict[str, Any]:
     """Set 'SHOULD' fields to 'REQUIRED' in the schema."""
-    SHOULD_FIELDS = {"name": "str", "id": "str", "licenses": "list"}
-    NAME_PATTERN = r"^[a-z0-9._-]+$"
+    should_fields = ("name", "id", "licenses")
+    name_pattern = r"^[a-z0-9._-]+$"
 
     # From https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-    SEMVER_PATTERN = (
+    semver_pattern = (
         r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
         r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0"
         r"|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>"
@@ -63,13 +63,13 @@ def _set_should_to_required(schema: dict[str, Any]) -> dict[str, Any]:
     )
 
     # Convert to required
-    schema["required"].extend(SHOULD_FIELDS.keys())
-    schema["properties"]["name"]["pattern"] = NAME_PATTERN
-    schema["properties"]["version"]["pattern"] = SEMVER_PATTERN
+    schema["required"].extend(should_fields)
+    schema["properties"]["name"]["pattern"] = name_pattern
+    schema["properties"]["version"]["pattern"] = semver_pattern
     schema["properties"]["contributors"]["items"]["required"] = ["title"]
     schema["properties"]["sources"]["items"]["required"] = ["title"]
     schema["properties"]["resources"]["items"]["properties"]["name"]["pattern"] = (
-        NAME_PATTERN
+        name_pattern
     )
     return schema
 
