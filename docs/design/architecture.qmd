@@ -29,41 +29,85 @@ This section describes the different users we expect and design for:
     add custom checks or ignore certain checks to fit the specific needs
     of the project.
 
+## Naming
+
+This section contains a naming scheme for `check-datapackage` that is
+inspired by the [Data Package standard](https://datapackage.org/).
+
+Overall, we follow the Data Package terminology where possible to keep
+things consistent. However, we also introduce some new terms and
+concepts specific to `check-datapackage`. The main objects and actions
+used throughout the package can be found in the tables below.
+
+### Objects
+
+| Object | Description |
+|----------------------------|--------------------------------------------|
+| package | A Data Package that contains a collection of related data resources and descriptor(s). |
+| descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
+| properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
+| schema | The JSON schema defining the Data Package standard. |
+| config | An object containing settings for modifying the behaviour and output of the check mechanism. |
+
+: Objects used throughout `check-datapackage`.
+
+### Actions
+
+| Action | Description |
+|----------------------------|--------------------------------------------|
+| check | Check that a descriptor conforms to the Data Package standard. |
+| explain | Explain issues flagged by the check action in more detail using non-technical language. |
+| read | Read various files, such as a Data Package descriptor or a configuration file. |
+
+: Actions that `check-datapackage` can perform.
+
 ## C4 Models
 
 This section contains the [C4 Models](https://c4model.com/) for
 `check-datapackage`. The C4 Model is an established visualisation
 approach to describe the architecture of a software system. It breaks
-the system down into four levels of architectural abstraction: Context,
-Containers, Components, and Code. For our case, the **Context** and
-**Containers** diagrams are the most useful.
+the system down into four levels of architectural abstraction: System
+context, containers, components, and code.
 
-### Context
+### System context
 
-The Context diagram shows the users and any external systems that
-interact with `check-datapackage`. This includes the user types
-described in the [User types](#user-types) section.
+The system context diagram shows the users and any external systems that
+interact with `check-datapackage`. This includes the user types and the
+Data Package standard.
 
-::: callout-caution
-For some reason, these diagrams don't display well on some browsers like
-Firefox. To see them, try using a different browser like Chrome or Edge.
-:::
+`check-datapackage` receives the definitions of the Data Package
+descriptor's structure---including required properties, their formats,
+and recommended fields---from the Data Package standard (version 2). The
+standard provides this information through versioned JSON Schema
+profiles that define required properties and textual descriptions that
+outline recommendations.
+
+The users, described in the [User types](#user-types) section, provide
+`check-datapackage` with their Data Package's descriptor to check its
+compliance with the standard.
 
 ```{mermaid}
 %%| label: fig-c4-context
-%%| fig-cap: "C4 Context diagram showing a very basic overview of `check-datapackage` and its anticipated users."
+%%| fig-cap: "C4 system context diagram showing the anticipated users and the external system (the Data Package standard) `check-datapackage` interacts with."
 flowchart LR
-    user_owner(["Owner<br>[person]"])
-    user_manager(["Manager<br>[person]"])
-    user_developer(["Developer<br>[person]"])
-    ext_dp_schema(["Data Package standard<br>[standard]"])
-    check
 
-    ext_dp_schema --> check
-    user_owner --> check
-    user_manager --> check
-    user_developer --> check
+    subgraph "Users"
+        user_owner("Owner<br>[person]")
+        user_manager("Manager<br>[person]")
+        user_developer("Developer<br>[person]")
+    end
+
+    dp_standard("Data Package V2<br>[standard]")
+    check("check-datapackage<br>[Python package]")
+
+
+    dp_standard --"Definition of the standard<br>and its recommendations"--> check
+    Users --"Checks the compliance of<br>their Data Package's<br>descriptor"--> check
+
+    %% Styling
+    style Users fill:#FFFFFF, color:#000000
 ```
+
 
 ### Container
 
@@ -84,40 +128,3 @@ flowchart LR
     ext_dp_schema --> check
     in_dp_json --> check
 ```
-
-## Naming
-
-This section contains a naming scheme for `check-datapackage` that is
-inspired by the [Data Package standard](https://datapackage.org/).
-
-Following Data Package terminology, we simplify "data package" to
-"package" and "data resource" to "resource". The Data Package standard
-calls a standalone and complete metadata structure
-["descriptor"](https://datapackage.org/standard/glossary/#descriptor).
-Descriptors are JSON objects contained in JSON files (e.g.,
-`datapackage.json` contains the Data Package descriptor). We adopt this
-usage, but may also use the word "properties" to refer to the metadata
-as a whole.
-
-### Objects
-
-| Object | Description |
-|----------------------------|--------------------------------------------|
-| package | A Data Package that contains a collection of related data resources and properties. |
-| resource | A single data file within a package including its properties. |
-| descriptor | The standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
-| properties | Individual elements of the metadata structure or the structure as a whole. |
-| standard | The JSON schema defining the Data Package standard. |
-| config | An object containing settings for modifying the behaviour and output of the check mechanism. |
-
-: Objects used throughout `check-datapackage`.
-
-### Actions
-
-| Action | Description |
-|----------------------------|--------------------------------------------|
-| check | Check that a descriptor conforms to the Data Package standard. |
-| explain | Explain issues flagged by the check mechanism in more detail using non-technical language. |
-| read | Read various files, such as the Data Package descriptor or configuration files. |
-
-: Actions that `check-datapackage` can perform.

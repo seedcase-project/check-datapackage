@@ -1,6 +1,7 @@
 ---
 title: "Checking a Data Package descriptor"
 jupyter: python3
+order: 1
 ---
 
 The structure and content of the Data Package descriptor follow the
