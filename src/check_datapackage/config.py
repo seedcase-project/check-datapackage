@@ -12,8 +12,8 @@ class Config:
     Attributes:
         exclude (list[Exclude]): Any issues matching any of these exclusions will be
             ignored (i.e., removed from the output of the check function).
-        rules (list[Rule]): Custom checks listed here will be done in addition
-            to checks defined in the Data Package standard.
+        custom_checks (list[CustomCheck]): Custom checks listed here will be done in
+            addition to checks defined in the Data Package standard.
         strict (bool): Whether to run recommended as well as required checks. If
             True, recommended checks will also be run. Defaults to False.
         version (str): The version of the Data Package standard to check against.
