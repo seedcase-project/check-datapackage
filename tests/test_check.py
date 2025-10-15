@@ -191,6 +191,17 @@ def test_fail_with_resource_name_path_and_data_missing():
     assert issues[1].type == "required"
 
 
+def test_fail_with_only_resource_name_missing():
+    descriptor = example_package_descriptor()
+    del descriptor["resources"][0]["name"]
+
+    issues = check(descriptor)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].name"
+    assert issues[0].type == "required"
+
+
 def test_fail_with_multiple_resources():
     descriptor = example_package_descriptor()
     descriptor["resources"].append(example_resource_descriptor())

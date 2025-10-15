@@ -143,13 +143,15 @@ def _handle_S_resources_x(
 ) -> list[SchemaError]:
     """Do not flag missing `path` and `data` separately."""
     errors_in_group = _filter(schema_errors, lambda error: error.parent == parent_error)
+    # If the parent error is caused by other errors, remove it
+    if errors_in_group:
+        schema_errors.remove(parent_error)
+
     path_or_data_required_errors = _filter(
         errors_in_group, _path_or_data_required_error
     )
-
     # If path and data are both missing, add a more informative error
-    if path_or_data_required_errors:
-        schema_errors.remove(parent_error)
+    if len(path_or_data_required_errors) > 1:
         schema_errors.append(
             SchemaError(
                 message=(
@@ -162,7 +164,7 @@ def _handle_S_resources_x(
             )
         )
 
-    # Remove all original required errors on $.resources[x].path and $.resources[x].data
+    # Remove all required errors on path and data
     return _filter(
         schema_errors, lambda error: error not in path_or_data_required_errors
     )
