@@ -102,7 +102,7 @@ flowchart LR
 
 
     dp_standard --"Definition of the standard"--> check
-    Users --"Check the compliance of<br>a Data Package's<br>descriptor"--> check
+    Users --"Check Data Package<br>descriptor"--> check
     %% Styling
     style Users fill:#FFFFFF, color:#000000
 ```
@@ -137,8 +137,8 @@ flowchart LR
     end
 
     dp_standard --"Definition of the standard"--> python
-    users --"Programmatically check<br>the compliance of<br>a Data Package's<br>descriptor"--> python
-    users -. "Check the compliance of<br>a Data Package's<br>descriptor via the<br>command line" .-> cli
+    users --"Check Data Package<br>descriptor programmatically"--> python
+    users -. "Check Data Package<br>descriptor via the CLI" .-> cli
 
     %% Styling
     style check-datapackage fill:#FFFFFF, color:#000000
