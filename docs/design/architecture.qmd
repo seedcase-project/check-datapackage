@@ -131,7 +131,7 @@ flowchart LR
 
     subgraph "check-datapackage"
         python("Core Python Package<br>[Python, JSON schema]")
-        cli("CLI<br>[TBD technology]")
+        cli("CLI<br>[Python]")
 
     python -. "Provides<br>functionality" .-> cli
     end
