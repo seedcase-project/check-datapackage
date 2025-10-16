@@ -31,25 +31,23 @@ guide](/docs/guide/index.qmd){.btn .about-link}
 ::: hero-text
 `check-datapackage` is a Python package that checks your Data Package's
 metadata against the [Data Package standard](https://datapackage.org/),
-helping you ensure that your metadata is compliant.
+ to ensure that your metadata is compliant with the standard.
 
 ## Key features :sparkles:
 
--   Checks the
-    [descriptor](https://datapackage.org/standard/glossary/#descriptor)
-    in your `datapackage.json` against the Data Package standard.
--   Enables you to configure which components of the descriptor should
+-   Checks your metadata in `datapackage.json` against the Data Package standard.
+-   Enables you to configure which components of the metadata should
     or should not be checked.
 -   Enables you to turn off specific checks defined in the standard.
 -   Supports user-defined, custom checks.
 -   Provides clear and user-friendly messages that point directly to
-    where issues occur in the descriptor.
+    where issues occur in the metadata.
 -   Supports a strict mode that enforces full compliance with the
     standard, including all recommendations.
 
-:warning: Note that `check-datapackage` only checks the descriptor
-against the Data Package standard---it does not check the data itself
-against its descriptor.
+:warning: Note that `check-datapackage` only checks the metadata in your `datapackage.json` file
+against the Data Package standard---it does not check the data itself against the metadata.
+
 :::
 ::::
 :::::
