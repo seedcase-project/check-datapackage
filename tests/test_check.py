@@ -3,8 +3,8 @@ from pytest import mark
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.examples import (
-    example_package_descriptor,
-    example_resource_descriptor,
+    example_package_properties,
+    example_resource_properties,
 )
 from check_datapackage.exclude import Exclude
 from tests.test_custom_check import lowercase_check
@@ -12,74 +12,74 @@ from tests.test_custom_check import lowercase_check
 # Without recommendations
 
 
-def test_passes_matching_descriptor_with_resources():
-    """Should pass descriptor matching the schema."""
-    descriptor = example_package_descriptor()
+def test_passes_matching_properties_with_resources():
+    """Should pass properties matching the schema."""
+    properties = example_package_properties()
 
-    assert check(descriptor) == []
+    assert check(properties) == []
 
 
-def test_fails_descriptor_without_resources():
-    """Should fail descriptor without resources."""
-    descriptor = {"name": "a name with spaces"}
+def test_fails_properties_without_resources():
+    """Should fail properties without resources."""
+    properties = {"name": "a name with spaces"}
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].type == "required"
     assert issues[0].jsonpath == "$.resources"
 
 
-def test_fails_descriptor_with_empty_resources():
-    """Should fail descriptor with an empty resources array."""
-    descriptor = {
+def test_fails_properties_with_empty_resources():
+    """Should fail properties with an empty resources array."""
+    properties = {
         "name": "a name with spaces",
         "resources": [],
     }
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources"
 
 
-def test_fails_descriptor_with_bad_type():
-    """Should fail descriptor with a field of the wrong type."""
-    descriptor = {
+def test_fails_properties_with_bad_type():
+    """Should fail properties with a field of the wrong type."""
+    properties = {
         "name": 123,
         "resources": [{"name": "a name", "path": "data.csv"}],
     }
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].type == "type"
     assert issues[0].jsonpath == "$.name"
 
 
-def test_fails_descriptor_with_bad_format():
-    """Should fail descriptor with a field of the wrong format."""
-    descriptor = {
+def test_fails_properties_with_bad_format():
+    """Should fail properties with a field of the wrong format."""
+    properties = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "homepage": "not a URL",
     }
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].type == "format"
     assert issues[0].jsonpath == "$.homepage"
 
 
-def test_fails_descriptor_with_pattern_mismatch():
-    """Should fail descriptor with a field that does not match the pattern."""
-    descriptor = {
+def test_fails_properties_with_pattern_mismatch():
+    """Should fail properties with a field that does not match the pattern."""
+    properties = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "contributors": [{"path": "/a/bad/path"}],
     }
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].type == "pattern"
@@ -89,9 +89,9 @@ def test_fails_descriptor_with_pattern_mismatch():
 # With recommendations
 
 
-def test_passes_matching_descriptor_with_recommendations():
-    """Should pass descriptor matching recommendations."""
-    descriptor = {
+def test_passes_matching_properties_with_recommendations():
+    """Should pass properties matching recommendations."""
+    properties = {
         "name": "a-name-with-no-spaces",
         "title": "A Title",
         "id": "123",
@@ -103,24 +103,24 @@ def test_passes_matching_descriptor_with_recommendations():
         "resources": [{"name": "a-name-with-no-spaces", "path": "data.csv"}],
     }
 
-    assert check(descriptor, config=Config(strict=True)) == []
+    assert check(properties, config=Config(strict=True)) == []
 
 
-def test_fails_descriptor_with_missing_required_fields_with_recommendations():
-    """Should fail descriptor with missing required fields."""
-    descriptor = {
+def test_fails_properties_with_missing_required_fields_with_recommendations():
+    """Should fail properties with missing required fields."""
+    properties = {
         "resources": [{"name": "a-name-with-no-spaces", "path": "data.csv"}],
     }
 
-    issues = check(descriptor, config=Config(strict=True))
+    issues = check(properties, config=Config(strict=True))
 
     assert len(issues) == 3
     assert all(issue.type == "required" for issue in issues)
 
 
-def test_fails_descriptor_violating_recommendations():
-    """Should fail descriptor that do not meet the recommendations."""
-    descriptor = {
+def test_fails_properties_violating_recommendations():
+    """Should fail properties that do not meet the recommendations."""
+    properties = {
         "name": "a name with spaces",
         "id": "123",
         "version": "not semver",
@@ -130,7 +130,7 @@ def test_fails_descriptor_violating_recommendations():
         "resources": [{"name": "a name with spaces", "path": "data.csv"}],
     }
 
-    issues = check(descriptor, config=Config(strict=True))
+    issues = check(properties, config=Config(strict=True))
 
     assert len(issues) == 5
     assert {issue.jsonpath for issue in issues} == {
@@ -143,25 +143,25 @@ def test_fails_descriptor_violating_recommendations():
 
 
 def test_exclude_not_excluding_custom_check():
-    descriptor = example_package_descriptor()
-    descriptor["name"] = "ALLCAPS"
-    del descriptor["resources"]
+    properties = example_package_properties()
+    properties["name"] = "ALLCAPS"
+    del properties["resources"]
     exclude_required = Exclude(type="required")
     config = Config(custom_checks=[lowercase_check], exclude=[exclude_required])
 
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert len(issues) == 1
     assert issues[0].type == "lowercase"
 
 
 def test_exclude_excluding_custom_check():
-    descriptor = example_package_descriptor()
-    descriptor["name"] = "ALLCAPS"
+    properties = example_package_properties()
+    properties["name"] = "ALLCAPS"
     exclude_lowercase = Exclude(type=lowercase_check.type)
     config = Config(custom_checks=[lowercase_check], exclude=[exclude_lowercase])
 
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert issues == []
 
@@ -170,19 +170,19 @@ def test_exclude_excluding_custom_check():
 
 
 def test_pass_with_resource_path_missing():
-    descriptor = example_package_descriptor()
-    descriptor["resources"][0]["data"] = [1, 2, 3]
-    del descriptor["resources"][0]["path"]
+    properties = example_package_properties()
+    properties["resources"][0]["data"] = [1, 2, 3]
+    del properties["resources"][0]["path"]
 
-    assert check(descriptor) == []
+    assert check(properties) == []
 
 
 def test_fail_with_resource_name_path_and_data_missing():
-    descriptor = example_package_descriptor()
-    del descriptor["resources"][0]["name"]
-    del descriptor["resources"][0]["path"]
+    properties = example_package_properties()
+    del properties["resources"][0]["name"]
+    del properties["resources"][0]["path"]
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 2
     assert issues[0].jsonpath == "$.resources[0]"
@@ -192,10 +192,10 @@ def test_fail_with_resource_name_path_and_data_missing():
 
 
 def test_fail_with_only_resource_name_missing():
-    descriptor = example_package_descriptor()
-    del descriptor["resources"][0]["name"]
+    properties = example_package_properties()
+    del properties["resources"][0]["name"]
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].name"
@@ -203,12 +203,12 @@ def test_fail_with_only_resource_name_missing():
 
 
 def test_fail_with_multiple_resources():
-    descriptor = example_package_descriptor()
-    descriptor["resources"].append(example_resource_descriptor())
-    del descriptor["resources"][0]["path"]
-    del descriptor["resources"][1]["path"]
+    properties = example_package_properties()
+    properties["resources"].append(example_resource_properties())
+    del properties["resources"][0]["path"]
+    del properties["resources"][1]["path"]
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 2
     assert issues[0].jsonpath == "$.resources[0]"
@@ -218,22 +218,22 @@ def test_fail_with_multiple_resources():
 
 
 def test_fail_with_both_resource_path_and_data_present():
-    descriptor = example_package_descriptor()
-    descriptor["resources"][0]["data"] = [1, 2, 3]
+    properties = example_package_properties()
+    properties["resources"][0]["data"] = [1, 2, 3]
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].type == "oneOf"
 
 
 def test_fail_one_resource_pass_another():
-    descriptor = example_package_descriptor()
-    resource2 = example_resource_descriptor()
-    descriptor["resources"].append(resource2)
-    del descriptor["resources"][0]["path"]
+    properties = example_package_properties()
+    resource2 = example_resource_properties()
+    properties["resources"].append(resource2)
+    del properties["resources"][0]["path"]
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].type == "required"
@@ -253,10 +253,10 @@ def test_fail_one_resource_pass_another():
     ],
 )
 def test_fail_with_bad_resource_path(path, location, type):
-    descriptor = example_package_descriptor()
-    descriptor["resources"][0]["path"] = path
+    properties = example_package_properties()
+    properties["resources"][0]["path"] = path
 
-    issues = check(descriptor)
+    issues = check(properties)
 
     assert len(issues) == 1
     assert issues[0].type == type

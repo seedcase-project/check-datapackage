@@ -2,8 +2,8 @@ from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.custom_check import CustomCheck
 from check_datapackage.examples import (
-    example_package_descriptor,
-    example_resource_descriptor,
+    example_package_properties,
+    example_resource_properties,
 )
 from check_datapackage.issue import Issue
 
@@ -22,10 +22,10 @@ resource_name_check = CustomCheck(
 
 
 def test_direct_jsonpath():
-    descriptor = example_package_descriptor()
-    descriptor["name"] = "ALLCAPS"
+    properties = example_package_properties()
+    properties["name"] = "ALLCAPS"
     config = Config(custom_checks=[lowercase_check])
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert issues == [
         Issue(
@@ -37,12 +37,12 @@ def test_direct_jsonpath():
 
 
 def test_indirect_jsonpath():
-    descriptor = example_package_descriptor()
-    descriptor["resources"].append(example_resource_descriptor())
-    descriptor["resources"][1]["name"] = "not starting with woolly"
+    properties = example_package_properties()
+    properties["resources"].append(example_resource_properties())
+    properties["resources"][1]["name"] = "not starting with woolly"
 
     config = Config(custom_checks=[resource_name_check])
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert issues == [
         Issue(
@@ -54,12 +54,12 @@ def test_indirect_jsonpath():
 
 
 def test_multiple_custom_checks():
-    descriptor = example_package_descriptor()
-    descriptor["name"] = "ALLCAPS"
-    descriptor["resources"][0]["name"] = "not starting with woolly"
+    properties = example_package_properties()
+    properties["name"] = "ALLCAPS"
+    properties["resources"][0]["name"] = "not starting with woolly"
 
     config = Config(custom_checks=[lowercase_check, resource_name_check])
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert issues == [
         Issue(
@@ -76,17 +76,17 @@ def test_multiple_custom_checks():
 
 
 def test_custom_checks_and_default_checks():
-    descriptor = example_package_descriptor()
-    descriptor["name"] = "ALLCAPS"
-    del descriptor["resources"]
+    properties = example_package_properties()
+    properties["name"] = "ALLCAPS"
+    del properties["resources"]
     config = Config(custom_checks=[lowercase_check])
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert [issue.type for issue in issues] == ["lowercase", "required"]
 
 
 def test_no_matching_jsonpath():
-    descriptor = example_package_descriptor()
+    properties = example_package_properties()
     custom_check = CustomCheck(
         jsonpath="$.missing",
         message="This check always fails.",
@@ -94,6 +94,6 @@ def test_no_matching_jsonpath():
         type="always-fail",
     )
     config = Config(custom_checks=[custom_check])
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert issues == []
