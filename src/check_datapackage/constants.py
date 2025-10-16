@@ -15,7 +15,7 @@ class RequiredFieldType(str, Enum):
 GROUP_ERRORS = {"allOf", "anyOf", "oneOf"}
 
 DATA_PACKAGE_SCHEMA_PATH = Path(
-    str(files("check_datapackage.schemas").joinpath("data-package-schema.json"))
+    str(files("check_datapackage.schemas").joinpath("data-package-2-0.json"))
 )
 
 NAME_PATTERN = r"^[a-z0-9._-]+$"
