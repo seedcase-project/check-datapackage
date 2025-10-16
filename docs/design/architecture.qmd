@@ -101,7 +101,7 @@ flowchart LR
     check("check-datapackage<br>[Python package]")
 
 
-    dp_standard --"Definition of the standard<br>and its recommendations"--> check
+    dp_standard --"Definition of the standard"--> check
     Users --"Check the compliance of<br>a Data Package's<br>descriptor"--> check
     %% Styling
     style Users fill:#FFFFFF, color:#000000
@@ -136,7 +136,7 @@ flowchart LR
     python -. "Provides<br>functionality" .-> cli
     end
 
-    dp_standard --"Definition of the standard<br>and its recommendations"--> python
+    dp_standard --"Definition of the standard"--> python
     users --"Programmatically check<br>the compliance of<br>a Data Package's<br>descriptor"--> python
     users -. "Check the compliance of<br>a Data Package's<br>descriptor via the<br>command line" .-> cli
 
