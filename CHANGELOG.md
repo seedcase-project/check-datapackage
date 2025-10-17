@@ -9,6 +9,24 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.8.5 (2025-10-17)
+
+### Refactor
+
+- ♻️  rename example dicts from "descriptor" to "properties" (#140)
+
+## 0.8.4 (2025-10-17)
+
+### Refactor
+
+- :recycle: simplify code to use `strict` mode (#127)
+
+## 0.8.3 (2025-10-16)
+
+### Refactor
+
+- :truck: rename data package schema to include version (#135)
+
 ## 0.8.2 (2025-10-15)
 
 ### Fix
