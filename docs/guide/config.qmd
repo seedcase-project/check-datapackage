@@ -5,7 +5,8 @@ order: 3
 ---
 
 You can pass a `Config` object to `check()` to customise the checks done
-on your Data Package's properties. The following configuration options are available:
+on your Data Package's properties. The following configuration options
+are available:
 
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
