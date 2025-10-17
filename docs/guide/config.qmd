@@ -5,7 +5,7 @@ order: 3
 ---
 
 You can pass a `Config` object to `check()` to customise the checks done
-on the descriptor. The following configuration options are available:
+on your Data Package's properties. The following configuration options are available:
 
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
@@ -35,14 +35,14 @@ exclude_required = cdp.Exclude(type="required")
 To exclude checks of a specific field or fields, you can use a [JSON
 path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath`
 attribute of an `Exclude` object. For example, you can exclude all
-checks on the `name` field of the Data Package descriptor by writing:
+checks on the `name` field of the Data Package properties by writing:
 
 ```{python}
 exclude_name = cdp.Exclude(jsonpath="$.name")
 ```
 
 Or you can use the wildcard JSON path selector to exclude checks on the
-`path` field of **all** Data Resource descriptors:
+`path` field of **all** Data Resource properties:
 
 ```{python}
 exclude_path = cdp.Exclude(jsonpath="$.resources[*].path")
@@ -55,7 +55,7 @@ exclude_desc_required = cdp.Exclude(type="required", jsonpath="$.resources[*].de
 ```
 
 This would exclude required checks on the `description` field of Data
-Resource descriptors.
+Resource properties.
 
 To make the `check()` function aware of your exclusions, you add them to
 the `Config` object passed to the function:

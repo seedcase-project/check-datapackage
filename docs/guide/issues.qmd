@@ -7,7 +7,7 @@ order: 2
 ## The `Issue` class
 
 One `Issue` corresponds to one failed check on one field in the
-descriptor. An `Issue` has three attributes:
+properties. An `Issue` has three attributes:
 
 -   `type`: The type of the check that failed and caused the issue. This
     can be a type that exists in the Data Package standard (e.g.,
