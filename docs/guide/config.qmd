@@ -103,7 +103,7 @@ license_check = cdp.CustomCheck(
         Data Packages may only be licensed under MIT. Please review
         the licenses listed in the Data Package.
         """),
-    check=lambda license_name: license_name == "mit",
+    check_value=lambda license_name: license_name == "mit",
 )
 ```
 

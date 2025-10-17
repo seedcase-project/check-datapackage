@@ -28,7 +28,7 @@ class Config:
             type="only-mit",
             jsonpath="$.licenses[*].name",
             message="Data Packages may only be licensed under MIT.",
-            check=lambda license_name: license_name == "mit",
+            check_value=lambda license_name: license_name == "mit",
         )
         config = cdp.Config(exclude=[exclude_required], custom_checks=[license_check])
         ```
