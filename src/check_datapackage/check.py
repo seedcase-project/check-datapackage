@@ -21,12 +21,13 @@ from check_datapackage.read_json import read_json
 
 
 def check(
-    descriptor: dict[str, Any], config: Config = Config(), error: bool = False
+    properties: dict[str, Any], config: Config = Config(), error: bool = False
 ) -> list[Issue]:
-    """Checks a Data Package descriptor against the Data Package standard.
+    """Checks a Data Package's properties against the Data Package standard.
 
     Args:
-        descriptor: A Data Package descriptor as a Python dictionary.
+        properties: A Data Package's metadata from `datapackage.json` as a Python
+            dictionary.
         config: Configuration for the checks to be done. See the `Config`
             class for more details, especially about the default values.
         error: Whether to treat any issues found as errors. Defaults
@@ -36,7 +37,7 @@ def check(
 
     Returns:
         A list of `Issue` objects representing any issues found
-            while checking the descriptor. If no issues are found, an empty list
+            while checking the properties. If no issues are found, an empty list
             is returned.
     """
     schema = read_json(DATA_PACKAGE_SCHEMA_PATH)
@@ -45,9 +46,9 @@ def check(
         _add_package_recommendations(schema)
         _add_resource_recommendations(schema)
 
-    issues = _check_object_against_json_schema(descriptor, schema)
-    issues += apply_custom_checks(config.custom_checks, descriptor)
-    issues = exclude(issues, config.exclude, descriptor)
+    issues = _check_object_against_json_schema(properties, schema)
+    issues += apply_custom_checks(config.custom_checks, properties)
+    issues = exclude(issues, config.exclude, properties)
 
     return sorted(set(issues))
 
