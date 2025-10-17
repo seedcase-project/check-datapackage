@@ -101,30 +101,46 @@ flowchart LR
     check("check-datapackage<br>[Python package]")
 
 
-    dp_standard --"Definition of the standard<br>and its recommendations"--> check
-    Users --"Checks the compliance of<br>their Data Package's<br>descriptor"--> check
-
+    dp_standard --"Definition of the standard"--> check
+    Users --"Check Data Package<br>descriptor"--> check
     %% Styling
     style Users fill:#FFFFFF, color:#000000
 ```
 
-
 ### Container
 
-The Container diagram shows the larger parts of the system, what they
-are responsible for, and how they interact with each other. It also
-shows the technology choices for each container.
+In C4, a [container diagram](https://c4model.com/diagrams/container)
+zooms in on the system boundary to show the *containers* within it, such
+as web applications or databases. This diagram displays the main
+containers of `check-datapackage`, their responsibilities, and how they
+interact, including the technologies used for each.
+
+Currently, we build `check-datapackage` with a single container---the
+core Python package---but we've designed it to be extendable as a
+command line interface (CLI) in the future. With a CLI, we want to ease
+the process of implementing the checks in e.g., continuous integration
+pipelines.
 
 ```{mermaid}
 %%| label: fig-c4-container
-%%| fig-cap: "C4 Container diagram showing larger parts of `check-datapackage` and their connections."
+%%| fig-cap: "C4 container diagram showing the core Python package in `check-datapackage` and the future command line interface (displayed dashed)."
 flowchart LR
-    ext_dp_schema(["Data Package standard<br>[JSON]<br><br>Define descriptor<br>structure and contents."])
-    in_dp_json(["Descriptor<br>[Python]<br><br>Describe Data Package<br>or Data Resource."])
-    config(["Config<br>[Python]<br><br>Configure check<br>behaviour and output."])
-    check
 
-    config --> check
-    ext_dp_schema --> check
-    in_dp_json --> check
+    users("Users<br>[person]")
+    dp_standard("Data Package V2<br>[standard]")
+
+    subgraph "check-datapackage"
+        python("Core Python Package<br>[Python, JSON schema]")
+        cli("CLI<br>[Python]")
+
+    python -. "Provides<br>functionality" .-> cli
+    end
+
+    dp_standard --"Definition of the standard"--> python
+    users --"Check Data Package<br>descriptor programmatically"--> python
+    users -. "Check Data Package<br>descriptor via the CLI" .-> cli
+
+    %% Styling
+    style check-datapackage fill:#FFFFFF, color:#000000
+    style cli fill:#FFFFFF, stroke-dasharray: 5 5
 ```
