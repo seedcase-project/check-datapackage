@@ -3,10 +3,10 @@ from typing import Any
 
 
 def example_resource_properties() -> dict[str, Any]:
-    """Create an example resource properties.
+    """Create a set of example resource properties.
 
     Returns:
-        An example resource properties.
+        A set of example resource properties.
     """
     return {
         "name": "woolly-dormice-2015",
@@ -16,10 +16,10 @@ def example_resource_properties() -> dict[str, Any]:
 
 
 def example_package_properties() -> dict[str, Any]:
-    """Create an example package properties.
+    """Create a set of example package properties.
 
     Returns:
-        An example package properties.
+        A set of example package properties.
     """
     return {
         "name": "woolly-dormice",
