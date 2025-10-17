@@ -2,8 +2,6 @@
 title: "Configuring the checks"
 jupyter: python3
 order: 3
-# TODO: eval when implemented
-eval: false
 ---
 
 You can pass a `Config` object to `check()` to customise the checks done
@@ -12,8 +10,8 @@ on the descriptor. The following configuration options are available:
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
 -   `exclude`: The list of checks to exclude.
--   `rules`: The list of custom checks to run in addition to the checks
-    defined in the standard.
+-   `custom_checks`: The list of custom checks to run in addition to the
+    checks defined in the standard.
 -   `strict`: Whether to run recommended checks in addition to required
     ones. Defaults to `False`.
 
@@ -80,8 +78,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(exclude=[exclude_required, exclude_name, exclude_path])
-issues = cdp.check(descriptor=package_descriptor, config=config)
-print(issues)
+cdp.check(descriptor=package_descriptor, config=config)
 ```
 
 In the example above, we would expect four `Issue` items: the package
@@ -90,16 +87,16 @@ the package and resource properties, and the resource `path` doesn't
 point to a data file. However, as we have defined exclusions for all of
 these, the function will flag no issues.
 
-## Adding custom check rules
+## Adding custom checks
 
-It is possible to create custom rules in addition to the ones defined in
-the Data Package standard.
+It is possible to create custom checks in addition to the ones defined
+in the Data Package standard.
 
 Let's say your organisation only accepts Data Packages licensed under
-MIT. You can express this requirement in a `Rule` as follows:
+MIT. You can express this requirement in a `CustomCheck` as follows:
 
 ```{python}
-license_rule = cdp.Rule(
+license_check = cdp.CustomCheck(
     type="only-mit",
     jsonpath="$.licenses[*].name",
     message=dedent("""
@@ -112,19 +109,19 @@ license_rule = cdp.Rule(
 
 Here's a breakdown of what each argument does:
 
--   `type`: An identifier for your rule. This is what will show up in
-    error messages and what you will use if you want to exclude your
-    rule. Each `Rule` should have a unique `type`.
--   `jsonpath`: The location of the field or fields, expressed in [JSON
-    path](https://en.wikipedia.org/wiki/JSONPath) notation, to which the
-    rule applies. This rule applies to the `name` field of all package
-    licenses.
--   `message`: The message that is shown when the rule is violated.
--   `check`: A function that expresses how compliance with the rule is
-    checked. It takes the value at the `jsonpath` location as input and
-    returns true if the rule is met, false if it isn't.
+-   `type`: An identifier for your custom check. This is what will show
+    up in error messages and what you will use if you want to exclude
+    your check. Each `CustomCheck` should have a unique `type`.
+-   `jsonpath`: The location of the field or fields the custom check
+    applies to, expressed in [JSON
+    path](https://en.wikipedia.org/wiki/JSONPath) notation. This check
+    applies to the `name` field of all package licenses.
+-   `message`: The message that is shown when the check is violated.
+-   `check`: A function that expresses the custom check. It takes the
+    value at the `jsonpath` location as input and returns true if the
+    check is met, false if it isn't.
 
-To register your custom rules with the `check()` function, you add them
+To register your custom checks with the `check()` function, you add them
 to the `Config` object passed to the function:
 
 ```{python}
@@ -149,23 +146,23 @@ package_descriptor = {
     ],
 }
 
-config = cdp.Config(rules=[license_rule])
-issues = cdp.check(descriptor=package_descriptor, config=config)
-print(issues)
+config = cdp.Config(custom_checks=[license_check])
+cdp.check(descriptor=package_descriptor, config=config)
 ```
 
-We can see that the custom rule was applied: `check()` returned one
+We can see that the custom check was applied: `check()` returned one
 issue flagging the first license attached to the Data Package.
 
 ## Strict mode
 
-The Data Package standard has both required and recommended rules. By
-default, `check()` checks only required rules. Recommended rules can be
+The Data Package standard has both requirements and recommendations. By
+default, `check()` only checks requirements. Recommendations can be
 turned on by setting the `strict` argument to `True`. The example below
 violates the recommendation that the package `name` should contain no
 special characters.
 
 ```{python}
+#| eval: false
 package_descriptor = {
     "name": "Woolly Dormice (Toros Dağları)",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
@@ -187,6 +184,5 @@ package_descriptor = {
     ],
 }
 
-issues = cdp.check(descriptor=package_descriptor, strict=True)
-print(issues)
+cdp.check(descriptor=package_descriptor, strict=True)
 ```

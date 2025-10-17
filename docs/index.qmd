@@ -1,3 +1,50 @@
 ---
 title: "Overview"
 ---
+
+## What is `check-datapackage`?
+
+`check-datapackage` is a simple Python package that checks your [Data
+Package's](https://datapackage.org) `datapackage.json` file for
+compliance with the [Data Package
+specification](https://datapackage.org/standard/data-package/).
+
+## Why use it?
+
+[Frictionless Data](https://frictionlessdata.io), who initially
+started and developed the Data Package specification, has several tools
+(listed on the [Frictionless](https://frictionlessdata.io/universe/) and
+[Data Package](https://datapackage.org/overview/software/) websites) for
+working with Data Packages, including a Python package called
+[`frictionless`](https://pypi.org/project/frictionless/). However, the
+`frictionless` package is a large package that does many things, and it
+can be difficult to navigate the documentation and interface to find and
+use the specific functionality you need. It also still implements Data
+Package version 1, while the latest is version 2.
+
+Since we found ourselves missing a tool we needed for our project, the
+[Seedcase Project](https://github.com/seedcase-project), we decided to
+build this package. We wanted a small, well-designed, and easy-to-use
+package that only checks the compliance of a Data Package against the
+current standard. We designed it for future CLI support, for instance
+using it in a [pre-commit](https://pre-commit.com/) hook or in CI
+pipelines like [GitHub Actions](https://docs.github.com/en/actions).
+
+## Learning more
+
+This website contains documentation on `check-datapackage`'s design, how
+to use it, and details about the interface.
+
+-   [How-to guide](/docs/guide/index.qmd): The guide section provides a
+    step-by-step introduction to `check-datapackage`, including
+    installing and using it.
+-   [Reference](/docs/reference/index.qmd): The reference section
+    contains detailed information about the `check-datapackage` API,
+    specifically the documentation of individual classes and functions.
+-   [Design](/docs/design/index.qmd): The design section describes the
+    architecture and interface of `check-datapackage`, the requirements,
+    use-cases, and [C4 model](https://c4model.com/) diagrams.
+
+## Contributors
+
+{{< include /docs/includes/_contributors.qmd >}}

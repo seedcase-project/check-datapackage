@@ -68,9 +68,9 @@ quartodoc:
     - name: check
     - name: read_json
     - name: Config
+    - name: CustomCheck
+    - name: RequiredCheck
     - name: Exclude
-    - name: Rule
-    - name: RequiredRule
     - name: Issue
     - name: example_package_descriptor
     - name: example_resource_descriptor

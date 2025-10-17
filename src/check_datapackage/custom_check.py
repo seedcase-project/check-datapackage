@@ -13,25 +13,26 @@ from check_datapackage.issue import Issue
 
 
 @dataclass(frozen=True)
-class Rule:
+class CustomCheck:
     """A custom check to be done on a Data Package descriptor.
 
     Attributes:
-        jsonpath (str): The location of the field or fields, expressed in [JSON
-            path](https://jg-rp.github.io/python-jsonpath/syntax/) notation, to which
-            the rule applies (e.g., `$.resources[*].name`).
-        message (str): The message that is shown when the rule is violated.
-        check (Callable[[Any], bool]): A function that expresses how compliance with the
-            rule is checked. It takes the value at the `jsonpath` location as input and
-            returns true if the rule is met, false if it isn't.
-        type (str): An identifier for the rule. It will be shown in error messages and
-            can be used to exclude the rule. Each rule should have a unique `type`.
+        jsonpath (str): The location of the field or fields the custom check applies to,
+            expressed in [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
+            notation (e.g., `$.resources[*].name`).
+        message (str): The message shown when the check is violated.
+        check (Callable[[Any], bool]): A function that expresses the custom check.
+            It takes the value at the `jsonpath` location as input and
+            returns true if the check is met, false if it isn't.
+        type (str): An identifier for the custom check. It will be shown in error
+            messages and can be used to exclude the check. Each custom check
+            should have a unique `type`.
 
     Examples:
         ```{python}
         import check_datapackage as cdp
 
-        license_rule = cdp.Rule(
+        license_check = cdp.CustomCheck(
             type="only-mit",
             jsonpath="$.licenses[*].name",
             message="Data Packages may only be licensed under MIT.",
@@ -46,7 +47,7 @@ class Rule:
     type: str = "custom"
 
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
-        """Checks the descriptor against this rule and creates issues on failure.
+        """Checks the descriptor against this check and creates issues on failure.
 
         Args:
             descriptor: The descriptor to check.
@@ -66,19 +67,19 @@ class Rule:
         )
 
 
-class RequiredRule(Rule):
-    """A rule that checks that a field is present (i.e. not None).
+class RequiredCheck(CustomCheck):
+    """A custom check that checks that a field is present (i.e. not None).
 
     Attributes:
         jsonpath (str): The location of the field or fields, expressed in [JSON
             path](https://jg-rp.github.io/python-jsonpath/syntax/) notation, to which
-            the rule applies (e.g., `$.resources[*].name`).
-        message (str): The message that is shown when the rule is violated.
+            the check applies (e.g., `$.resources[*].name`).
+        message (str): The message that is shown when the check fails.
 
     Examples:
         ```{python}
         import check_datapackage as cdp
-        required_title_rule = cdp.RequiredRule(
+        required_title_check = cdp.RequiredCheck(
             jsonpath="$.title",
             message="A title is required.",
         )
@@ -88,12 +89,12 @@ class RequiredRule(Rule):
     _field_name: str
 
     def __init__(self, jsonpath: str, message: str):
-        """Initializes the `RequiredRule`."""
+        """Initializes the `RequiredCheck`."""
         field_name_match = re.search(r"(?<!\.)(\.\w+)$", jsonpath)
         if not field_name_match:
             raise ValueError(
-                f"Cannot define `RequiredRule` for JSON path `{jsonpath}`."
-                " A `RequiredRule` must target a concrete object field (e.g.,"
+                f"Cannot define `RequiredCheck` for JSON path `{jsonpath}`."
+                " A `RequiredCheck` must target a concrete object field (e.g.,"
                 " `$.title`) or set of fields (e.g., `$.resources[*].title`)."
                 " Ambiguous paths (e.g., `$..title`) or paths pointing to array items"
                 " (e.g., `$.resources[0]`) are not allowed."
@@ -108,7 +109,7 @@ class RequiredRule(Rule):
         )
 
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
-        """Checks the descriptor against this rule and creates issues on failure.
+        """Checks the descriptor against this check and creates issues on failure.
 
         Args:
             descriptor: The descriptor to check.
@@ -133,17 +134,19 @@ class RequiredRule(Rule):
         )
 
 
-def apply_rules(rules: list[Rule], descriptor: dict[str, Any]) -> list[Issue]:
-    """Checks the descriptor for all rules and creates issues for fields that fail.
+def apply_custom_checks(
+    custom_checks: list[CustomCheck], descriptor: dict[str, Any]
+) -> list[Issue]:
+    """Checks the descriptor for all custom checks and creates issues if any fail.
 
     Args:
-        rules: The rules to apply to the descriptor.
+        custom_checks: The custom checks to apply to the descriptor.
         descriptor: The descriptor to check.
 
     Returns:
         A list of `Issue`s.
     """
     return _flat_map(
-        rules,
-        lambda rule: rule.apply(descriptor),
+        custom_checks,
+        lambda check: check.apply(descriptor),
     )
