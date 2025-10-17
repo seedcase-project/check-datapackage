@@ -72,8 +72,8 @@ quartodoc:
     - name: RequiredCheck
     - name: Exclude
     - name: Issue
-    - name: example_package_descriptor
-    - name: example_resource_descriptor
+    - name: example_package_properties
+    - name: example_resource_properties
 
 metadata-files:
   - docs/reference/_sidebar.yml

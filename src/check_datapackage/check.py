@@ -10,8 +10,6 @@ from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
 from check_datapackage.custom_check import apply_custom_checks
 from check_datapackage.exclude import exclude
 from check_datapackage.internals import (
-    _add_package_recommendations,
-    _add_resource_recommendations,
     _filter,
     _flat_map,
     _map,
@@ -42,14 +40,38 @@ def check(
     schema = read_json(DATA_PACKAGE_SCHEMA_PATH)
 
     if config.strict:
-        _add_package_recommendations(schema)
-        _add_resource_recommendations(schema)
+        _set_should_fields_to_required(schema)
 
     issues = _check_object_against_json_schema(descriptor, schema)
     issues += apply_custom_checks(config.custom_checks, descriptor)
     issues = exclude(issues, config.exclude, descriptor)
 
     return sorted(set(issues))
+
+
+def _set_should_fields_to_required(schema: dict[str, Any]) -> dict[str, Any]:
+    """Set 'SHOULD' fields to 'REQUIRED' in the schema."""
+    should_fields = ("name", "id", "licenses")
+    name_pattern = r"^[a-z0-9._-]+$"
+
+    # From https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    semver_pattern = (
+        r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
+        r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0"
+        r"|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>"
+        r"[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+    )
+
+    # Convert to required
+    schema["required"].extend(should_fields)
+    schema["properties"]["name"]["pattern"] = name_pattern
+    schema["properties"]["version"]["pattern"] = semver_pattern
+    schema["properties"]["contributors"]["items"]["required"] = ["title"]
+    schema["properties"]["sources"]["items"]["required"] = ["title"]
+    schema["properties"]["resources"]["items"]["properties"]["name"]["pattern"] = (
+        name_pattern
+    )
+    return schema
 
 
 def _check_object_against_json_schema(
