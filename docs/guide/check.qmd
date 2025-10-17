@@ -1,36 +1,43 @@
 ---
-title: "Checking a Data Package descriptor"
+title: "Checking a Data Package's properties"
 jupyter: python3
 order: 1
 ---
 
-The structure and content of the Data Package descriptor follow the
-[Data Package standard](https://datapackage.org). This standard defines
-the available properties at each level of the descriptor, specifies
-which properties are required, and describes the allowed values for
-each.
+The structure and content of the Data Package's `datapackage.json`
+should follow the [Data Package standard](https://datapackage.org). This
+standard defines the available properties at each level of the Data
+Package's descriptor file, specifies which properties are required, and
+describes the allowed values for each.
+
+::: callout-note
+Note that we use the word *descriptor* to refer to the JSON file
+containing the Data Package's metadata, i.e., the `datapackage.json`
+file. In contrast, we use the word *properties* to refer to the contents
+of the Data Package's descriptor loaded into memory as a Python `dict`.
+:::
 
 `check-datapackage` provides the `check()` function to verify that a
-Data Package descriptor meets these requirements. `check()` takes a
-Python `dict` as input, representing the descriptor, and by default
-returns a list of `Issue` objects, each corresponding to a failed check
-on a field in the descriptor. If you prefer the output as an error, you
-can also run `check()` with `error=True`. When checking a descriptor,
-you can customise the function's behaviour by specifying issues to
-ignore and additional custom checks to perform.
+Data Package's properties meets these requirements. `check()` takes a
+Python `dict` as input, representing the properties in the descriptor,
+and by default returns a list of `Issue` objects, each corresponding to
+a failed check on a field in the properties. If you prefer the output as
+an error, you can also run `check()` with `error=True`. When checking
+the properties, you can customise the function's behaviour by specifying
+issues to ignore and additional custom checks to perform.
 
 By default, `check()` returns a list of `Issue` objects, each
-corresponding to one failed check on one field in the descriptor. If
+corresponding to one failed check on one field in the properties. If
 there are no failed checks, an empty list is returned.
 
-In the example below, all required fields in the descriptor are present
+In the example below, all required fields in the properties are present
 and well-formed, so the output of `check()`, `issues`, is an empty list.
 
 ```{python}
 from textwrap import dedent
 import check_datapackage as cdp
 
-package_descriptor = {
+package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -51,14 +58,14 @@ package_descriptor = {
     ],
 }
 
-cdp.check(descriptor=package_descriptor)
+cdp.check(properties=package_properties)
 ```
 
-Now let's remove the required `description` field from the descriptor
+Now let's remove the required `description` field from the properties
 and give a `name` of the wrong type (a number instead of a string).
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -74,7 +81,7 @@ package_descriptor = {
     ],
 }
 
-cdp.check(descriptor=package_descriptor)
+cdp.check(properties=package_properties)
 ```
 
 The output now lists two issues: one for the missing `description` field
@@ -89,7 +96,7 @@ execution, you can achieve this by setting the `error` argument of
 ```{python}
 #| error: true
 #| eval: false
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -98,7 +105,7 @@ package_descriptor = {
     "licenses": [{"name": "odc-pddl"}],
 }
 
-cdp.check(descriptor=package_descriptor, error=True)
+cdp.check(properties=package_properties, error=True)
 ```
 
 Now, if any issues are found, the function will produce an error instead
