@@ -2,11 +2,11 @@ from textwrap import dedent
 from typing import Any
 
 
-def example_resource_descriptor() -> dict[str, Any]:
-    """Create an example resource descriptor.
+def example_resource_properties() -> dict[str, Any]:
+    """Create a set of example resource properties.
 
     Returns:
-        An example resource descriptor.
+        A set of example resource properties.
     """
     return {
         "name": "woolly-dormice-2015",
@@ -15,11 +15,11 @@ def example_resource_descriptor() -> dict[str, Any]:
     }
 
 
-def example_package_descriptor() -> dict[str, Any]:
-    """Create an example package descriptor.
+def example_package_properties() -> dict[str, Any]:
+    """Create a set of example package properties.
 
     Returns:
-        An example package descriptor.
+        A set of example package properties.
     """
     return {
         "name": "woolly-dormice",
@@ -33,5 +33,5 @@ def example_package_descriptor() -> dict[str, Any]:
         "created": "2014-05-14T05:00:01+00:00",
         "version": "1.0.0",
         "licenses": [{"name": "odc-pddl"}],
-        "resources": [example_resource_descriptor()],
+        "resources": [example_resource_properties()],
     }
