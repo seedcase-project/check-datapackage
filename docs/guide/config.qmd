@@ -61,7 +61,7 @@ To make the `check()` function aware of your exclusions, you add them to
 the `Config` object passed to the function:
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -78,7 +78,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(exclude=[exclude_required, exclude_name, exclude_path])
-cdp.check(descriptor=package_descriptor, config=config)
+cdp.check(properties=package_properties, config=config)
 ```
 
 In the example above, we would expect four `Issue` items: the package
@@ -125,7 +125,7 @@ To register your custom checks with the `check()` function, you add them
 to the `Config` object passed to the function:
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -147,7 +147,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(custom_checks=[license_check])
-cdp.check(descriptor=package_descriptor, config=config)
+cdp.check(properties=package_properties, config=config)
 ```
 
 We can see that the custom check was applied: `check()` returned one
@@ -163,7 +163,7 @@ special characters.
 
 ```{python}
 #| eval: false
-package_descriptor = {
+package_properties = {
     "name": "Woolly Dormice (Toros Dağları)",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -184,5 +184,5 @@ package_descriptor = {
     ],
 }
 
-cdp.check(descriptor=package_descriptor, strict=True)
+cdp.check(properties=package_properties, strict=True)
 ```

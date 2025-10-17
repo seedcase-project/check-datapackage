@@ -30,7 +30,7 @@ and well-formed, so the output of `check()`, `issues`, is an empty list.
 from textwrap import dedent
 import check_datapackage as cdp
 
-package_descriptor = {
+package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -51,14 +51,14 @@ package_descriptor = {
     ],
 }
 
-cdp.check(descriptor=package_descriptor)
+cdp.check(properties=package_properties)
 ```
 
 Now let's remove the required `description` field from the descriptor
 and give a `name` of the wrong type (a number instead of a string).
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -74,7 +74,7 @@ package_descriptor = {
     ],
 }
 
-cdp.check(descriptor=package_descriptor)
+cdp.check(properties=package_properties)
 ```
 
 The output now lists two issues: one for the missing `description` field
@@ -89,7 +89,7 @@ execution, you can achieve this by setting the `error` argument of
 ```{python}
 #| error: true
 #| eval: false
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -98,7 +98,7 @@ package_descriptor = {
     "licenses": [{"name": "odc-pddl"}],
 }
 
-cdp.check(descriptor=package_descriptor, error=True)
+cdp.check(properties=package_properties, error=True)
 ```
 
 Now, if any issues are found, the function will produce an error instead
