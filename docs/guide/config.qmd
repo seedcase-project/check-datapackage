@@ -9,7 +9,7 @@ on the descriptor. The following configuration options are available:
 
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
--   `exclude`: The list of checks to exclude.
+-   `exclusions`: A list of checks to exclude.
 -   `custom_checks`: The list of custom checks to run in addition to the
     checks defined in the standard.
 -   `strict`: Whether to run recommended checks in addition to required
@@ -23,42 +23,42 @@ to.
 The Data Package standard defines a range of check types (e.g.,
 `required` or `pattern`) and it is also possible to create your own. For
 example, to exclude checks flagging missing fields, you would exclude
-the `required` check by defining an `Exclude` object with this `type`:
+the `required` check by defining an `Exclusion` object with this `type`:
 
 ```{python}
 from textwrap import dedent
 import check_datapackage as cdp
 
-exclude_required = cdp.Exclude(type="required")
+exclusion_required = cdp.Exclusion(type="required")
 ```
 
 To exclude checks of a specific field or fields, you can use a [JSON
 path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath`
-attribute of an `Exclude` object. For example, you can exclude all
+attribute of an `Exclusion` object. For example, you can exclude all
 checks on the `name` field of the Data Package descriptor by writing:
 
 ```{python}
-exclude_name = cdp.Exclude(jsonpath="$.name")
+exclusion_name = cdp.Exclusion(jsonpath="$.name")
 ```
 
 Or you can use the wildcard JSON path selector to exclude checks on the
 `path` field of **all** Data Resource descriptors:
 
 ```{python}
-exclude_path = cdp.Exclude(jsonpath="$.resources[*].path")
+exclusion_path = cdp.Exclusion(jsonpath="$.resources[*].path")
 ```
 
 The `type` and `jsonpath` arguments can also be combined:
 
 ```{python}
-exclude_desc_required = cdp.Exclude(type="required", jsonpath="$.resources[*].description")
+exclusion_desc_required = cdp.Exclusion(type="required", jsonpath="$.resources[*].description")
 ```
 
-This would exclude required checks on the `description` field of Data
+This will exclude required checks on the `description` field of Data
 Resource descriptors.
 
-To make the `check()` function aware of your exclusions, you add them to
-the `Config` object passed to the function:
+To apply your exclusions when running the `check()`, you add them to
+the `Config` object passed to the `check()` function:
 
 ```{python}
 package_descriptor = {
@@ -77,7 +77,7 @@ package_descriptor = {
     ],
 }
 
-config = cdp.Config(exclude=[exclude_required, exclude_name, exclude_path])
+config = cdp.Config(exclusions=[exclusion_required, exclusion_name, exclusion_path])
 cdp.check(descriptor=package_descriptor, config=config)
 ```
 

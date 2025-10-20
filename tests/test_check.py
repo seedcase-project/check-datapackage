@@ -6,7 +6,7 @@ from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
 )
-from check_datapackage.exclude import Exclude
+from check_datapackage.exclude import Exclusion
 from tests.test_custom_check import lowercase_check
 
 # Without recommendations
@@ -142,12 +142,13 @@ def test_fails_properties_violating_recommendations():
     }
 
 
-def test_exclude_not_excluding_custom_check():
+def test_exclusion_does_not_exclude_custom_check():
+    """Exclusion should not exclude custom check if types do not match."""
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
     del properties["resources"]
-    exclude_required = Exclude(type="required")
-    config = Config(custom_checks=[lowercase_check], exclude=[exclude_required])
+    exclusion_required = Exclusion(type="required")
+    config = Config(custom_checks=[lowercase_check], exclusions=[exclusion_required])
 
     issues = check(properties, config=config)
 
@@ -155,11 +156,12 @@ def test_exclude_not_excluding_custom_check():
     assert issues[0].type == "lowercase"
 
 
-def test_exclude_excluding_custom_check():
+def test_exclusion_does_exclude_custom_check():
+    """Exclusion should exclude custom check if types match."""
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
-    exclude_lowercase = Exclude(type=lowercase_check.type)
-    config = Config(custom_checks=[lowercase_check], exclude=[exclude_lowercase])
+    exclusion_lowercase = Exclusion(type=lowercase_check.type)
+    config = Config(custom_checks=[lowercase_check], exclusions=[exclusion_lowercase])
 
     issues = check(properties, config=config)
 

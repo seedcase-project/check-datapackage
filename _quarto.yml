@@ -69,7 +69,7 @@ quartodoc:
     - name: read_json
     - name: Config
     - name: CustomCheck
-    - name: Exclude
+    - name: Exclusion
     - name: Issue
     - name: example_package_properties
     - name: example_resource_properties

@@ -11,12 +11,12 @@ from check_datapackage.issue import Issue
 
 
 @dataclass
-class Exclude:
-    r"""Exclude issues when checking a Data Package descriptor.
+class Exclusion:
+    r"""A check to be excluded when checking properties.
 
-    When you use both `jsonpath` and `type` in the same `Exclude`, only issues that
-    match *both* will be excluded, meaning it is an `AND` logic. If you want `OR` logic,
-    use multiple `Exclude` objects in the `Config`.
+    When you use both `jsonpath` and `type` in the same `Exclusion` object, only issues
+    that match *both* will be excluded, meaning it is an `AND` logic. If you want `OR`
+    logic, use multiple `Exclusion` objects in the `Config`.
 
     Attributes:
         jsonpath (Optional[str]): [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
@@ -30,9 +30,9 @@ class Exclude:
         ```{python}
         import check_datapackage as cdp
 
-        exclude_required = cdp.Exclude(type="required")
-        exclude_name = cdp.Exclude(jsonpath="$.name")
-        exclude_desc_required = cdp.Exclude(
+        exclusion_required = cdp.Exclusion(type="required")
+        exclusion_name = cdp.Exclusion(jsonpath="$.name")
+        exclusion_desc_required = cdp.Exclusion(
             type="required",
             jsonpath="$.resources[*].description"
         )
@@ -44,36 +44,38 @@ class Exclude:
 
 
 def exclude(
-    issues: list[Issue], excludes: list[Exclude], descriptor: dict[str, Any]
+    issues: list[Issue], exclusions: list[Exclusion], descriptor: dict[str, Any]
 ) -> list[Issue]:
-    """Exclude issues based on the provided configuration settings."""
+    """Exclude issues defined by Exclusion objects."""
     return _filter(
         issues,
-        lambda issue: not _get_any_matches(issue, excludes, descriptor),
+        lambda issue: not _get_any_matches(issue, exclusions, descriptor),
     )
 
 
 def _get_any_matches(
-    issue: Issue, excludes: list[Exclude], descriptor: dict[str, Any]
+    issue: Issue, exclusions: list[Exclusion], descriptor: dict[str, Any]
 ) -> bool:
     matches: list[bool] = _map(
-        excludes, lambda exclude: _get_matches(issue, exclude, descriptor)
+        exclusions, lambda exclusion: _get_matches(issue, exclusion, descriptor)
     )
     return any(matches)
 
 
-def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> bool:
+def _get_matches(
+    issue: Issue, exclusion: Exclusion, descriptor: dict[str, Any]
+) -> bool:
     matches: list[bool] = []
 
-    both_none = exclude.jsonpath is None and exclude.type is None
+    both_none = exclusion.jsonpath is None and exclusion.type is None
     if both_none:
         return False
 
-    if exclude.jsonpath:
-        matches.append(_same_jsonpath(issue, exclude.jsonpath, descriptor))
+    if exclusion.jsonpath:
+        matches.append(_same_jsonpath(issue, exclusion.jsonpath, descriptor))
 
-    if exclude.type:
-        matches.append(_same_type(issue, exclude.type))
+    if exclusion.type:
+        matches.append(_same_type(issue, exclusion.type))
 
     return all(matches)
 
