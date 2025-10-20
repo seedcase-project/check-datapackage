@@ -9,6 +9,7 @@ from check_datapackage.exclusion import Exclusion
 
 
 def test_exclusion_none_type_and_jsonpath():
+    """Default Exclusion (without type and jsonpath) doesn't exclude default checks."""
     properties: dict[str, Any] = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
@@ -102,6 +103,7 @@ def test_exclusions_multiple_types():
     ],
 )
 def test_exclusion_jsonpaths(jsonpath: str, num_issues: int) -> None:
+    """Exclusion by various jsonpaths."""
     properties = example_package_properties()
     # Total 3 issues
     properties["created"] = "20240614"
@@ -117,6 +119,7 @@ def test_exclusion_jsonpaths(jsonpath: str, num_issues: int) -> None:
 
 
 def test_exclusion_multiple_jsonpaths():
+    """Exclusion by multiple jsonpaths."""
     properties = example_package_properties()
     properties["created"] = "20240614"
     properties.update({"contributors": [{"path": "/a/bad/path"}]})
@@ -132,6 +135,7 @@ def test_exclusion_multiple_jsonpaths():
 
 
 def test_exclusion_jsonpath_and_type():
+    """Exclusion by jsonpath and type."""
     properties = example_package_properties()
     properties["contributors"] = [{"path": "/a/bad/path"}, {"path": "/a/bad/path"}]
 
@@ -145,6 +149,7 @@ def test_exclusion_jsonpath_and_type():
 
 
 def test_exclusion_jsonpath_and_type_non_overlapping():
+    """Exclusion by jsonpath and type where no overlap occurs."""
     properties = example_package_properties()
     # There should be two issues
     properties["created"] = "20240614"
