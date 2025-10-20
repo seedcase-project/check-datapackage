@@ -71,8 +71,7 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
         return False
 
     if exclude.jsonpath:
-        test_object = _get_test_object_for_exclude(issue, exclude, descriptor)
-        matches.append(_same_jsonpath(issue, exclude.jsonpath, test_object))
+        matches.append(_jsonpaths_match(issue, exclude.jsonpath))
 
     if exclude.type:
         matches.append(_same_type(issue, exclude.type))
@@ -80,22 +79,14 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
     return all(matches)
 
 
-def _same_jsonpath(issue: Issue, jsonpath: str, descriptor: dict[Any, str]) -> bool:
-    jsonpaths = _get_direct_jsonpaths(jsonpath, descriptor)
+def _jsonpaths_match(issue: Issue, jsonpath: str) -> bool:
+    test_object = _get_test_object_from_jsonpath(issue.jsonpath)
+    jsonpaths = _get_direct_jsonpaths(jsonpath, test_object)
     return issue.jsonpath in jsonpaths
 
 
 def _same_type(issue: Issue, type: str) -> bool:
     return type == issue.type
-
-
-def _get_test_object_for_exclude(
-    issue: Issue, exclude: Exclude, descriptor: dict[str, Any]
-) -> dict[str, Any]:
-    """Gets object for testing JSON path exclusion based on exclude type."""
-    if exclude.type and exclude.type == "required":
-        return _get_test_object_from_jsonpath(issue.jsonpath)
-    return descriptor
 
 
 def _get_test_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
