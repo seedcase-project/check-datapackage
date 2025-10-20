@@ -57,8 +57,8 @@ exclusion_desc_required = cdp.Exclusion(type="required", jsonpath="$.resources[*
 This will exclude required checks on the `description` field of Data
 Resource descriptors.
 
-To apply your exclusions when running the `check()`, you add them to
-the `Config` object passed to the `check()` function:
+To apply your exclusions when running the `check()`, you add them to the
+`Config` object passed to the `check()` function:
 
 ```{python}
 package_descriptor = {
