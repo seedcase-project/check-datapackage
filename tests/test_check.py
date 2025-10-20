@@ -6,7 +6,7 @@ from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
 )
-from check_datapackage.exclude import Exclusion
+from check_datapackage.exclusion import Exclusion
 from tests.test_custom_check import lowercase_check
 
 # Without recommendations

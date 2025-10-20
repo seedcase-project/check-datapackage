@@ -5,7 +5,7 @@ from pytest import mark
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.examples import example_package_properties
-from check_datapackage.exclude import Exclusion
+from check_datapackage.exclusion import Exclusion
 
 
 def test_exclusion_none_type_and_jsonpath():
