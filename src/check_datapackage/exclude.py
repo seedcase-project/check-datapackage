@@ -1,10 +1,11 @@
+import re
 from dataclasses import dataclass
+from functools import reduce
 from typing import Any, Optional
 
 from check_datapackage.internals import (
-    DescriptorField,
     _filter,
-    _get_fields_at_jsonpath,
+    _get_direct_jsonpaths,
     _map,
 )
 from check_datapackage.issue import Issue
@@ -70,7 +71,7 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
         return False
 
     if exclude.jsonpath:
-        matches.append(_same_jsonpath(issue, exclude.jsonpath, descriptor))
+        matches.append(_jsonpaths_match(issue, exclude.jsonpath))
 
     if exclude.type:
         matches.append(_same_type(issue, exclude.type))
@@ -78,11 +79,43 @@ def _get_matches(issue: Issue, exclude: Exclude, descriptor: dict[str, Any]) -> 
     return all(matches)
 
 
-def _same_jsonpath(issue: Issue, jsonpath: str, descriptor: dict[Any, str]) -> bool:
-    fields: list[DescriptorField] = _get_fields_at_jsonpath(jsonpath, descriptor)
-    jsonpaths: list[str] = _map(fields, lambda field: field.jsonpath)
+def _jsonpaths_match(issue: Issue, jsonpath: str) -> bool:
+    test_object = _get_test_object_from_jsonpath(issue.jsonpath)
+    jsonpaths = _get_direct_jsonpaths(jsonpath, test_object)
     return issue.jsonpath in jsonpaths
 
 
 def _same_type(issue: Issue, type: str) -> bool:
     return type == issue.type
+
+
+def _get_test_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
+    """Builds an object with a property at the given JSON Path location."""
+    fields = jsonpath.removeprefix("$.").split(".")
+    test_object: dict[str, Any] = {}
+    reduce(_set_object_field, fields, test_object)
+    return test_object
+
+
+def _set_object_field(obj: dict[str, Any], field: str) -> dict[str, Any]:
+    """Sets a field on the object to a placeholder value.
+
+    Array fields are set to an array with the necessary number of items.
+    E.g., `resources[1]` creates `'resources': [{}, {}]`.
+
+    Other fields are set to an empty object.
+
+    Returns:
+        The object most recently set. For arrays, this is the item at the given index.
+    """
+    array_match = re.search(r"(\w+)\[(\d+)\]$", field)
+    if array_match:
+        array_name, index = array_match.groups()
+        index = int(index)
+        array_value: list[dict[str, Any]] = _map(range(index + 1), lambda _: {})
+        obj[array_name] = array_value
+        return array_value[index]
+
+    dict_value: dict[str, Any] = {}
+    obj[field] = dict_value
+    return dict_value
