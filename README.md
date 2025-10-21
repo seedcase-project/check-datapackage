@@ -1,6 +1,6 @@
 
 
-# check-datapackage: Ensure the correctness and compliance of your Data Package
+# check-datapackage: Ensure compliance of your Data Package to the standard
 
 <!-- TODO: Include DOI after uploading -->
 
@@ -30,7 +30,23 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) -->
 
-<!-- TODO: Add description of project -->
+`check-datapackage` is a Python package that checks your Data Package’s
+metadata against the [Data Package standard](https://datapackage.org/),
+to ensure that your metadata is compliant with the standard. It only
+checks the metadata in your `datapackage.json` file against the Data
+Package standard—it does not check the data itself against the metadata.
+Specifically, it:
+
+- Checks your metadata in `datapackage.json` against the Data Package
+  standard.
+- Enables you to configure which components of the metadata should or
+  should not be checked.
+- Enables you to turn off specific checks defined in the standard.
+- Supports user-defined, custom checks.
+- Provides clear and user-friendly messages that point directly to where
+  issues occur in the metadata.
+- Supports a strict mode that enforces full compliance with the
+  standard, including properties that must and should be included.
 
 > [!TIP]
 >
