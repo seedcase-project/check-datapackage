@@ -23,8 +23,8 @@ class Exclusion:
             to the field or fields in the input object where issues should be ignored.
             Uses JSON path syntax for queries, e.g., `$.resources[0].name`, to ignore
             issues related to that path.
-        type (Optional[str]): The type of the issue to ignore (e.g., "required", "type",
-            "pattern", or "format").
+        type (Optional[str]): The type of check to exclude (e.g., a JSON schema type
+            such as "required", "type", "pattern", or "format", or a custom type).
 
     Examples:
         ```{python}
