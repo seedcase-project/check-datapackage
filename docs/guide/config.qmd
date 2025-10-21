@@ -5,7 +5,8 @@ order: 3
 ---
 
 You can pass a `Config` object to `check()` to customise the checks done
-on the descriptor. The following configuration options are available:
+on your Data Package's properties. The following configuration options
+are available:
 
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
@@ -35,14 +36,14 @@ exclusion_required = cdp.Exclusion(type="required")
 To exclude checks of a specific field or fields, you can use a [JSON
 path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath`
 attribute of an `Exclusion` object. For example, you can exclude all
-checks on the `name` field of the Data Package descriptor by writing:
+checks on the `name` field of the Data Package properties by writing:
 
 ```{python}
 exclusion_name = cdp.Exclusion(jsonpath="$.name")
 ```
 
 Or you can use the wildcard JSON path selector to exclude checks on the
-`path` field of **all** Data Resource descriptors:
+`path` field of **all** Data Resource properties:
 
 ```{python}
 exclusion_path = cdp.Exclusion(jsonpath="$.resources[*].path")
@@ -55,13 +56,13 @@ exclusion_desc_required = cdp.Exclusion(type="required", jsonpath="$.resources[*
 ```
 
 This will exclude required checks on the `description` field of Data
-Resource descriptors.
+Resource properties.
 
 To apply your exclusions when running the `check()`, you add them to the
 `Config` object passed to the `check()` function:
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -78,7 +79,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(exclusions=[exclusion_required, exclusion_name, exclusion_path])
-cdp.check(descriptor=package_descriptor, config=config)
+cdp.check(properties=package_properties, config=config)
 ```
 
 In the example above, we would expect four `Issue` items: the package
@@ -125,7 +126,7 @@ To register your custom checks with the `check()` function, you add them
 to the `Config` object passed to the function:
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -147,7 +148,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(custom_checks=[license_check])
-cdp.check(descriptor=package_descriptor, config=config)
+cdp.check(properties=package_properties, config=config)
 ```
 
 We can see that the custom check was applied: `check()` returned one
@@ -163,7 +164,7 @@ special characters.
 
 ```{python}
 #| eval: false
-package_descriptor = {
+package_properties = {
     "name": "Woolly Dormice (Toros Dağları)",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -184,5 +185,5 @@ package_descriptor = {
     ],
 }
 
-cdp.check(descriptor=package_descriptor, strict=True)
+cdp.check(properties=package_properties, strict=True)
 ```
