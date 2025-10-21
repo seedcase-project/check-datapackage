@@ -126,11 +126,13 @@ function.
 
 See the help documentation with `help(Config)` for more details.
 
-### {{< var wip >}} `Exclude`
+### {{< var wip >}} `Exclusion`
 
-A subitem of `Config` for expressing checks to ignore.
+A subitem of `Config` that expresses checks to exclude. This can be
+useful if you want to exclude (or skip) certain checks from the Data
+Package standard that are not relevant to your use case.
 
-See the help documentation with `help(Exclude)` for more details.
+See the help documentation with `help(Exclusion)` for more details.
 
 #### {{< var wip >}} `CustomCheck`
 
@@ -164,7 +166,7 @@ flowchart TD
 
     config[/Config/]
     custom_check[/CustomCheck/]
-    exclude[/Exclude/]
+    exclusion[/Exclusion/]
     check["check()"]
     issues[/"list[Issue]"/]
 
@@ -173,8 +175,8 @@ flowchart TD
 
     descriptor_file --> read_json --> descriptor
     config_file --> read_config --> config
-    custom_check & exclude --> config
-    custom_check & exclude -.-> config_file
+    custom_check & exclusion --> config
+    custom_check & exclusion -.-> config_file
 
     descriptor & config --> check --> issues --> explain --> messages
 ```
