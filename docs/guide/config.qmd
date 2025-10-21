@@ -167,7 +167,7 @@ issue flagging the first license attached to the Data Package.
 
 The Data Package standard includes properties that "MUST" and "SHOULD"
 be included and/or have a specific format in a compliant Data Package. By default, `check()` only
-the `check()` function only includes "MUST" checks. To include "SHOULD" checks, 
+the `check()` function only includes "MUST" checks. To include "SHOULD" checks,
 set the `strict` argument to `True`. For example,
 the `name` field of a Data Package "SHOULD" not contain special
 characters. So running `check()` in strict mode (`strict=True`) on the following
