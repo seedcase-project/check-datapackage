@@ -76,7 +76,7 @@ interact with `check-datapackage`. This includes the user types and the
 Data Package standard.
 
 `check-datapackage` receives the definitions of the Data Package
-descriptor's structure---including properties that must or should be
+descriptor's structure---including properties that [must or should](https://datapackage.org/standard/data-package/#language) be
 included and their formats---from the Data Package standard (version 2). The
 standard provides this information through versioned JSON Schema
 profiles that define required properties and textual descriptions that

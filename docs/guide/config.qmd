@@ -14,15 +14,15 @@ are available:
 -   `custom_checks`: The list of custom checks to run in addition to the
     checks defined in the standard.
 -   `strict`: Whether to include "SHOULD" checks in addition to "MUST"
-    checks ones. Defaults to `False`.
+    checks. Defaults to `False`.
 
 ::: callout-important
 The Data Package standard uses language from [RFC
-2119](https://www.ietf.org/rfc/rfc2119.txt) when defining it's checks.
+2119](https://www.ietf.org/rfc/rfc2119.txt) to define its specifications.
 They use "MUST" for required properties and "SHOULD" for properties that
 should be included but are not strictly required. We try to match this
 language in `check-datapackage` by using the terms "MUST" and "SHOULD",
-though we use "required" for "MUST" in our documentation.
+though we also use "required" for "MUST" in our documentation.
 :::
 
 ## Excluding checks
@@ -166,11 +166,11 @@ issue flagging the first license attached to the Data Package.
 ## Strict mode
 
 The Data Package standard includes properties that "MUST" and "SHOULD"
-be included in a compliant Data Package. By default, `check()` only
-checks properties that "MUST" be included. To include properties that
-"SHOULD" be included, set the `strict` argument to `True`. For example,
+be included and/or have a specific format in a compliant Data Package. By default, `check()` only
+the `check()` function only includes "MUST" checks. To include "SHOULD" checks, 
+set the `strict` argument to `True`. For example,
 the `name` field of a Data Package "SHOULD" not contain special
-characters. So running `check()` in strict mode on the following
+characters. So running `check()` in strict mode (`strict=True`) on the following
 properties would output an issue.
 
 ```{python}
