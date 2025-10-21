@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.8.6 (2025-10-21)
+
+### Refactor
+
+- 🚚 rename `Exclude` class to `Exclusion` (#145)
+
 ## 0.8.5 (2025-10-17)
 
 ### Refactor
