@@ -26,6 +26,12 @@ def _get_fields_at_jsonpath(
     return _map(matches, _create_descriptor_field)
 
 
+def _get_direct_jsonpaths(jsonpath: str, descriptor: dict[str, Any]) -> list[str]:
+    """Returns all direct JSON paths that match a direct or indirect JSON path."""
+    fields = _get_fields_at_jsonpath(jsonpath, descriptor)
+    return _map(fields, lambda field: field.jsonpath)
+
+
 def _create_descriptor_field(match: JSONPathMatch) -> DescriptorField:
     return DescriptorField(
         jsonpath=match.path.replace("['", ".").replace("']", ""),
