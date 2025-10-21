@@ -42,7 +42,8 @@ Overall, `check-datapackage` must:
 -   Provide clear, user-friendly, and structured messages about any
     issues, identifying where in the descriptor the issues occur.
 -   Provide a strict mode that enforces all aspects of the Data Package
-    standard, including all recommendations.
+    standard, including properties that should be included but aren't
+    required.
 -   Be designed in a way that can be extended as a command-line
     interface (CLI) in the future.
 

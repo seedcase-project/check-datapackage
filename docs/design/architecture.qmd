@@ -76,11 +76,11 @@ interact with `check-datapackage`. This includes the user types and the
 Data Package standard.
 
 `check-datapackage` receives the definitions of the Data Package
-descriptor's structure---including required properties, their formats,
-and recommended fields---from the Data Package standard (version 2). The
+descriptor's structure---including properties that must or should be
+included and their formats---from the Data Package standard (version 2). The
 standard provides this information through versioned JSON Schema
 profiles that define required properties and textual descriptions that
-outline recommendations.
+outline compliance.
 
 The users, described in the [User types](#user-types) section, provide
 `check-datapackage` with their Data Package's descriptor to check its
