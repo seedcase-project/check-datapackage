@@ -88,7 +88,7 @@ def explain(issues: list[Issue]) -> list[str]:
     """
 ```
 
-### {{< var wip >}} `read_json()`
+### {{< var done >}} `read_json()`
 
 This is a simple helper function to read the `datapackage.json` file
 into a Python dictionary. See [`help(read_json)`](/docs/reference/read_json.qmd)
@@ -119,28 +119,28 @@ With all the configurations kept in one class, we can potentially store
 the configuration in a file that can be read into the class, which would
 be useful for a CLI interface.
 
-### {{< var wip >}} `Config`
+### {{< var done >}} `Config`
 
 `Config` is a class that holds all the configurations for the `check()`
 function.
 
 See the help documentation with `help(Config)` for more details.
 
-### {{< var wip >}} `Exclusion`
+### {{< var done >}} `Exclusion`
 
-A subitem of `Config` that expresses checks to exclude. This can be
+A sub-item of `Config` that expresses checks to exclude. This can be
 useful if you want to exclude (or skip) certain checks from the Data
 Package standard that are not relevant to your use case.
 
 See the help documentation with `help(Exclusion)` for more details.
 
-#### {{< var wip >}} `CustomCheck`
+#### {{< var done >}} `CustomCheck`
 
-Expresses a custom check.
+A sub-item of `Config`. Expresses a custom check.
 
 See the help documentation with `help(CustomCheck)` for more details.
 
-### {{< var wip >}} `Issue`
+### {{< var done >}} `Issue`
 
 This class represents an issue that is found when checking a Data
 Package.
