@@ -76,7 +76,7 @@ show details about `check-datapackage`.
 ## Install system-wide
 
 We strongly recommend using `check-datapackage` in a virtual
-environment, but you can also install it system-wide. The easiest way to
+environment (as described in the section above), but you can also install it system-wide. The easiest way to
 do that is to use pipx:
 
 ``` {.bash filename="Terminal"}
