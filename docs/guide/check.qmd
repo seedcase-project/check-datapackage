@@ -98,15 +98,6 @@ before, we can call `check()` with `error=True` like this:
 ```{python}
 #| error: true
 #| eval: false
-package_properties = {
-    "name": 123,
-    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "id": "123-abc-123",
-    "created": "2014-05-14T05:00:01+00:00",
-    "version": "1.0.0",
-    "licenses": [{"name": "odc-pddl"}],
-}
-
 cdp.check(properties=package_properties, error=True)
 ```
 
