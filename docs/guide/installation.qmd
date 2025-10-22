@@ -53,12 +53,15 @@ uv init <project-name>
 This will create a new directory with the project name you provided with the basic
 structure of a Python project, including a `pyproject.toml` file.
 
+With uv installed, you can now install `check-datapackage` directly from the
 [GitHub
-repository](https://github.com/seedcase-project/check-datapackage):
+repository](https://github.com/seedcase-project/check-datapackage) with this command:
 
 ``` {.bash filename="Terminal"}
-uv add check-datapackage
+uv add "check-datapackage @ git+https://github.com/seedcase-project/check-datapackage"
 ```
+
+<!-- TODO: Change to `uv add check-datapackage` when we've released it on PyPI -->
 
 You can check that `check-datapackage` has been installed correctly by
 running this command:
