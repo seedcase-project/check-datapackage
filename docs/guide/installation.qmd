@@ -1,5 +1,5 @@
 ---
-title: "Installing"
+title: "Installing `check-datapackage`"
 order: 0
 ---
 
