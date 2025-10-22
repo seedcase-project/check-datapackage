@@ -41,8 +41,18 @@ To check that uv is installed, run this command:
 uv
 ```
 
-If you get a list of uv commands, you've installed it successfully. With
-uv installed, you can now install `check-datapackage` directly from the
+If you get a list of uv commands, you've installed it successfully.
+
+Then, create a Python project using uv by running the following
+command in your Terminal (replace `<project-name>` with your desired project name, e.g., `diabetes-study`):
+
+``` {.bash filename="Terminal"}
+uv init <project-name>
+```
+
+This will create a new directory with the project name you provided with the basic
+structure of a Python project, including a `pyproject.toml` file.
+
 [GitHub
 repository](https://github.com/seedcase-project/check-datapackage):
 
