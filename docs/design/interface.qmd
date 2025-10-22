@@ -6,7 +6,7 @@ This section of the documentation focuses on the design of the interface
 and how it is implemented as Python code.
 
 ::: callout-note
-We use symbols to indicate parts of the design that are actively being worked on, 
+We use symbols to indicate parts of the design that are actively being worked on,
 done, or planned (see table below). For
 work that is planned or is in progress, we include the function
 signatures and docstrings to clarify the design. Once the interface is
