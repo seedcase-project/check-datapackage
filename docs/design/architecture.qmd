@@ -145,13 +145,22 @@ flowchart LR
     style cli fill:#FFFFFF, stroke-dasharray: 5 5
 ```
 
-
 ### Component/code
 
-In the diagram below, we zoom in on the core Python package container to show its
-internal components. In C4, a [component](https://c4model.com/abstractions/component) is "a grouping of related functionality encapsulated behind a well-defined interface", like a class or a module, while [code](https://c4model.com/abstractions/code) is the basic building blocks, such as classes and functions.
+In the diagram below, we zoom in on the core Python package container to
+show its internal components. In C4, a
+[component](https://c4model.com/abstractions/component) is "a grouping
+of related functionality encapsulated behind a well-defined interface",
+like a class or a module, while
+[code](https://c4model.com/abstractions/code) is the basic building
+blocks, such as classes and functions.
 
-Because the core Python package is relatively small and simple, and because both component and code diagrams include classes, we combine the component and code levels of the C4 model into a single diagram as shown below. This diagram shows the main classes and functions within the core Python package. Because the CLI is only a planned future extension, we do not include a component/code diagram for it at this time.
+Because the core Python package is relatively small and simple, and
+because both component and code diagrams include classes, we combine the
+component and code levels of the C4 model into a single diagram as shown
+below. This diagram shows the main classes and functions within the core
+Python package. Because the CLI is only a planned future extension, we
+do not include a component/code diagram for it at this time.
 
 ```{mermaid}
 %%| label: fig-c4-component
@@ -194,4 +203,6 @@ flowchart LR
     style config_file fill:#FFFFFF, color:#000000, stroke-dasharray: 5 5
 ```
 
-For more details on the individual classes and functions, see the [interface documentation](/docs/design/interface.qmd) and the [reference documentation](/docs/reference/index.qmd).
+For more details on the individual classes and functions, see the
+[interface documentation](/docs/design/interface.qmd) and the [reference
+documentation](/docs/reference/index.qmd).
