@@ -9,7 +9,7 @@ from check_datapackage.examples import (
 from check_datapackage.exclusion import Exclusion
 from tests.test_custom_check import lowercase_check
 
-# Without recommendations
+# "MUST" checks
 
 
 def test_passes_matching_properties_with_resources():
@@ -86,11 +86,11 @@ def test_fails_properties_with_pattern_mismatch():
     assert issues[0].jsonpath == "$.contributors[0].path"
 
 
-# With recommendations
+# "SHOULD" checks
 
 
-def test_passes_matching_properties_with_recommendations():
-    """Should pass properties matching recommendations."""
+def test_passes_matching_properties_with_should():
+    """Should pass properties matching "SHOULD" specifications."""
     properties = {
         "name": "a-name-with-no-spaces",
         "title": "A Title",
@@ -106,8 +106,8 @@ def test_passes_matching_properties_with_recommendations():
     assert check(properties, config=Config(strict=True)) == []
 
 
-def test_fails_properties_with_missing_required_fields_with_recommendations():
-    """Should fail properties with missing required fields."""
+def test_fails_properties_with_missing_required_fields_in_should():
+    """Should fail properties with missing required properties in strict mode."""
     properties = {
         "resources": [{"name": "a-name-with-no-spaces", "path": "data.csv"}],
     }
@@ -118,8 +118,8 @@ def test_fails_properties_with_missing_required_fields_with_recommendations():
     assert all(issue.type == "required" for issue in issues)
 
 
-def test_fails_properties_violating_recommendations():
-    """Should fail properties that do not meet the recommendations."""
+def test_fails_properties_violating_should():
+    """Should fail properties that do not meet "SHOULD" specifications."""
     properties = {
         "name": "a name with spaces",
         "id": "123",
