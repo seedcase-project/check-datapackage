@@ -43,19 +43,22 @@ uv
 
 If you get a list of uv commands, you've installed it successfully.
 
-Then, create a Python project using uv by running the following
-command in your Terminal (replace `<project-name>` with your desired project name, e.g., `diabetes-study`):
+Then, create a Python project using uv by running the following command
+in your Terminal (replace `<project-name>` with your desired project
+name, e.g., `diabetes-study`):
 
 ``` {.bash filename="Terminal"}
 uv init <project-name>
 ```
 
-This will create a new directory with the project name you provided with the basic
-structure of a Python project, including a `pyproject.toml` file.
+This will create a new directory with the project name you provided with
+the basic structure of a Python project, including a `pyproject.toml`
+file.
 
-With uv installed, you can now install `check-datapackage` directly from the
-[GitHub
-repository](https://github.com/seedcase-project/check-datapackage) with this command:
+With uv installed, you can now install `check-datapackage` directly from
+the [GitHub
+repository](https://github.com/seedcase-project/check-datapackage) with
+this command:
 
 ``` {.bash filename="Terminal"}
 uv add "check-datapackage @ git+https://github.com/seedcase-project/check-datapackage"
@@ -75,9 +78,9 @@ show details about `check-datapackage`.
 
 ## Install system-wide
 
-We strongly recommend using `check-datapackage` in a virtual
-environment (as described in the section above), but you can also install it system-wide. The easiest way to
-do that is to use pipx:
+We strongly recommend using `check-datapackage` in a virtual environment
+(as described in the section above), but you can also install it
+system-wide. The easiest way to do that is to use pipx:
 
 ``` {.bash filename="Terminal"}
 pipx install check-datapackage
