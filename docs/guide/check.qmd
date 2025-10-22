@@ -27,17 +27,16 @@ By default, if any issues are found, `check()` returns a list of `Issue` objects
 Let's look at an example. The code below defines a `package_properties` dictionary that includes all the required properties in a correct format. When we call `check()` on these properties, it returns an empty list:
 
 ```{python}
-from textwrap import dedent
 import check_datapackage as cdp
 
 package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "description": dedent("""
+    "description": """
         This scoping review explores the hibernation physiology of the
         woolly dormouse, drawing on data collected over a 10-year period
         along the Taurus Mountain range in Turkey.
-        """),
+    """,
     "id": "123-abc-123",
     "created": "2014-05-14T05:00:01+00:00",
     "version": "1.0.0",
