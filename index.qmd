@@ -12,7 +12,7 @@ width="150px"}
 ![](_extensions/seedcase-project/seedcase-theme/logos/check-datapackage-font.svg){fig-alt="Check datapackage font."
 height="50px"}
 
-## Ensure the compliance of your Data Package
+## Ensure the compliance of your Data Package metadata
 
 [Overview](/docs/index.qmd){.btn .about-link} [Explore
 guide](/docs/guide/index.qmd){.btn .about-link}
