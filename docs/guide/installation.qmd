@@ -67,7 +67,7 @@ You can check that `check-datapackage` has been installed correctly by
 running this command:
 
 ``` {.bash filename="Terminal"}
-uv pip show check_datapackage
+uv pip show check-datapackage
 ```
 
 If `check-datapackage` has been installed successfully, the output will
@@ -84,7 +84,7 @@ pipx install check-datapackage
 ```
 
 To check that `check-datapackage` has been installed correctly, run the
-following and make sure `check_datapackage` is listed:
+following and make sure `check-datapackage` is listed:
 
 ``` {.bash filename="Terminal"}
 pipx list
