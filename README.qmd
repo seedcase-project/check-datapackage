@@ -4,16 +4,15 @@ metadata-files:
   - _metadata.yml
 ---
 
-# {{< meta gh.repo >}}: Ensure compliance of your Data Package to the standard
+<!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
+
+# {{< meta gh.repo >}}: Ensure the compliance of your Data Package metadata
 
 {{< include /docs/includes/_badges.qmd >}}
 
-`check-datapackage` is a Python package that checks your Data Package's
+`check-datapackage` is a Python package that checks your Data Package’s
 metadata against the [Data Package standard](https://datapackage.org/),
-to ensure that your metadata is compliant with the standard. It only
-checks the metadata in your `datapackage.json` file against the Data
-Package standard---it does not check the data itself against the
-metadata. Specifically, it:
+to ensure that it's compliant with the standard. Specifically, it:
 
 -   Checks your metadata in `datapackage.json` against the Data Package
     standard.
@@ -25,6 +24,12 @@ metadata. Specifically, it:
     where issues occur in the metadata.
 -   Supports a strict mode that enforces full compliance with the
     standard, including properties that must and should be included.
+
+::: callout-warning
+`check-datapackage` only checks the metadata in your datapackage.json
+file against the Data Package standard---it does not check the data
+itself against the metadata.
+:::
 
 ::: callout-tip
 This Python package was generated from the

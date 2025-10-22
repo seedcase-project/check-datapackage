@@ -1,6 +1,8 @@
 
 
-# check-datapackage: Ensure compliance of your Data Package metadata
+<!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
+
+# check-datapackage: Ensure the compliance of your Data Package metadata
 
 <!-- TODO: Include DOI after uploading -->
 
@@ -32,8 +34,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 
 `check-datapackage` is a Python package that checks your Data Package’s
 metadata against the [Data Package standard](https://datapackage.org/),
-to ensure that it's compliant with the standard.
-Specifically, it:
+to ensure that it’s compliant with the standard. Specifically, it:
 
 - Checks your metadata in `datapackage.json` against the Data Package
   standard.
@@ -46,7 +47,11 @@ Specifically, it:
 - Supports a strict mode that enforces full compliance with the
   standard, including properties that must and should be included.
 
-⚠️ Note that `check-datapackage` only checks the metadata in your datapackage.json file against the Data Package standard—it does not check the data itself against the metadata.
+> [!WARNING]
+>
+> `check-datapackage` only checks the metadata in your datapackage.json
+> file against the Data Package standard—it does not check the data
+> itself against the metadata.
 
 > [!TIP]
 >
