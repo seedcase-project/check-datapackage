@@ -181,6 +181,10 @@ class Extension:
     custom_check : Optional[list[CustomCheck]] = None
 ````
 
+Each extension class must implement it's own `apply()` method that takes
+the `datapackage.json` properties `dict` as input and outputs an `Issue`
+list that has the issues found by that extension.
+
 #### {{< var wip >}} `Required`
 
 A sub-item of `Extension` that allows users to set specific properties
