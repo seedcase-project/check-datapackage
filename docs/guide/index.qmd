@@ -1,6 +1,6 @@
 ---
 title: "Guide"
-description: "A guide on using `check-datapackage` on your `datapackage.json` file."
+description: "A guide on using `check-datapackage` to check the compliance of your Data Package's metadata against the Data Package standard."
 listing:
     contents: .
     type: grid

@@ -7,7 +7,7 @@ order: 2
 ## The `Issue` class
 
 One `Issue` corresponds to one failed check on one field in the
-descriptor. An `Issue` has three attributes:
+properties. An `Issue` has three attributes:
 
 -   `type`: The type of the check that failed and caused the issue. This
     can be a type that exists in the Data Package standard (e.g.,
@@ -26,7 +26,7 @@ by `check()`:
 ```{python}
 import check_datapackage as cdp
 
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -35,7 +35,7 @@ package_descriptor = {
     "licenses": [{"name": "odc-pddl"}],
 }
 
-cdp.check(descriptor=package_descriptor)
+cdp.check(properties=package_properties)
 ```
 
 When setting `error=True` in `check()`, error messages will be generated
