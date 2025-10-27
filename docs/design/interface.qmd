@@ -192,7 +192,7 @@ class Extensions:
         # check(descriptor, config=cdp.Config(extensions=extensions))
         ```
     """
-    required_check : list[RequiredCheck] = field(default_factory=list)
+    required_checks : list[RequiredCheck] = field(default_factory=list)
     custom_checks : list[CustomCheck] = field(default_factory=list)
 ````
 
