@@ -186,21 +186,31 @@ def test_exclusion_jsonpath_resources():
     )
     assert len(issues) == 0
 
+def test_exclude_issue_on_array_item():
+    properties = example_package_properties()
+    properties["resources"].append("not a resource")
+    exclusions = [Exclusion(jsonpath="$.resources[*]")]
+    config = Config(exclusions=exclusions)
+
+    issues = check(properties, config=config)
+
+    assert issues == []
+
 
 @mark.parametrize(
     "jsonpath",
     ["$.resources[*].name", "$.resources[1].*"],
 )
 def test_exclude_required_at_jsonpath_array(jsonpath):
-    descriptor = example_package_properties()
-    descriptor["resources"].append(example_resource_properties())
-    del descriptor["resources"][1]["name"]
-
+    properties = example_package_properties()
+    properties["resources"].append(example_resource_properties())
+    del properties["resources"][1]["name"]
     exclusions = [
         Exclusion(jsonpath=jsonpath, type="required"),
     ]
     config = Config(exclusions=exclusions)
-    issues = check(descriptor, config=config)
+
+    issues = check(properties, config=config)
 
     assert issues == []
 
@@ -209,13 +219,13 @@ def test_exclude_required_at_jsonpath_array(jsonpath):
     "jsonpath", ["$.*", "$..resources", "..resources", "resources", "..*"]
 )
 def test_exclude_required_at_jsonpath_dict_field(jsonpath):
-    descriptor = example_package_properties()
-    del descriptor["resources"]
-
+    properties = example_package_properties()
+    del properties["resources"]
     exclusions = [
         Exclusion(jsonpath=jsonpath, type="required"),
     ]
     config = Config(exclusions=exclusions)
-    issues = check(descriptor, config=config)
+
+    issues = check(properties, config=config)
 
     assert issues == []

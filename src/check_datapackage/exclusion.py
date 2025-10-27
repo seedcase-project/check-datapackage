@@ -96,21 +96,19 @@ def _get_json_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
     return _get_object_from_path_parts(path_parts)
 
 
-def _get_object_from_path_parts(remaining: list[str]) -> dict[str, Any]:
-    current_path = remaining[0]
-    # The innermost field is always an empty object
-    if len(remaining) == 1:
-        return {current_path: {}}
+def _get_object_from_path_parts(remaining_parts: list[str]) -> dict[str, Any]:
+    current_part = remaining_parts[0]
+    next_value = {}
+    if len(remaining_parts) > 1:
+        next_value = _get_object_from_path_parts(remaining_parts[1:])
 
-    next_field = _get_object_from_path_parts(remaining[1:])
-
-    array_match = re.search(r"(\w+)\[(\d+)\]$", current_path)
+    array_match = re.search(r"(\w+)\[(\d+)\]$", current_part)
     if array_match:
-        # If the current field is an array, insert the next field as the last item
+        # If the current field is an array, insert the next value as the last item
         # in the array
         array_name, index = array_match.groups()
         array_value: list[dict[str, Any]] = _map(range(int(index)), lambda _: {})
-        return {array_name: array_value + [next_field]}
+        return {array_name: array_value + [next_value]}
 
-    # If the current field is a dict, insert the next field as a property
-    return {current_path: next_field}
+    # If the current field is a dict, insert the next value as a property
+    return {current_part: next_value}
