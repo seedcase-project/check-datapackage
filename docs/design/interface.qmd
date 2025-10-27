@@ -159,10 +159,16 @@ class Extension:
         import check_datapackage as cdp
 
         custom_extensions = cdp.Extension(
-            required=[cdp.Required(
-                jsonpath="$.description",
-                message="Data Packages must include a description."
-            )],
+            required=[
+                cdp.Required(
+                    jsonpath="$.description",
+                    message="Data Packages must include a description."
+                ),
+                cdp.Required(
+                    jsonpath="$.contributors[*].email",
+                    message="All contributors must have an email address."
+                )
+            ],
             custom_check=[cdp.CustomCheck(
                 type="only-mit",
                 jsonpath="$.licenses[*].name",
