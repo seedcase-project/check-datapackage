@@ -5,15 +5,25 @@ order: 3
 ---
 
 You can pass a `Config` object to `check()` to customise the checks done
-on the descriptor. The following configuration options are available:
+on your Data Package's properties. The following configuration options
+are available:
 
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
--   `exclude`: The list of checks to exclude.
+-   `exclusions`: A list of checks to exclude.
 -   `custom_checks`: The list of custom checks to run in addition to the
     checks defined in the standard.
--   `strict`: Whether to run recommended checks in addition to required
-    ones. Defaults to `False`.
+-   `strict`: Whether to include "SHOULD" checks in addition to "MUST"
+    checks. Defaults to `False`.
+
+::: callout-important
+The Data Package standard uses language from [RFC
+2119](https://www.ietf.org/rfc/rfc2119.txt) to define its specifications.
+They use "MUST" for required properties and "SHOULD" for properties that
+should be included but are not strictly required. We try to match this
+language in `check-datapackage` by using the terms "MUST" and "SHOULD",
+though we also use "required" for "MUST" in our documentation.
+:::
 
 ## Excluding checks
 
@@ -23,45 +33,45 @@ to.
 The Data Package standard defines a range of check types (e.g.,
 `required` or `pattern`) and it is also possible to create your own. For
 example, to exclude checks flagging missing fields, you would exclude
-the `required` check by defining an `Exclude` object with this `type`:
+the `required` check by defining an `Exclusion` object with this `type`:
 
 ```{python}
 from textwrap import dedent
 import check_datapackage as cdp
 
-exclude_required = cdp.Exclude(type="required")
+exclusion_required = cdp.Exclusion(type="required")
 ```
 
 To exclude checks of a specific field or fields, you can use a [JSON
 path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath`
-attribute of an `Exclude` object. For example, you can exclude all
-checks on the `name` field of the Data Package descriptor by writing:
+attribute of an `Exclusion` object. For example, you can exclude all
+checks on the `name` field of the Data Package properties by writing:
 
 ```{python}
-exclude_name = cdp.Exclude(jsonpath="$.name")
+exclusion_name = cdp.Exclusion(jsonpath="$.name")
 ```
 
 Or you can use the wildcard JSON path selector to exclude checks on the
-`path` field of **all** Data Resource descriptors:
+`path` field of **all** Data Resource properties:
 
 ```{python}
-exclude_path = cdp.Exclude(jsonpath="$.resources[*].path")
+exclusion_path = cdp.Exclusion(jsonpath="$.resources[*].path")
 ```
 
 The `type` and `jsonpath` arguments can also be combined:
 
 ```{python}
-exclude_desc_required = cdp.Exclude(type="required", jsonpath="$.resources[*].description")
+exclusion_desc_required = cdp.Exclusion(type="required", jsonpath="$.resources[*].description")
 ```
 
-This would exclude required checks on the `description` field of Data
-Resource descriptors.
+This will exclude required checks on the `description` field of Data
+Resource properties.
 
-To make the `check()` function aware of your exclusions, you add them to
-the `Config` object passed to the function:
+To apply your exclusions when running the `check()`, you add them to the
+`Config` object passed to the `check()` function:
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "id": "123-abc-123",
@@ -77,8 +87,8 @@ package_descriptor = {
     ],
 }
 
-config = cdp.Config(exclude=[exclude_required, exclude_name, exclude_path])
-cdp.check(descriptor=package_descriptor, config=config)
+config = cdp.Config(exclusions=[exclusion_required, exclusion_name, exclusion_path])
+cdp.check(properties=package_properties, config=config)
 ```
 
 In the example above, we would expect four `Issue` items: the package
@@ -125,7 +135,7 @@ To register your custom checks with the `check()` function, you add them
 to the `Config` object passed to the function:
 
 ```{python}
-package_descriptor = {
+package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -147,7 +157,7 @@ package_descriptor = {
 }
 
 config = cdp.Config(custom_checks=[license_check])
-cdp.check(descriptor=package_descriptor, config=config)
+cdp.check(properties=package_properties, config=config)
 ```
 
 We can see that the custom check was applied: `check()` returned one
@@ -155,15 +165,17 @@ issue flagging the first license attached to the Data Package.
 
 ## Strict mode
 
-The Data Package standard has both requirements and recommendations. By
-default, `check()` only checks requirements. Recommendations can be
-turned on by setting the `strict` argument to `True`. The example below
-violates the recommendation that the package `name` should contain no
-special characters.
+The Data Package standard includes properties that "MUST" and "SHOULD"
+be included and/or have a specific format in a compliant Data Package. By default, `check()` only
+the `check()` function only includes "MUST" checks. To include "SHOULD" checks,
+set the `strict` argument to `True`. For example,
+the `name` field of a Data Package "SHOULD" not contain special
+characters. So running `check()` in strict mode (`strict=True`) on the following
+properties would output an issue.
 
 ```{python}
 #| eval: false
-package_descriptor = {
+package_properties = {
     "name": "Woolly Dormice (Toros Dağları)",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
     "description": dedent("""
@@ -184,5 +196,5 @@ package_descriptor = {
     ],
 }
 
-cdp.check(descriptor=package_descriptor, strict=True)
+cdp.check(properties=package_properties, strict=True)
 ```

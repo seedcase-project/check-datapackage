@@ -6,11 +6,22 @@ This section of the documentation focuses on the design of the interface
 and how it is implemented as Python code.
 
 ::: callout-note
-We use {{< var wip >}} to indicate parts of the design that are still a
-work in progress, which will contain the function and class signatures.
-Once the interface is implemented, indicated by {{< var done >}}, we
-will remove the signatures from the documentation and point instead to
-the reference documentation.
+We use symbols to indicate parts of the design that are actively being
+worked on, done, or planned (see table below). For work that is planned
+or is in progress, we include the function signatures and docstrings to
+clarify the design. Once the interface is implemented (done), we will
+remove the signatures from the documentation and point to the reference
+documentation instead. The symbols we use are described in the table
+below.
+
+| Status | Description |
+|:-----------------------------:|:----------------------------------------|
+| {{< var done >}} | Interface that has been implemented. |
+| {{< var wip >}} | Interface that is currently being worked on. |
+| {{< var planned >}} | Interface that is planned, but isn't being worked on currently. |
+
+: A table showing the symbols used to indicate the status of interface
+components, along with their descriptions.
 :::
 
 ## Inputs
@@ -66,7 +77,7 @@ decide when and how failed checks should be enforced or handled. The
 output of this function is a list of `Issue` objects, which are
 described below.
 
-### {{< var wip >}} `explain()`
+### {{< var planned >}} `explain()`
 
 The output of `check()` is a list of `Issue` objects, which are
 structured and machine-readable, but not very human-readable and
@@ -88,13 +99,13 @@ def explain(issues: list[Issue]) -> list[str]:
     """
 ```
 
-### {{< var wip >}} `read_json()`
+### {{< var done >}} `read_json()`
 
 This is a simple helper function to read the `datapackage.json` file
-into a Python dictionary. See [`help(read_json)`](/docs/reference/read_json.qmd)
-for more details.
+into a Python dictionary. See
+[`help(read_json)`](/docs/reference/read_json.qmd) for more details.
 
-### {{< var wip >}} `read_config()`
+### {{< var planned >}} `read_config()`
 
 This is a simple helper function to read a configuration file into a
 `Config` object for when we extend to having the configurations in a
@@ -119,32 +130,136 @@ With all the configurations kept in one class, we can potentially store
 the configuration in a file that can be read into the class, which would
 be useful for a CLI interface.
 
-### {{< var wip >}} `Config`
+### {{< var done >}} `Config`
 
 `Config` is a class that holds all the configurations for the `check()`
 function.
 
 See the help documentation with `help(Config)` for more details.
 
-### {{< var wip >}} `Exclude`
+### {{< var done >}} `Exclusion`
 
-A subitem of `Config` for expressing checks to ignore.
+A sub-item of `Config` that expresses checks to exclude. This can be
+useful if you want to exclude (or skip) certain checks from the Data
+Package standard that are not relevant to your use case.
 
-See the help documentation with `help(Exclude)` for more details.
+See the help documentation with `help(Exclusion)` for more details.
 
-#### {{< var wip >}} `CustomCheck`
+#### {{< var wip >}} `Extensions`
 
-Expresses a custom check.
+This sub-item of `Config` defines extensions, i.e., additional checks
+that supplement those specified by the Data Package standard. It
+contains subitems that store additional checks, such as `RequiredCheck`
+and `CustomCheck`. This `Extensions` class might be expanded to include
+more types of extensions.
 
+```` python
+@dataclass(frozen=True)
+class Extensions:
+    """Extensions to the standard checks.
+
+    This contains additional checks to be made alongside the standard
+    Data Package checks.
+
+    Attributes:
+        required_checks: A list of `RequiredCheck` objects defining properties to set as required.
+        custom_checks: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
+            checks.
+
+    Examples:
+
+        ```{python}
+        import check_datapackage as cdp
+
+        extensions = cdp.Extensions(
+            required_checks=[
+                cdp.RequiredCheck(
+                    jsonpath="$.description",
+                    message="Data Packages must include a description."
+                ),
+                cdp.RequiredCheck(
+                    jsonpath="$.contributors[*].email",
+                    message="All contributors must have an email address."
+                )
+            ],
+            custom_checks=[cdp.CustomCheck(
+                type="only-mit",
+                jsonpath="$.licenses[*].name",
+                message="Data Packages may only be licensed under MIT.",
+                check=lambda license_name: license_name == "mit",
+            )]
+        )
+        # check(descriptor, config=cdp.Config(extensions=extensions))
+        ```
+    """
+    required_checks : list[RequiredCheck] = field(default_factory=list)
+    custom_checks : list[CustomCheck] = field(default_factory=list)
+````
+
+Each extension class must implement its own `apply()` method that takes
+the `datapackage.json` properties `dict` as input and outputs an `Issue`
+list that contains the issues found by that extension.
+
+#### {{< var wip >}} `RequiredCheck`
+
+A sub-item of `Extensions` that allows users to set specific properties
+as required that are not required by the Data Package standard. See the
+help documentation with `help(RequiredCheck)` for more details.
+
+#### {{< var done >}} `CustomCheck`
+
+A sub-item of `Extensions` that allows users to add an additional, custom
+check that `check-datapackage` will run alongside the standard checks.
 See the help documentation with `help(CustomCheck)` for more details.
 
-### {{< var wip >}} `Issue`
+### {{< var done >}} `Issue`
 
 This class represents an issue that is found when checking a Data
 Package.
 
 See the help documentation with
 [`help(Issue)`](/docs/reference/Issue.qmd) for more details.
+
+## {{< var planned >}} Configuration file
+
+When we develop the CLI, we'll use a config file to store the settings
+contained within the `Config` class. This file will be named `.cdp.toml`
+and will be located in the same directory as the `datapackage.json`
+file. This is an example of what that file could look like:
+
+``` toml
+# The Data Package standard version to check against.
+version = "v2"
+
+# Whether to check properties that must *and should* be included.
+strict = true
+
+# Exclude all issues related to the "resources" property.
+[[exclusions]]
+jsonpath = "$.resources"
+
+# Exclude all issues related to the "format" type in the schema.
+[[exclusions]]
+type = "format"
+
+# Exclude issues that are both a "pattern" type and found in
+# the "path" property of the "contributors" field.
+[[exclusions]]
+jsonpath = "$.contributors[*].path"
+type = "pattern"
+
+# Require that the "description" property is included in the Data Package.
+[[extensions.required_checks]]
+jsonpath = "$.description"
+message = "This Data Package needs to include a 'description' property."
+
+# A custom check to ensure that all resource names are lowercase.
+[[extensions.custom_checks]]
+jsonpath = "$.resources[*].name"
+type = "name-lowercase"
+message = "The value in the 'name' property of the 'resources' must be lowercase."
+check = "lambda name: name.islower()"
+```
 
 ## Flow
 
@@ -153,18 +268,18 @@ This is the potential flow of using `check-datapackage`:
 ```{mermaid}
 %%| label: fig-interface-flow
 %%| fig-cap: "Flow of functions and classes when using `check-datapackage`."
-%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the datapackage.json and .cdp.yaml files, then checking the descriptor with the config, and finally explaining any issues found."
+%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the descriptor with the config, and finally explaining any issues found."
 flowchart TD
     descriptor_file[(datapackage.json)]
     read_json["read_json()"]
     descriptor[/"Descriptor<br>(dict)"/]
 
-    config_file[(.cdp.yaml)]
+    config_file[(.cdp.toml)]
     read_config["read_config()"]
 
     config[/Config/]
     custom_check[/CustomCheck/]
-    exclude[/Exclude/]
+    exclusion[/Exclusion/]
     check["check()"]
     issues[/"list[Issue]"/]
 
@@ -173,8 +288,8 @@ flowchart TD
 
     descriptor_file --> read_json --> descriptor
     config_file --> read_config --> config
-    custom_check & exclude --> config
-    custom_check & exclude -.-> config_file
+    custom_check & exclusion --> config
+    custom_check & exclusion -.-> config_file
 
     descriptor & config --> check --> issues --> explain --> messages
 ```

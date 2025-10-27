@@ -11,8 +11,9 @@ class Issue:
         jsonpath (string): A [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)
             format pointing to the field in the input object where the issue is located.
             For example, `$.resources[2].name`.
-        type (string): The type of the check that failed. Used mostly for excluding
-            specific types of issues.
+        type (string): The type of the check that failed (e.g., a JSON schema type such
+            as "required", "type", "pattern", or "format", or a custom type). Used to
+            exclude specific types of issues.
         message (string): A description of what exactly the issue is.
 
     Examples:

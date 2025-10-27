@@ -5,76 +5,77 @@ from pytest import mark
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.examples import example_package_properties
-from check_datapackage.exclude import Exclude
+from check_datapackage.exclusion import Exclusion
 
 
-def test_exclude_none_type():
+def test_exclusion_none_type_and_jsonpath():
+    """Default Exclusion (without type and jsonpath) doesn't exclude default checks."""
     properties: dict[str, Any] = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "contributors": [{"path": "/a/bad/path"}],
     }
 
-    exclude = [Exclude()]
-    config = Config(exclude=exclude)
+    exclusion = [Exclusion()]
+    config = Config(exclusions=exclusion)
     issues = check(properties, config=config)
 
     assert len(issues) == 1
 
 
-def test_exclude_required_type():
-    """Exclude type with the required value."""
+def test_exclusion_required_type():
+    """Exclusion by required type."""
     properties = {"name": "a name with spaces"}
 
-    exclude = [Exclude(type="required")]
-    config = Config(exclude=exclude)
+    exclusion = [Exclusion(type="required")]
+    config = Config(exclusions=exclusion)
     issues = check(properties, config=config)
 
     assert len(issues) == 0
 
 
-def test_exclude_format_type():
-    """Exclude type with the format value."""
+def test_exclusion_format_type():
+    """Exclusion by format type."""
     # created must match a date format
     properties = {"created": "20240614"}
 
-    exclude = [Exclude(type="format")]
-    config = Config(exclude=exclude)
+    exclusion = [Exclusion(type="format")]
+    config = Config(exclusions=exclusion)
     issues = check(properties, config=config)
 
     # One issue: missing resources
     assert len(issues) == 1
 
 
-def test_exclude_pattern_type():
-    """Exclude types with the pattern value."""
+def test_exclusion_pattern_type():
+    """Exclusion by pattern type."""
     properties: dict[str, Any] = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "contributors": [{"path": "/a/bad/path"}],
     }
 
-    exclude = [Exclude(type="pattern")]
-    config = Config(exclude=exclude)
+    exclusion = [Exclusion(type="pattern")]
+    config = Config(exclusions=exclusion)
     issues = check(properties, config=config)
 
     assert len(issues) == 0
 
 
-def test_exclude_multiple_types():
-    """Exclude by many types."""
+def test_exclusions_multiple_types():
+    """Exclusions by multiple types."""
     properties: dict[str, Any] = {
         "name": "a name",
         "created": "20240614",
         "contributors": [{"path": "/a/bad/path"}],
     }
 
-    exclude = [
-        Exclude(type="required"),
-        Exclude(type="pattern"),
-        Exclude(type="format"),
+    exclusions = [
+        Exclusion(type="required"),
+        Exclusion(type="pattern"),
+        Exclusion(type="format"),
     ]
-    config = Config(exclude=exclude)
+    config = Config(exclusions=exclusions)
     issues = check(properties, config=config)
 
     assert len(issues) == 0
@@ -101,7 +102,8 @@ def test_exclude_multiple_types():
         ("$.resources[0].path", 2),
     ],
 )
-def test_exclude_jsonpath(jsonpath: str, num_issues: int) -> None:
+def test_exclusion_jsonpaths(jsonpath: str, num_issues: int) -> None:
+    """Exclusion by various jsonpaths."""
     properties = example_package_properties()
     # Total 3 issues
     properties["created"] = "20240614"
@@ -109,60 +111,63 @@ def test_exclude_jsonpath(jsonpath: str, num_issues: int) -> None:
     properties["resources"][0]["path"] = "/a/bad/path"
     properties.update({"contributors": [{"path": "/a/bad/path"}]})
 
-    exclude = [Exclude(jsonpath=jsonpath)]
-    config = Config(exclude=exclude)
+    exclusion = [Exclusion(jsonpath=jsonpath)]
+    config = Config(exclusions=exclusion)
     issues = check(properties, config=config)
 
     assert len(issues) == num_issues
 
 
-def test_exclude_jsonpath_multiple():
+def test_exclusion_multiple_jsonpaths():
+    """Exclusion by multiple jsonpaths."""
     properties = example_package_properties()
     properties["created"] = "20240614"
     properties.update({"contributors": [{"path": "/a/bad/path"}]})
 
-    exclude = [
-        Exclude(jsonpath="$.contributors[0].path"),
-        Exclude(jsonpath="$.created"),
+    exclusions = [
+        Exclusion(jsonpath="$.contributors[0].path"),
+        Exclusion(jsonpath="$.created"),
     ]
-    config = Config(exclude=exclude)
+    config = Config(exclusions=exclusions)
     issues = check(properties, config=config)
 
     assert len(issues) == 0
 
 
-def test_exclude_jsonpath_and_type():
+def test_exclusion_jsonpath_and_type():
+    """Exclusion by jsonpath and type."""
     properties = example_package_properties()
     properties["contributors"] = [{"path": "/a/bad/path"}, {"path": "/a/bad/path"}]
 
-    exclude = [
-        Exclude(jsonpath="$.contributors[0].path", type="pattern"),
+    exclusions = [
+        Exclusion(jsonpath="$.contributors[0].path", type="pattern"),
     ]
-    config = Config(exclude=exclude)
+    config = Config(exclusions=exclusions)
     issues = check(properties, config=config)
 
     assert len(issues) == 1
 
 
-def test_exclude_jsonpath_and_type_non_overlapping():
+def test_exclusion_jsonpath_and_type_non_overlapping():
+    """Exclusion by jsonpath and type where no overlap occurs."""
     properties = example_package_properties()
     # There should be two issues
     properties["created"] = "20240614"
     properties.update({"contributors": [{"path": "/a/bad/path"}]})
 
-    exclude = [
-        Exclude(jsonpath="$.contributors[0].path"),
-        Exclude(type="pattern"),
+    exclusions = [
+        Exclusion(jsonpath="$.contributors[0].path"),
+        Exclusion(type="pattern"),
     ]
-    config = Config(exclude=exclude)
+    config = Config(exclusions=exclusions)
     issues = check(properties, config=config)
 
     # For the created field
     assert len(issues) == 1
 
 
-def test_exclude_jsonpath_resources():
-    """Exclude by jsonpath for resources."""
+def test_exclusion_jsonpath_resources():
+    """Exclusion by jsonpath for resources."""
     properties: dict[str, Any] = {
         "name": "woolly-dormice",
         "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
@@ -173,5 +178,7 @@ def test_exclude_jsonpath_resources():
         "licenses": [{"name": "odc-pddl"}],
         "resources": "this is a string",  # should be an array
     }
-    issues = check(properties, config=Config(exclude=[Exclude(jsonpath="$.resources")]))
+    issues = check(
+        properties, config=Config(exclusions=[Exclusion(jsonpath="$.resources")])
+    )
     assert len(issues) == 0
