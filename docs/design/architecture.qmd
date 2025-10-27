@@ -26,8 +26,8 @@ This section describes the different users we expect and design for:
 -   **Developer:** Contributes to building up the Data Package including
     the data itself and/or the infrastructure around it. Wants to ensure
     that changes don't impact the compliance of the Data Package. Might
-    add custom checks or ignore certain checks to fit the specific needs
-    of the project.
+    add extensions (additional checks) or exclude certain Data Package
+    checks to fit the specific needs of the project.
 
 ## Naming
 
