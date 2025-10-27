@@ -145,25 +145,25 @@ Package standard that are not relevant to your use case.
 
 See the help documentation with `help(Exclusion)` for more details.
 
-#### {{< var wip >}} `Extension`
+#### {{< var wip >}} `Extensions`
 
 This sub-item of `Config` defines extensions, i.e., additional checks
 that supplement those specified by the Data Package standard. It
 contains subitems that store additional checks, such as `RequiredCheck`
-and `CustomCheck`. This `Extension` class might be expanded to include
+and `CustomCheck`. This `Extensions` class might be expanded to include
 more types of extensions.
 
 ```` python
-@dataclass
-class Extension:
-    """Extension to the standard checks.
+@dataclass(frozen=True)
+class Extensions:
+    """Extensions to the standard checks.
 
     This contains additional checks to be made alongside the standard
     Data Package checks.
 
     Attributes:
-        required: A list of `RequiredCheck` objects defining properties to set as required.
-        custom_check: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
+        required_checks: A list of `RequiredCheck` objects defining properties to set as required.
+        custom_checks: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
             checks.
 
     Examples:
@@ -171,8 +171,8 @@ class Extension:
         ```{python}
         import check_datapackage as cdp
 
-        extensions = cdp.Extension(
-            required=[
+        extensions = cdp.Extensions(
+            required_checks=[
                 cdp.RequiredCheck(
                     jsonpath="$.description",
                     message="Data Packages must include a description."
@@ -182,7 +182,7 @@ class Extension:
                     message="All contributors must have an email address."
                 )
             ],
-            custom_check=[cdp.CustomCheck(
+            custom_checks=[cdp.CustomCheck(
                 type="only-mit",
                 jsonpath="$.licenses[*].name",
                 message="Data Packages may only be licensed under MIT.",
@@ -192,23 +192,23 @@ class Extension:
         # check(descriptor, config=cdp.Config(extensions=extensions))
         ```
     """
-    required : Optional[list[RequiredCheck]] = None
-    custom_check : Optional[list[CustomCheck]] = None
+    required_check : list[RequiredCheck] = field(default_factory=list)
+    custom_checks : list[CustomCheck] = field(default_factory=list)
 ````
 
-Each extension class must implement it's own `apply()` method that takes
+Each extension class must implement its own `apply()` method that takes
 the `datapackage.json` properties `dict` as input and outputs an `Issue`
 list that contains the issues found by that extension.
 
 #### {{< var wip >}} `RequiredCheck`
 
-A sub-item of `Extension` that allows users to set specific properties
+A sub-item of `Extensions` that allows users to set specific properties
 as required that are not required by the Data Package standard. See the
 help documentation with `help(RequiredCheck)` for more details.
 
 #### {{< var done >}} `CustomCheck`
 
-A sub-item of `Extension` that allows users to add an additional, custom
+A sub-item of `Extensions` that allows users to add an additional, custom
 check that `check-datapackage` will run alongside the standard checks.
 See the help documentation with `help(CustomCheck)` for more details.
 
@@ -249,12 +249,12 @@ jsonpath = "$.contributors[*].path"
 type = "pattern"
 
 # Require that the "description" property is included in the Data Package.
-[[extensions.required]]
+[[extensions.required_checks]]
 jsonpath = "$.description"
 message = "This Data Package needs to include a 'description' property."
 
 # A custom check to ensure that all resource names are lowercase.
-[[extensions.custom_check]]
+[[extensions.custom_checks]]
 jsonpath = "$.resources[*].name"
 type = "name-lowercase"
 message = "The value in the 'name' property of the 'resources' must be lowercase."
