@@ -1,3 +1,4 @@
 # ruff: noqa
 # mypy: ignore-errors
-version  # unused variable (src/check_datapackage/config.py:40)
+tracebacklimit  # unused attribute (src/check_datapackage/check.py:58)
+version  # unused variable (src/check_datapackage/config.py:44)

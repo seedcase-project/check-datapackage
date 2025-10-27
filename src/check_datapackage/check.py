@@ -1,4 +1,5 @@
 import re
+import sys
 from dataclasses import dataclass
 from functools import reduce
 from typing import Any, Iterator, Optional
@@ -46,6 +47,19 @@ def check(
     issues = _check_object_against_json_schema(properties, schema)
     issues += apply_custom_checks(config.custom_checks, properties)
     issues = exclude(issues, config.exclusions, properties)
+
+    if error and issues:
+        # TODO: Switch to using `explain()` once implemented
+        errors: list[str] = _map(
+            issues,
+            lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
+        )
+        # Should hide the traceback for the user
+        sys.tracebacklimit = 0
+        raise Exception(
+            "There were some issues found in your `datapackage.json`:\n\n"
+            + "\n".join(errors)
+        )
 
     return sorted(set(issues))
 
