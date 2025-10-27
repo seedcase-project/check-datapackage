@@ -180,23 +180,23 @@ flowchart LR
         check("check()<br>[function]")
         explain("explain()<br>[function]")
 
-        exclusion --"Define checks to exclude"--> config
-        extension --"Define additional checks"--> config
-        config_file -. "Read configuration<br>from file" .-> read_config
+        exclusion --"Defines checks to exclude"--> config
+        extension --"Defines additional checks"--> config
+        config_file -. "Reads configuration<br>from file" .-> read_config
 
         read_json --"Provides properties as dict"--> check
-        read_config -. "Add check<br>configurations" .-> check
-        config --"Add check<br>configurations"--> check
+        read_config -. "Adds check<br>configurations" .-> check
+        config --"Adds check<br>configurations"--> check
 
-        check --"Pass found issues<br>to get non-technical<br>explanation"--> explain
+        check --"Passes found issues<br>to get non-technical<br>explanation"--> explain
     end
 
     dp_standard("Data Package V2<br>[standard]")
-    users("Users<br>[person]")
+    user("User<br>[person]")
 
-    dp_standard --"Definition of the standard"--> check
-    users --"Provide datapackage.json<br>to check"--> read_json
-    users --"Provide configuration file<br>(optional)"--> config_file
+    dp_standard --"Defines the Data<br>Package standard"--> check
+    user --"Provides datapackage.json<br>to check"--> read_json
+    user --"Provides configuration file<br>(optional)"--> config_file
 
     %% Styling
     style python_package fill:#FFFFFF, color:#000000
