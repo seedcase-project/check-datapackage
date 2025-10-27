@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from check_datapackage.internals import (
@@ -37,6 +37,12 @@ class CustomCheck:
             message="Data Packages may only be licensed under MIT.",
             check=lambda license_name: license_name == "mit",
         )
+        config = cdp.Config(
+            extensions=cdp.Extensions(
+                custom_checks=[license_check]
+            )
+        )
+        # check(descriptor, config=config)
         ```
     """
 
@@ -44,6 +50,59 @@ class CustomCheck:
     message: str
     check: Callable[[Any], bool]
     type: str = "custom"
+
+
+@dataclass(frozen=True)
+class Extensions:
+    """Extensions to the standard checks.
+
+    This sub-class of `Config` defines extensions, i.e., additional checks
+    that supplement those specified by the Data Package standard. It
+    contains sub-classes that store additional checks. This `Extensions` class
+    can be expanded to include more types of extensions.
+
+    Each extension class must implement its own `apply()` method that takes
+    the `datapackage.json` properties `dict` as input and outputs an `Issue`
+    list that contains the issues found by that extension.
+
+    Attributes:
+        custom_checks: A list of `CustomCheck` objects defining extra, custom
+            checks to run alongside the standard checks.
+
+    Examples:
+        ```python
+        # TODO: eval once RequiredCheck is implemented
+        import check_datapackage as cdp
+
+        extensions = cdp.Extensions(
+            required_checks=[
+                cdp.RequiredCheck(
+                    jsonpath="$.description",
+                    message="Data Packages must include a description.",
+                ),
+                cdp.RequiredCheck(
+                    jsonpath="$.contributors[*].email",
+                    message="All contributors must have an email address.",
+                ),
+            ],
+            custom_checks=[
+                cdp.CustomCheck(
+                    type="only-mit",
+                    jsonpath="$.licenses[*].name",
+                    message="Data Packages may only be licensed under MIT.",
+                    check=lambda license_name: license_name == "mit",
+                )
+            ],
+        )
+        # check(properties, config=cdp.Config(extensions=extensions))
+        ```
+    """
+
+    # docstring:
+    # required_checks: A list of `RequiredCheck` objects defining properties
+    #     to set as required.
+    # required_checks: list[RequiredCheck] = field(default_factory=list[RequiredCheck])
+    custom_checks: list[CustomCheck] = field(default_factory=list[CustomCheck])
 
 
 def apply_custom_checks(

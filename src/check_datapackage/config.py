@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
-from check_datapackage.custom_check import CustomCheck
+from check_datapackage.custom_check import Extensions
 from check_datapackage.exclusion import Exclusion
 
 
@@ -12,8 +12,8 @@ class Config:
     Attributes:
         exclusions (list[Exclusion]): Any issues matching any of Exclusion objects will
             be excluded (i.e., removed from the output of the check function).
-        custom_checks (list[CustomCheck]): Custom checks listed here will be done in
-            addition to checks defined in the Data Package standard.
+        extensions (list[Extensions]): Additional checks (called extensions)
+            that supplement those specified by the Data Package standard.
         strict (bool): Whether to include "SHOULD" checks in addition to "MUST" checks
             from the Data Package standard. If True, "SHOULD" checks will also be
             included. Defaults to False.
@@ -33,12 +33,14 @@ class Config:
         )
         config = cdp.Config(
             exclusions=[exclusion_required],
-            custom_checks=[license_check],
+            extensions=cdp.Extensions(custom_checks=[license_check]),
         )
+
+        # check(properties, config=config)
         ```
     """
 
-    exclusions: list[Exclusion] = field(default_factory=list)
-    custom_checks: list[CustomCheck] = field(default_factory=list)
+    exclusions: list[Exclusion] = field(default_factory=list[Exclusion])
+    extensions: Extensions = Extensions()
     strict: bool = False
     version: Literal["v1", "v2"] = "v2"
