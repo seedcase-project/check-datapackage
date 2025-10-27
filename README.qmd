@@ -6,7 +6,7 @@ metadata-files:
 
 <!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
 
-# {{< meta gh.repo >}}: Ensure the compliance of your Data Package metadata
+# `{{< meta gh.repo >}}`: Ensure the compliance of your Data Package metadata
 
 {{< include /docs/includes/_badges.qmd >}}
 

@@ -2,7 +2,7 @@
 
 <!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
 
-# check-datapackage: Ensure the compliance of your Data Package metadata
+# `check-datapackage`: Ensure the compliance of your Data Package metadata
 
 <!-- TODO: Include DOI after uploading -->
 
