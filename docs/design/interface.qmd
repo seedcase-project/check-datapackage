@@ -136,9 +136,11 @@ See the help documentation with `help(Exclusion)` for more details.
 
 #### {{< var wip >}} `Extension`
 
-This sub-item of `Config` defines extensions, i.e., additional checks that supplement those specified by the Data Package standard. It contains subitems that store
-additional checks, such as `Required` and `CustomCheck`. This `Extension`
-class might be expanded to include more types of extensions.
+This sub-item of `Config` defines extensions, i.e., additional checks
+that supplement those specified by the Data Package standard. It
+contains subitems that store additional checks, such as `RequiredCheck`
+and `CustomCheck`. This `Extension` class might be expanded to include
+more types of extensions.
 
 ```` python
 @dataclass
@@ -149,7 +151,7 @@ class Extension:
     Data Package checks.
 
     Attributes:
-        required: A list of `Required` objects defining properties to set as required.
+        required: A list of `RequiredCheck` objects defining properties to set as required.
         custom_check: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
             checks.
 
@@ -160,11 +162,11 @@ class Extension:
 
         extensions = cdp.Extension(
             required=[
-                cdp.Required(
+                cdp.RequiredCheck(
                     jsonpath="$.description",
                     message="Data Packages must include a description."
                 ),
-                cdp.Required(
+                cdp.RequiredCheck(
                     jsonpath="$.contributors[*].email",
                     message="All contributors must have an email address."
                 )
@@ -179,7 +181,7 @@ class Extension:
         # check(descriptor, config=cdp.Config(extensions=extensions))
         ```
     """
-    required : Optional[list[Required]] = None
+    required : Optional[list[RequiredCheck]] = None
     custom_check : Optional[list[CustomCheck]] = None
 ````
 
@@ -187,17 +189,17 @@ Each extension class must implement it's own `apply()` method that takes
 the `datapackage.json` properties `dict` as input and outputs an `Issue`
 list that contains the issues found by that extension.
 
-#### {{< var wip >}} `Required`
+#### {{< var wip >}} `RequiredCheck`
 
 A sub-item of `Extension` that allows users to set specific properties
 as required that are not required by the Data Package standard. See the
-help documentation with `help(Required)` for more details.
+help documentation with `help(RequiredCheck)` for more details.
 
 #### {{< var done >}} `CustomCheck`
 
-A sub-item of `Extension` that allows users to add an additional, custom check that `check-datapackage` will run alongside
-the standard checks. See the help documentation with `help(CustomCheck)`
-for more details.
+A sub-item of `Extension` that allows users to add an additional, custom
+check that `check-datapackage` will run alongside the standard checks.
+See the help documentation with `help(CustomCheck)` for more details.
 
 ### {{< var done >}} `Issue`
 
@@ -255,7 +257,7 @@ This is the potential flow of using `check-datapackage`:
 ```{mermaid}
 %%| label: fig-interface-flow
 %%| fig-cap: "Flow of functions and classes when using `check-datapackage`."
-%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the datapackage.json and .cdp.toml files, then checking the descriptor with the config, and finally explaining any issues found."
+%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the descriptor with the config, and finally explaining any issues found."
 flowchart TD
     descriptor_file[(datapackage.json)]
     read_json["read_json()"]
