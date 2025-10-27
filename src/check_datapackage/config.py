@@ -14,8 +14,9 @@ class Config:
             be excluded (i.e., removed from the output of the check function).
         custom_checks (list[CustomCheck]): Custom checks listed here will be done in
             addition to checks defined in the Data Package standard.
-        strict (bool): Whether to run recommended as well as required checks. If
-            True, recommended checks will also be run. Defaults to False.
+        strict (bool): Whether to include "SHOULD" checks in addition to "MUST" checks
+            from the Data Package standard. If True, "SHOULD" checks will also be
+            included. Defaults to False.
         version (str): The version of the Data Package standard to check against.
             Defaults to "v2".
 

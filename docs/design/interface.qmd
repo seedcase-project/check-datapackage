@@ -145,10 +145,71 @@ Package standard that are not relevant to your use case.
 
 See the help documentation with `help(Exclusion)` for more details.
 
+#### {{< var wip >}} `Extensions`
+
+This sub-item of `Config` defines extensions, i.e., additional checks
+that supplement those specified by the Data Package standard. It
+contains subitems that store additional checks, such as `RequiredCheck`
+and `CustomCheck`. This `Extensions` class might be expanded to include
+more types of extensions.
+
+```` python
+@dataclass(frozen=True)
+class Extensions:
+    """Extensions to the standard checks.
+
+    This contains additional checks to be made alongside the standard
+    Data Package checks.
+
+    Attributes:
+        required_checks: A list of `RequiredCheck` objects defining properties to set as required.
+        custom_checks: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
+            checks.
+
+    Examples:
+
+        ```{python}
+        import check_datapackage as cdp
+
+        extensions = cdp.Extensions(
+            required_checks=[
+                cdp.RequiredCheck(
+                    jsonpath="$.description",
+                    message="Data Packages must include a description."
+                ),
+                cdp.RequiredCheck(
+                    jsonpath="$.contributors[*].email",
+                    message="All contributors must have an email address."
+                )
+            ],
+            custom_checks=[cdp.CustomCheck(
+                type="only-mit",
+                jsonpath="$.licenses[*].name",
+                message="Data Packages may only be licensed under MIT.",
+                check=lambda license_name: license_name == "mit",
+            )]
+        )
+        # check(descriptor, config=cdp.Config(extensions=extensions))
+        ```
+    """
+    required_checks : list[RequiredCheck] = field(default_factory=list)
+    custom_checks : list[CustomCheck] = field(default_factory=list)
+````
+
+Each extension class must implement its own `apply()` method that takes
+the `datapackage.json` properties `dict` as input and outputs an `Issue`
+list that contains the issues found by that extension.
+
+#### {{< var wip >}} `RequiredCheck`
+
+A sub-item of `Extensions` that allows users to set specific properties
+as required that are not required by the Data Package standard. See the
+help documentation with `help(RequiredCheck)` for more details.
+
 #### {{< var done >}} `CustomCheck`
 
-A sub-item of `Config`. Expresses a custom check.
-
+A sub-item of `Extensions` that allows users to add an additional, custom
+check that `check-datapackage` will run alongside the standard checks.
 See the help documentation with `help(CustomCheck)` for more details.
 
 ### {{< var done >}} `Issue`
@@ -159,6 +220,47 @@ Package.
 See the help documentation with
 [`help(Issue)`](/docs/reference/Issue.qmd) for more details.
 
+## {{< var planned >}} Configuration file
+
+When we develop the CLI, we'll use a config file to store the settings
+contained within the `Config` class. This file will be named `.cdp.toml`
+and will be located in the same directory as the `datapackage.json`
+file. This is an example of what that file could look like:
+
+``` toml
+# The Data Package standard version to check against.
+version = "v2"
+
+# Whether to check properties that must *and should* be included.
+strict = true
+
+# Exclude all issues related to the "resources" property.
+[[exclusions]]
+jsonpath = "$.resources"
+
+# Exclude all issues related to the "format" type in the schema.
+[[exclusions]]
+type = "format"
+
+# Exclude issues that are both a "pattern" type and found in
+# the "path" property of the "contributors" field.
+[[exclusions]]
+jsonpath = "$.contributors[*].path"
+type = "pattern"
+
+# Require that the "description" property is included in the Data Package.
+[[extensions.required_checks]]
+jsonpath = "$.description"
+message = "This Data Package needs to include a 'description' property."
+
+# A custom check to ensure that all resource names are lowercase.
+[[extensions.custom_checks]]
+jsonpath = "$.resources[*].name"
+type = "name-lowercase"
+message = "The value in the 'name' property of the 'resources' must be lowercase."
+check = "lambda name: name.islower()"
+```
+
 ## Flow
 
 This is the potential flow of using `check-datapackage`:
@@ -166,13 +268,13 @@ This is the potential flow of using `check-datapackage`:
 ```{mermaid}
 %%| label: fig-interface-flow
 %%| fig-cap: "Flow of functions and classes when using `check-datapackage`."
-%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the datapackage.json and .cdp.yaml files, then checking the descriptor with the config, and finally explaining any issues found."
+%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the descriptor with the config, and finally explaining any issues found."
 flowchart TD
     descriptor_file[(datapackage.json)]
     read_json["read_json()"]
     descriptor[/"Descriptor<br>(dict)"/]
 
-    config_file[(.cdp.yaml)]
+    config_file[(.cdp.toml)]
     read_config["read_config()"]
 
     config[/Config/]
