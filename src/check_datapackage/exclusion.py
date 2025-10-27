@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from functools import reduce
 from typing import Any, Optional
 
 from check_datapackage.internals import (
@@ -93,31 +92,25 @@ def _same_type(issue: Issue, type: str) -> bool:
 
 def _get_test_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
     """Builds an object with a property at the given JSON Path location."""
-    fields = jsonpath.removeprefix("$.").split(".")
-    test_object: dict[str, Any] = {}
-    reduce(_set_object_field, fields, test_object)
-    return test_object
+    path_parts = jsonpath.removeprefix("$.").split(".")
+    return _get_object_from_path_parts(path_parts)
 
 
-def _set_object_field(obj: dict[str, Any], field: str) -> dict[str, Any]:
-    """Sets a field on the object to a placeholder value.
+def _get_object_from_path_parts(remaining: list[str]) -> dict[str, Any]:
+    current_path = remaining[0]
+    # The innermost field is always an empty object
+    if len(remaining) == 1:
+        return {current_path: {}}
+    
+    next_field = _get_object_from_path_parts(remaining[1:])
 
-    Array fields are set to an array with the necessary number of items.
-    E.g., `resources[1]` creates `'resources': [{}, {}]`.
-
-    Other fields are set to an empty object.
-
-    Returns:
-        The object most recently set. For arrays, this is the item at the given index.
-    """
-    array_match = re.search(r"(\w+)\[(\d+)\]$", field)
+    array_match = re.search(r"(\w+)\[(\d+)\]$", current_path)
     if array_match:
+        # If the current field is an array, insert the next field as the last item
+        # in the array
         array_name, index = array_match.groups()
-        index = int(index)
-        array_value: list[dict[str, Any]] = _map(range(index + 1), lambda _: {})
-        obj[array_name] = array_value
-        return array_value[index]
+        array_value: list[dict[str, Any]] = _map(range(int(index)), lambda _: {})
+        return {array_name: array_value + [next_field]}
 
-    dict_value: dict[str, Any] = {}
-    obj[field] = dict_value
-    return dict_value
+    # If the current field is a dict, insert the next field as a property
+    return {current_path: next_field}
