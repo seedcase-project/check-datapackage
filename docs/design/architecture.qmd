@@ -172,7 +172,7 @@ flowchart LR
         subgraph config_file["Configuration file"]
             config("Config<br>[class]")
             exclusion("Exclusion<br>[class]")
-            custom_check("CustomCheck<br>[class]")
+            extension("Extension<br>[class]")
         end
 
         read_config["read_config()<br>[function]"]
@@ -180,8 +180,8 @@ flowchart LR
         check("check()<br>[function]")
         explain("explain()<br>[function]")
 
-        exclusion --"Define checks to exclusion"--> config
-        custom_check --"Define custom checks"--> config
+        exclusion --"Define checks to exclude"--> config
+        extension --"Define additional checks"--> config
         config_file -. "Read configuration<br>from file" .-> read_config
 
         read_json --"Provides properties as dict"--> check
