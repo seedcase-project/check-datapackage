@@ -77,10 +77,10 @@ Data Package standard.
 
 `check-datapackage` receives the definitions of the Data Package
 descriptor's structure---including required properties, their formats,
-and recommended fields---from the Data Package standard (version 2). The
-standard provides this information through versioned JSON Schema
-profiles that define required properties and textual descriptions that
-outline recommendations.
+and recommended fields---from the Data Package standard. The standard
+provides this information through versioned JSON Schema profiles that
+define required properties and textual descriptions that outline
+recommendations.
 
 The users, described in the [User types](#user-types) section, provide
 `check-datapackage` with their Data Package's descriptor to check its
@@ -97,7 +97,7 @@ flowchart LR
         user_developer("Developer<br>[person]")
     end
 
-    dp_standard("Data Package V2<br>[standard]")
+    dp_standard("Data Package<br>[standard]")
     check("check-datapackage<br>[Python package]")
 
 
@@ -127,7 +127,7 @@ pipelines.
 flowchart LR
 
     users("Users<br>[person]")
-    dp_standard("Data Package V2<br>[standard]")
+    dp_standard("Data Package<br>[standard]")
 
     subgraph "check-datapackage"
         python("Core Python Package<br>[Python, JSON schema]")
@@ -191,7 +191,7 @@ flowchart LR
         check --"Passes found issues<br>to get non-technical<br>explanation"--> explain
     end
 
-    dp_standard("Data Package V2<br>[standard]")
+    dp_standard("Data Package<br>[standard]")
     user("User<br>[person]")
 
     dp_standard --"Defines the Data<br>Package standard"--> check
