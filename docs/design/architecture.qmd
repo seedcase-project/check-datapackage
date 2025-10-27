@@ -82,6 +82,13 @@ provides this information through versioned JSON Schema profiles that
 define required properties and textual descriptions that outline
 recommendations.
 
+::: callout-note
+In the initial version of `check-datapackage`, we only support the
+second edition of the Data Package standard (v2.0). However, we plan to
+extend this to support future editions as they are released, as well as
+the first edition to ensure backward compatibility.
+:::
+
 The users, described in the [User types](#user-types) section, provide
 `check-datapackage` with their Data Package's descriptor to check its
 compliance with the standard.
