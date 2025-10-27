@@ -81,8 +81,8 @@ def _get_matches(
 
 
 def _jsonpaths_match(issue: Issue, jsonpath: str) -> bool:
-    test_object = _get_test_object_from_jsonpath(issue.jsonpath)
-    jsonpaths = _get_direct_jsonpaths(jsonpath, test_object)
+    json_object = _get_json_object_from_jsonpath(issue.jsonpath)
+    jsonpaths = _get_direct_jsonpaths(jsonpath, json_object)
     return issue.jsonpath in jsonpaths
 
 
@@ -90,7 +90,7 @@ def _same_type(issue: Issue, type: str) -> bool:
     return type == issue.type
 
 
-def _get_test_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
+def _get_json_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
     """Builds an object with a property at the given JSON Path location."""
     path_parts = jsonpath.removeprefix("$.").split(".")
     return _get_object_from_path_parts(path_parts)
