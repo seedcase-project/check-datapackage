@@ -2,9 +2,9 @@
 
 from .check import check
 from .config import Config
-from .custom_check import CustomCheck
 from .examples import example_package_properties, example_resource_properties
 from .exclusion import Exclusion
+from .extensions import CustomCheck
 from .issue import Issue
 from .read_json import read_json
 
