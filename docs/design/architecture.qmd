@@ -26,8 +26,8 @@ This section describes the different users we expect and design for:
 -   **Developer:** Contributes to building up the Data Package including
     the data itself and/or the infrastructure around it. Wants to ensure
     that changes don't impact the compliance of the Data Package. Might
-    add custom checks or ignore certain checks to fit the specific needs
-    of the project.
+    add extensions (additional checks) or exclude certain Data Package
+    checks to fit the specific needs of the project.
 
 ## Naming
 
@@ -77,10 +77,17 @@ Data Package standard.
 
 `check-datapackage` receives the definitions of the Data Package
 descriptor's structure---including required properties, their formats,
-and recommended fields---from the Data Package standard (version 2). The
-standard provides this information through versioned JSON Schema
-profiles that define required properties and textual descriptions that
-outline recommendations.
+and recommended fields---from the Data Package standard. The standard
+provides this information through versioned JSON Schema profiles that
+define required properties and textual descriptions that outline
+recommendations.
+
+::: callout-note
+In the initial version of `check-datapackage`, we only support the
+second edition of the Data Package standard (v2.0). However, we plan to
+extend this to support future editions as they are released, as well as
+the first edition to ensure backward compatibility.
+:::
 
 The users, described in the [User types](#user-types) section, provide
 `check-datapackage` with their Data Package's descriptor to check its
@@ -97,7 +104,7 @@ flowchart LR
         user_developer("Developer<br>[person]")
     end
 
-    dp_standard("Data Package V2<br>[standard]")
+    dp_standard("Data Package<br>[standard]")
     check("check-datapackage<br>[Python package]")
 
 
@@ -127,7 +134,7 @@ pipelines.
 flowchart LR
 
     users("Users<br>[person]")
-    dp_standard("Data Package V2<br>[standard]")
+    dp_standard("Data Package<br>[standard]")
 
     subgraph "check-datapackage"
         python("Core Python Package<br>[Python, JSON schema]")
@@ -144,3 +151,65 @@ flowchart LR
     style check-datapackage fill:#FFFFFF, color:#000000
     style cli fill:#FFFFFF, stroke-dasharray: 5 5
 ```
+
+### Component/code
+
+In the diagram below, we zoom in on the core Python package container to
+show its internal components. In C4, a
+[component](https://c4model.com/abstractions/component) is "a grouping
+of related functionality encapsulated behind a well-defined interface",
+like a class or a module, while
+[code](https://c4model.com/abstractions/code) is the basic building
+blocks, such as classes and functions.
+
+Because the core Python package is relatively small and simple, and
+because both component and code diagrams include classes, we combine the
+component and code levels of the C4 model into a single diagram as shown
+below. This diagram shows the main classes and functions within the core
+Python package. Because the CLI is only a planned future extension, we
+do not include a component/code diagram for it at this time.
+
+```{mermaid}
+%%| label: fig-c4-component
+%%| fig-cap: "C4 component diagram showing the parts of the Python package and their connections."
+flowchart LR
+
+    subgraph python_package["Core Python Package"]
+
+        subgraph config_file["Configuration file"]
+            config("Config<br>[class]")
+            exclusion("Exclusion<br>[class]")
+            extension("Extension<br>[class]")
+        end
+
+        read_config["read_config()<br>[function]"]
+        read_json["read_json()<br>[function]"]
+        check("check()<br>[function]")
+        explain("explain()<br>[function]")
+
+        exclusion --"Defines checks to exclude"--> config
+        extension --"Defines additional checks"--> config
+        config_file -. "Reads configuration<br>from file" .-> read_config
+
+        read_json --"Provides properties as dict"--> check
+        read_config -. "Adds check<br>configurations" .-> check
+        config --"Adds check<br>configurations"--> check
+
+        check --"Passes found issues<br>to get non-technical<br>explanation"--> explain
+    end
+
+    dp_standard("Data Package<br>[standard]")
+    user("User<br>[person]")
+
+    dp_standard --"Defines the Data<br>Package standard"--> check
+    user --"Provides datapackage.json<br>to check"--> read_json
+    user --"Provides configuration file<br>(optional)"--> config_file
+
+    %% Styling
+    style python_package fill:#FFFFFF, color:#000000
+    style config_file fill:#FFFFFF, color:#000000, stroke-dasharray: 5 5
+```
+
+For more details on the individual classes and functions, see the
+[interface documentation](/docs/design/interface.qmd) and the [reference
+documentation](/docs/reference/index.qmd).
