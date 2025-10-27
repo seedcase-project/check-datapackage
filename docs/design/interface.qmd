@@ -158,23 +158,19 @@ class Extension:
         ```{python}
         import check_datapackage as cdp
 
-        exclusion_required = cdp.Extension(
+        custom_extensions = cdp.Extension(
             required=[cdp.Required(
                 jsonpath="$.description",
                 message="Data Packages must include a description."
             )],
-            custom_check=[],
+            custom_check=[cdp.CustomCheck(
+                type="only-mit",
+                jsonpath="$.licenses[*].name",
+                message="Data Packages may only be licensed under MIT.",
+                check=lambda license_name: license_name == "mit",
+            )]
         )
-        license_check = cdp.CustomCheck(
-            type="only-mit",
-            jsonpath="$.licenses[*].name",
-            message="Data Packages may only be licensed under MIT.",
-            check=lambda license_name: license_name == "mit",
-        )
-        config = cdp.Config(
-            exclusions=[exclusion_required],
-            custom_checks=[license_check],
-        )
+        # check(descriptor, config=cdp.Config(extensions=custom_extensions))
         ```
     """
     required : Optional[list[Required]] = None
