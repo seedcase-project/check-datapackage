@@ -22,10 +22,10 @@ class CustomCheck:
         check (Callable[[Any], bool]): A function that expresses the custom check.
             It takes the value at the `jsonpath` location as input and
             returns true if the check is met, false if it isn't.
-        type (str): The type of the custom check (e.g., a JSON schema type such as
-            "required", "type", "pattern", or "format", or a custom type). It will be
-            shown in error messages and can be used in an `Exclusion` object to exclude
-            the check. Each custom check should have a unique `type`.
+        type (str): An identifier for your custom check. This will show up in the
+            message as well as what you will use if you want to also exclude it
+            with the `type` argument of an `Exclusion` object. Each custom check should
+            have a unique `type`.
 
     Examples:
         ```{python}
