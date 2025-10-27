@@ -4,11 +4,32 @@ metadata-files:
   - _metadata.yml
 ---
 
-# {{< meta gh.repo >}}: Ensure the correctness and compliance of your Data Package
+<!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
+
+# `{{< meta gh.repo >}}`: Ensure the compliance of your Data Package metadata
 
 {{< include /docs/includes/_badges.qmd >}}
 
-<!-- TODO: Add description of project -->
+`check-datapackage` is a Python package that checks your Data Package’s
+metadata against the [Data Package standard](https://datapackage.org/),
+to ensure that it's compliant with the standard. Specifically, it:
+
+-   Checks your metadata in `datapackage.json` against the Data Package
+    standard.
+-   Enables you to configure which components of the metadata should or
+    should not be checked.
+-   Enables you to turn off specific checks defined in the standard.
+-   Supports user-defined, custom checks.
+-   Provides clear and user-friendly messages that point directly to
+    where issues occur in the metadata.
+-   Supports a strict mode that enforces full compliance with the
+    standard, including properties that must and should be included.
+
+::: callout-warning
+`check-datapackage` only checks the metadata in your datapackage.json
+file against the Data Package standard---it does not check the data
+itself against the metadata.
+:::
 
 ::: callout-tip
 This Python package was generated from the
@@ -24,14 +45,20 @@ Seedcase template :tada:
     configuration, pull request templates, and a
     [CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
     file.
--   `tools/vulture-allowlist.py`: List of variables that shouldn't be flagged by [Vulture](https://github.com/jendrikseipp/vulture) as unused.
--   `tools/get-contributors.sh`: Script to get list of project contributors.
+-   `tools/vulture-allowlist.py`: List of variables that shouldn't be
+    flagged by [Vulture](https://github.com/jendrikseipp/vulture) as
+    unused.
+-   `tools/get-contributors.sh`: Script to get list of project
+    contributors.
 -   `tests/`: Test files for the package.
 -   `src/`: Source code for the package.
--   `docs/`: Documentation about using and developing the Python package.
--   `_renderer.py`: Custom [`quartodoc`](https://machow.github.io/quartodoc/) renderer.
+-   `docs/`: Documentation about using and developing the Python
+    package.
+-   `_renderer.py`: Custom
+    [`quartodoc`](https://machow.github.io/quartodoc/) renderer.
 -   `pytest.ini`: Pytest configuration file.
--   `mypy.ini`: [`mypy`](https://mypy.readthedocs.io/en/stable/) configuration file for type checking Python code.
+-   `mypy.ini`: [`mypy`](https://mypy.readthedocs.io/en/stable/)
+    configuration file for type checking Python code.
 -   `.copier-answers.yml`: Contains the answers you gave when copying
     the project from the template. **You should not modify this file
     directly.**

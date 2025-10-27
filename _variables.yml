@@ -1,2 +1,3 @@
 done: '[{{< fa check-circle size="l" title="Completed" >}}]{style="color: #47DC76"}'
 wip: '[{{< fa hammer size="l" title="In progress" >}}]{style="color: #7647DC"}'
+planned: '[{{< fa map size="l" title="Planned" >}}]{style="color: #ADADAD"}'
