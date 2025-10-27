@@ -50,6 +50,7 @@ website:
            - auto: "docs/guide/*.qmd"
 
 quartodoc:
+  title: "API Reference"
   sidebar: "docs/reference/_sidebar.yml"
   style: "pkgdown"
   dir: "docs/reference"
