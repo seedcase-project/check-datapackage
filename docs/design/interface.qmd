@@ -136,21 +136,21 @@ See the help documentation with `help(Exclusion)` for more details.
 
 #### {{< var wip >}} `Extension`
 
-This sub-item of `Config` contains it's own set of sub-items that store
-extensions to the checks that `check-datapackage` runs. This `Extension`
-class can be expanded to include more types of extensions.
+This sub-item of `Config` defines extensions, i.e., additional checks that supplement those specified by the Data Package standard. It contains subitems that store
+additional checks, such as `Required` and `CustomCheck`. This `Extension`
+class might be expanded to include more types of extensions.
 
 ```` python
 @dataclass
 class Extension:
-    """Extensions to the standard checks.
+    """Extension to the standard checks.
 
     This contains additional checks to be made alongside the standard
     Data Package checks.
 
     Attributes:
-        required: A list of properties to set as required.
-        custom_check: A list of extra, custom checks to run alongside the standard
+        required: A list of `Required` objects defining properties to set as required.
+        custom_check: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
             checks.
 
     Examples:
@@ -158,7 +158,7 @@ class Extension:
         ```{python}
         import check_datapackage as cdp
 
-        custom_extensions = cdp.Extension(
+        extensions = cdp.Extension(
             required=[
                 cdp.Required(
                     jsonpath="$.description",
@@ -176,7 +176,7 @@ class Extension:
                 check=lambda license_name: license_name == "mit",
             )]
         )
-        # check(descriptor, config=cdp.Config(extensions=custom_extensions))
+        # check(descriptor, config=cdp.Config(extensions=extensions))
         ```
     """
     required : Optional[list[Required]] = None
@@ -185,7 +185,7 @@ class Extension:
 
 Each extension class must implement it's own `apply()` method that takes
 the `datapackage.json` properties `dict` as input and outputs an `Issue`
-list that has the issues found by that extension.
+list that contains the issues found by that extension.
 
 #### {{< var wip >}} `Required`
 
@@ -195,7 +195,7 @@ help documentation with `help(Required)` for more details.
 
 #### {{< var done >}} `CustomCheck`
 
-Add an extra, custom check that `check-datapackage` will run alongside
+A sub-item of `Extension` that allows users to add an additional, custom check that `check-datapackage` will run alongside
 the standard checks. See the help documentation with `help(CustomCheck)`
 for more details.
 
