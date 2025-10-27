@@ -11,7 +11,7 @@ are available:
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
 -   `exclusions`: A list of checks to exclude.
--   `extensions`: The list of extensions, which are additional checks
+-   `extensions`: A list of extensions, which are additional checks
     that supplement those specified by the Data Package standard.
 -   `strict`: Whether to run recommended checks in addition to required
     ones. Defaults to `False`.
@@ -90,10 +90,10 @@ these, the function will flag no issues.
 
 ## Adding extensions
 
-It is possible to add extensions in addition to the ones defined in the
-Data Package standard. There are currently two types of extensions
-supported: `CustomCheck` and `RequiredCheck`. You can use as many
-`CustomCheck`s and `RequiredCheck`s as you want to fit your needs.
+It is possible to add checks in addition to the ones defined in the
+Data Package standard. We call these additional checks *extensions*. There are currently two types of extensions
+supported: `CustomCheck` and `RequiredCheck`. You can add as many
+`CustomCheck`s and `RequiredCheck`s to your `Config` as you want to fit your needs.
 
 ### Custom checks
 
@@ -154,8 +154,8 @@ issue flagging the first license attached to the Data Package.
 
 ### Required checks
 
-You can also set specific properties in the `datapackage.json` file as
-required, even though it isn't required by the Data Package standard.
+You can also set specific properties in the `datapackage.json` file to be
+required, even when they aren't required by the Data Package standard with a `RequiredCheck`.
 For example, if you want to make the `description` field of Data Package
 a required field, you can define a `RequiredCheck` like this:
 
@@ -170,8 +170,7 @@ description_required = cdp.RequiredCheck(
 See the [`RequiredCheck`](/docs/reference/required_check.qmd)
 documentation for more details on its parameters.
 
-To use this `RequiredCheck` in the `Config` object passed to `check()`,
-it would look like:
+To apply this `RequiredCheck`, it should be added to the `Config` object passed to `check()` like shown below:
 
 ```{python}
 #| eval: false
