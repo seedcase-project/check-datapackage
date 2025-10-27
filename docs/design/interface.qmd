@@ -156,26 +156,26 @@ class Extension:
     Examples:
 
         ```{python}
-import check_datapackage as cdp
+        import check_datapackage as cdp
 
-exclusion_required = cdp.Extension(
-    required=[cdp.Required(
-        jsonpath="$.description",
-        message="Data Packages must include a description."
-    )],
-    custom_check=[],
-)
-license_check = cdp.CustomCheck(
-    type="only-mit",
-    jsonpath="$.licenses[*].name",
-    message="Data Packages may only be licensed under MIT.",
-    check=lambda license_name: license_name == "mit",
-)
-config = cdp.Config(
-    exclusions=[exclusion_required],
-    custom_checks=[license_check],
-)
-```
+        exclusion_required = cdp.Extension(
+            required=[cdp.Required(
+                jsonpath="$.description",
+                message="Data Packages must include a description."
+            )],
+            custom_check=[],
+        )
+        license_check = cdp.CustomCheck(
+            type="only-mit",
+            jsonpath="$.licenses[*].name",
+            message="Data Packages may only be licensed under MIT.",
+            check=lambda license_name: license_name == "mit",
+        )
+        config = cdp.Config(
+            exclusions=[exclusion_required],
+            custom_checks=[license_check],
+        )
+        ```
     """
     required : Optional[list[Required]] = None
     custom_check : Optional[list[CustomCheck]] = None
