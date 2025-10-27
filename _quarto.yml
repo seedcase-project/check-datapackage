@@ -76,7 +76,7 @@ quartodoc:
     - name: Exclusion
 
   - title: Output
-    desc: Classes that contain details about the issues found.
+    desc: Classes that contain details about the output.
     contents:
     - name: Issue
 
