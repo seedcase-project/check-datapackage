@@ -101,7 +101,7 @@ def _get_object_from_path_parts(remaining: list[str]) -> dict[str, Any]:
     # The innermost field is always an empty object
     if len(remaining) == 1:
         return {current_path: {}}
-    
+
     next_field = _get_object_from_path_parts(remaining[1:])
 
     array_match = re.search(r"(\w+)\[(\d+)\]$", current_path)
