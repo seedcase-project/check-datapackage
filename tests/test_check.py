@@ -1,4 +1,4 @@
-from pytest import mark
+from pytest import mark, raises
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
@@ -263,3 +263,12 @@ def test_fail_with_bad_resource_path(path, location, type):
     assert len(issues) == 1
     assert issues[0].type == type
     assert issues[0].jsonpath == location
+
+
+def test_error_as_true():
+    properties = {
+        "name": 123,
+    }
+
+    with raises(Exception):
+        check(properties, error=True)

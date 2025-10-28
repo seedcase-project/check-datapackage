@@ -95,7 +95,6 @@ execution, you can achieve this by setting the `error` argument of
 
 ```{python}
 #| error: true
-#| eval: false
 package_properties = {
     "name": 123,
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
