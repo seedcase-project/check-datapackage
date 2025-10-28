@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass, field
-from typing import Any, Callable, Protocol, Sequence
+from typing import Any, Callable
 
 from check_datapackage.internals import (
     _filter,
@@ -10,21 +10,6 @@ from check_datapackage.internals import (
     _map,
 )
 from check_datapackage.issue import Issue
-
-
-class SupportsApply(Protocol):
-    """A protocol for classes implementing an `apply()` method."""
-
-    def apply(self, properties: dict[str, Any]) -> list[Issue]:
-        """Applies the check to the properties and creates issues on failure.
-
-        Args:
-            properties: The properties to check.
-
-        Returns:
-            A list of `Issue`s.
-        """
-        ...
 
 
 @dataclass(frozen=True)
@@ -155,7 +140,7 @@ class RequiredCheck:
 
 
 def apply_checks(
-    checks: Sequence[SupportsApply], properties: dict[str, Any]
+    checks: list[CustomCheck | RequiredCheck], properties: dict[str, Any]
 ) -> list[Issue]:
     """Checks the properties for all user-defined checks and creates issues if any fail.
 
