@@ -103,19 +103,24 @@ def _get_json_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
     return _get_object_from_path_parts(path_parts)
 
 
-def _get_object_from_path_parts(remaining_parts: list[str]) -> dict[str, Any]:
-    current_part = remaining_parts[0]
+def _get_object_from_path_parts(path_parts: list[str]) -> dict[str, Any]:
+    current_part = path_parts[0]
     next_value = {}
-    if len(remaining_parts) > 1:
-        next_value = _get_object_from_path_parts(remaining_parts[1:])
+    if len(path_parts) > 1:
+        next_value = _get_object_from_path_parts(path_parts[1:])
 
-    array_match = re.search(r"(\w+)\[(\d+)\]$", current_part)
-    if array_match:
+    array_parts = _get_array_parts(current_part)
+    if array_parts:
         # If the current field is an array, insert the next value as the last item
         # in the array
-        array_name, index = array_match.groups()
-        array_value: list[dict[str, Any]] = _map(range(int(index)), lambda _: {})
-        return {array_name: array_value + [next_value]}
+        name, index = array_parts.groups()
+        value: list[dict[str, Any]] = _map(range(int(index)), lambda _: {})
+        return {name: value + [next_value]}
 
     # If the current field is a dict, insert the next value as a property
     return {current_part: next_value}
+
+
+def _get_array_parts(path_part: str) -> Optional[re.Match[str]]:
+    """Extract the name and index from a JSON path part representing an array."""
+    return re.search(r"(\w+)\[(\d+)\]$", path_part)
