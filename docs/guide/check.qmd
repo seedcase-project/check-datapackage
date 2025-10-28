@@ -13,9 +13,9 @@ ones are required, and what values are allowed.
 This guide shows you how to use the main function `check()` to run these
 checks. Each section walks you through a different part of `check()`,
 starting with its basic usage with the `properties` argument,
-introducing the default checks, how to configure which checks you want to run
-with the `config` argument, and how to handle failed checks with the
-`error` argument.
+introducing the default checks, how to configure which checks you want
+to run with the `config` argument, and how to handle failed checks with
+the `error` argument.
 
 ::: callout-tip
 For the full reference of the `check()` function, see the [reference
