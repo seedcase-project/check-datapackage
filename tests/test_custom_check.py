@@ -10,13 +10,13 @@ from check_datapackage.issue import Issue
 lowercase_check = CustomCheck(
     jsonpath="$.name",
     message="Name must be lowercase.",
-    check=lambda name: name.islower(),
+    check_value=lambda name: name.islower(),
     type="lowercase",
 )
 resource_name_check = CustomCheck(
     jsonpath="$.resources[*].name",
     message="Resource name must start with 'woolly'.",
-    check=lambda name: name.startswith("woolly"),
+    check_value=lambda name: name.startswith("woolly"),
     type="resource-name",
 )
 
@@ -90,7 +90,7 @@ def test_no_matching_jsonpath():
     custom_check = CustomCheck(
         jsonpath="$.missing",
         message="This check always fails.",
-        check=lambda value: False,
+        check_value=lambda value: False,
         type="always-fail",
     )
     config = Config(custom_checks=[custom_check])
