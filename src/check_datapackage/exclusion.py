@@ -81,7 +81,7 @@ def _get_matches(
 
 
 def _jsonpaths_match(issue: Issue, jsonpath: str) -> bool:
-    json_object = _get_json_object_from_jsonpath(issue.jsonpath)
+    json_object: dict[str, Any] = _get_json_object_from_jsonpath(issue.jsonpath)
     jsonpaths = _get_direct_jsonpaths(jsonpath, json_object)
     return issue.jsonpath in jsonpaths
 
