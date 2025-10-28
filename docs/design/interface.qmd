@@ -32,8 +32,7 @@ This section describes the inputs accepted by `check-datapackage`.
     properties of a Data Package or Data Resource. Allowed properties
     are defined in the [Data Package
     standard](https://datapackage.org/). A common use case is loading
-    the properties from the `datapackage.json` file (which is called
-    a descriptor).
+    the properties from the `datapackage.json` file.
 -   **Config:** A `Config` object can optionally be passed to
     `check-datapackage` with settings to modify the behaviour and output
     of the check mechanism.
