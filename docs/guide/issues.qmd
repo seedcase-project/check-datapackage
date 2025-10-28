@@ -11,36 +11,32 @@ properties. An `Issue` has attributes that provide information about the
 failed check, which are described in more detail in the
 [`Issue`](/docs/reference/Issue.qmd) documentation.
 
-## The `explain()` function
+<!-- TODO: Unhide this after it has been implemented. -->
 
-::: callout-important
-This function has not yet been implemented, though this section
-describes how it will work when it is available. See the
-[interface](/docs/design/interface.qmd) documentation for more details
-about it.
-:::
+::: content-hidden
+## The `explain()` function
 
 The `explain()` function provides a more verbose and user-friendly
 description of a list of `Issue`s. If you have package properties that
-looks like the below:
+looks like the below, with the missing `resources` field (that we remove
+here to demonstrate the `explain()` function):
 
 ```{python}
 import check_datapackage as cdp
-cdp.example_package_properties()
+package_properties = cdp.example_package_properties()
+del package_properties["resources"]
+package_properties
 ```
 
-You can give the issues found by `check()` to `explain()` to
-get a more human-friendly version of the problems:
+You can give the issues found by `check()` to `explain()` to get a more
+human-friendly version of the problems:
 
 ```{python}
 #| eval: false
-# Remove a required field to generate an issue
-package_properties = cdp.example_package_properties()
-del package_properties["resources"]
-
 issues = cdp.check(properties=package_properties)
 cdp.explain(issues)
 ```
 
 When setting `error=True` in `check()`, error messages will be generated
 by the `explain()` function.
+:::
