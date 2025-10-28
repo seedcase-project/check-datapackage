@@ -76,21 +76,7 @@ Now let's edit `package_properties` to have a `name` of the wrong type
 (a number instead of a string) and run `check()` again:
 
 ```{python}
-package_properties = {
-    "name": 123,
-    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "id": "123-abc-123",
-    "created": "2014-05-14T05:00:01+00:00",
-    "version": "1.0.0",
-    "licenses": [{"name": "odc-pddl"}],
-    "resources": [
-        {
-            "name": "woolly-dormice-2015",
-            "title": "Body fat percentage in the hibernating woolly dormouse",
-            "path": "resources/woolly-dormice-2015/data.parquet",
-        }
-    ],
-}
+package_properties["name"] = 123
 
 cdp.check(properties=package_properties)
 ```
