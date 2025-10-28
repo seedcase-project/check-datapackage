@@ -15,11 +15,11 @@ from check_datapackage.issue import Issue
 class SupportsApply(Protocol):
     """A protocol for classes implementing an `apply()` method."""
 
-    def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
-        """Applies the check to the descriptor and creates issues on failure.
+    def apply(self, properties: dict[str, Any]) -> list[Issue]:
+        """Applies the check to the properties and creates issues on failure.
 
         Args:
-            descriptor: The descriptor to check.
+            properties: The properties to check.
 
         Returns:
             A list of `Issue`s.
@@ -29,7 +29,7 @@ class SupportsApply(Protocol):
 
 @dataclass(frozen=True)
 class CustomCheck:
-    """A custom check to be done on a Data Package descriptor.
+    """A custom check to be done on Data Package metadata.
 
     Attributes:
         jsonpath (str): The location of the field or fields the custom check applies to,
@@ -70,16 +70,16 @@ class CustomCheck:
                 " Use `RequiredCheck` to mark fields as required instead."
             )
 
-    def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
-        """Checks the descriptor against this check and creates issues on failure.
+    def apply(self, properties: dict[str, Any]) -> list[Issue]:
+        """Checks the properties against this check and creates issues on failure.
 
         Args:
-            descriptor: The descriptor to check.
+            properties: The properties to check.
 
         Returns:
             A list of `Issue`s.
         """
-        matching_fields = _get_fields_at_jsonpath(self.jsonpath, descriptor)
+        matching_fields = _get_fields_at_jsonpath(self.jsonpath, properties)
         failed_fields = _filter(
             matching_fields, lambda field: not self.check(field.value)
         )
@@ -128,18 +128,18 @@ class RequiredCheck:
             )
         super().__setattr__("_field_name", field_name_match.group(1))
 
-    def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
-        """Checks the descriptor against this check and creates issues on failure.
+    def apply(self, properties: dict[str, Any]) -> list[Issue]:
+        """Checks the properties against this check and creates issues on failure.
 
         Args:
-            descriptor: The descriptor to check.
+            properties: The properties to check.
 
         Returns:
             A list of `Issue`s.
         """
-        matching_paths = _get_direct_jsonpaths(self.jsonpath, descriptor)
+        matching_paths = _get_direct_jsonpaths(self.jsonpath, properties)
         indirect_parent_path = self.jsonpath.removesuffix(self._field_name)
-        direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, descriptor)
+        direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, properties)
         missing_paths = _filter(
             direct_parent_paths,
             lambda path: f"{path}{self._field_name}" not in matching_paths,
@@ -155,18 +155,18 @@ class RequiredCheck:
 
 
 def apply_checks(
-    checks: Sequence[SupportsApply], descriptor: dict[str, Any]
+    checks: Sequence[SupportsApply], properties: dict[str, Any]
 ) -> list[Issue]:
-    """Checks the descriptor for all user-defined checks and creates issues if any fail.
+    """Checks the properties for all user-defined checks and creates issues if any fail.
 
     Args:
-        checks: The user-defined checks to apply to the descriptor.
-        descriptor: The descriptor to check.
+        checks: The user-defined checks to apply to the properties.
+        properties: The properties to check.
 
     Returns:
         A list of `Issue`s.
     """
     return _flat_map(
         checks,
-        lambda check: check.apply(descriptor),
+        lambda check: check.apply(properties),
     )
