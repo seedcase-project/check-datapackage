@@ -19,7 +19,7 @@ The overall aim of `check-datapackage` is to check the compliance of a
 [Data Package
 descriptor](https://datapackage.org/standard/glossary/#descriptor)
 against the [Data Package standard](https://datapackage.org/). The
-contents of the descriptor (the `datapackage.json`) are called
+contents of the `datapackage.json` are called
 ["properties"](https://datapackage.org/standard/data-package/#properties).
 
 Specifically, `check-datapackage` should:
@@ -41,7 +41,7 @@ Overall, `check-datapackage` must:
 -   Support custom, user-defined checks in addition to those in the
     standard.
 -   Provide clear, user-friendly, and structured messages about any
-    issues, identifying which properties the issues occur in.
+    issues, identifying in which properties the issues occur.
 -   Provide a strict mode that enforces all aspects of the Data Package
     standard, including "SHOULD" checks of properties that should be
     included or should be in a specific format.
