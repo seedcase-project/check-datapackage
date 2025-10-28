@@ -21,15 +21,15 @@ about it.
 :::
 
 The `explain()` function provides a more verbose and user-friendly
-description of a list of `Issue`s. If you had a package properties that
-looked like the below:
+description of a list of `Issue`s. If you have package properties that
+looks like the below:
 
 ```{python}
 import check_datapackage as cdp
 cdp.example_package_properties()
 ```
 
-You can use input the issues found using `check()` into `explain()` to
+You can give the issues found by `check()` to `explain()` to
 get a more human-friendly version of the problems:
 
 ```{python}
