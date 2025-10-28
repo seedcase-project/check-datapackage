@@ -82,8 +82,9 @@ class CustomCheck:
         )
 
 
+@dataclass(frozen=True)
 class RequiredCheck:
-    """A custom check that checks that a field is present (i.e. not None).
+    """A check that checks if a field is present (i.e. not None).
 
     Attributes:
         jsonpath (str): The location of the field or fields, expressed in [JSON
@@ -100,24 +101,23 @@ class RequiredCheck:
         )
         ```
     """
+    jsonpath: str
+    message: str
+    _field_name: str = field(init=False, repr=False)
 
-    _field_name: str
 
-    def __init__(self, jsonpath: str, message: str):
-        """Initializes the `RequiredCheck`."""
-        field_name_match = re.search(r"(?<!\.)(\.\w+)$", jsonpath)
+    def __post_init__(self) -> None:
+        """Checks that `RequiredCheck`s have sensible `jsonpath`s."""
+        field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
         if not field_name_match:
             raise ValueError(
-                f"Cannot define `RequiredCheck` for JSON path `{jsonpath}`."
+                f"Cannot define `RequiredCheck` for JSON path `{self.jsonpath}`."
                 " A `RequiredCheck` must target a concrete object field (e.g.,"
                 " `$.title`) or set of fields (e.g., `$.resources[*].title`)."
                 " Ambiguous paths (e.g., `$..title`) or paths pointing to array items"
                 " (e.g., `$.resources[0]`) are not allowed."
             )
-
-        self._field_name = field_name_match.group(1)
-        self.jsonpath = jsonpath
-        self.message = message
+        super().__setattr__("_field_name", field_name_match.group(1))
     
 
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
@@ -146,19 +146,19 @@ class RequiredCheck:
         )
 
 
-def apply_custom_checks(
-    custom_checks: Sequence[SupportsApply], descriptor: dict[str, Any]
+def apply_checks(
+    checks: Sequence[SupportsApply], descriptor: dict[str, Any]
 ) -> list[Issue]:
-    """Checks the descriptor for all custom checks and creates issues if any fail.
+    """Checks the descriptor for all user-defined checks and creates issues if any fail.
 
     Args:
-        custom_checks: The custom checks to apply to the descriptor.
+        checks: The user-defined checks to apply to the descriptor.
         descriptor: The descriptor to check.
 
     Returns:
         A list of `Issue`s.
     """
     return _flat_map(
-        custom_checks,
+        checks,
         lambda check: check.apply(descriptor),
     )
