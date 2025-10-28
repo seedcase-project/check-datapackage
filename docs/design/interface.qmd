@@ -31,8 +31,7 @@ This section describes the inputs accepted by `check-datapackage`.
 -   **Properties**: This is a Python dictionary containing the
     properties of a Data Package. Allowed properties are defined in the
     [Data Package standard](https://datapackage.org/). A common use case
-    is loading the properties from the `datapackage.json` file (which is
-    called a descriptor).
+    is loading the properties from the `datapackage.json` file.
 -   **Config:** A `Config` object can optionally be passed to
     `check-datapackage` with settings to modify the behaviour and output
     of the check mechanism.
@@ -174,20 +173,20 @@ import check_datapackage as cdp
 
 extensions = cdp.Extensions(
     required_checks=[
-        cdp.RequiredCheck(
-            jsonpath="$.description",
-            message="Data Packages must include a description."
-        ),
-        cdp.RequiredCheck(
-            jsonpath="$.contributors[*].email",
-            message="All contributors must have an email address."
-        )
+cdp.RequiredCheck(
+    jsonpath="$.description",
+    message="Data Packages must include a description."
+),
+cdp.RequiredCheck(
+    jsonpath="$.contributors[*].email",
+    message="All contributors must have an email address."
+)
     ],
     custom_checks=[cdp.CustomCheck(
-        type="only-mit",
-        jsonpath="$.licenses[*].name",
-        message="Data Packages may only be licensed under MIT.",
-        check=lambda license_name: license_name == "mit",
+type="only-mit",
+jsonpath="$.licenses[*].name",
+message="Data Packages may only be licensed under MIT.",
+check=lambda license_name: license_name == "mit",
     )]
 )
 # check(properties, config=cdp.Config(extensions=extensions))
