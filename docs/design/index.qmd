@@ -15,38 +15,39 @@ there.
 
 ## Purpose
 
-The overall aim of `check-datapackage` is to check the compliance of
-[Data Package
-descriptors](https://datapackage.org/standard/glossary/#descriptor)
-(i.e., the contents of `datapackage.json`) against the [Data Package
-standard](https://datapackage.org/).
+The overall aim of `check-datapackage` is to check the compliance of a
+Data Package's metadata, found in the `datapackage.json` file, against
+the [Data Package standard](https://datapackage.org/). The contents of
+the `datapackage.json` are called
+["properties"](https://datapackage.org/standard/data-package/#properties).
 
 Specifically, `check-datapackage` should:
 
-1.  Check that the structure and contents of Data Package descriptors
-    match the specification.
+1.  Check that the structure and contents of the Data Package (the
+    properties) match the specification.
 2.  Provide simple, user-friendly feedback about mismatches.
 
 ## Requirements
 
 Overall, `check-datapackage` must:
 
--   Check Data Package descriptors against the Data Package standard,
+-   Check the Data Package properties against the Data Package standard,
     specifically the Data Package
     [profiles](https://datapackage.org/standard/glossary/#profile).
 -   Allow configuration to check or not check certain components of the
-    descriptor.
+    properties.
 -   Support turning off specific checks defined in the standard.
 -   Support custom, user-defined checks in addition to those in the
     standard.
 -   Provide clear, user-friendly, and structured messages about any
-    issues, identifying where in the descriptor the issues occur.
+    issues, identifying in which properties the issues occur.
 -   Provide a strict mode that enforces all aspects of the Data Package
-    standard, including "SHOULD" checks of properties that should be included or should be in a specific format.
+    standard, including "SHOULD" checks of properties that should be
+    included or should be in a specific format.
 -   Be designed in a way that can be extended as a command-line
     interface (CLI) in the future.
 
 In general, `check-datapackage` will not:
 
 -   Depend on other Seedcase packages.
--   Check resource data against its descriptor.
+-   Check resource data against its properties.
