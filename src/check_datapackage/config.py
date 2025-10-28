@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
-from check_datapackage.custom_check import CustomCheck
+from check_datapackage.custom_check import SupportsApply
 from check_datapackage.exclusion import Exclusion
 
 
@@ -39,6 +39,6 @@ class Config:
     """
 
     exclusions: list[Exclusion] = field(default_factory=list)
-    custom_checks: list[CustomCheck] = field(default_factory=list)
+    custom_checks: list[SupportsApply] = field(default_factory=list)
     strict: bool = False
     version: Literal["v1", "v2"] = "v2"

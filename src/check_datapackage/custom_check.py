@@ -1,6 +1,6 @@
 import re
-from dataclasses import dataclass
-from typing import Any, Callable
+from dataclasses import dataclass, field
+from typing import Any, Callable, Protocol, Sequence
 
 from check_datapackage.internals import (
     _filter,
@@ -10,6 +10,20 @@ from check_datapackage.internals import (
     _map,
 )
 from check_datapackage.issue import Issue
+
+
+class SupportsApply(Protocol):
+    """A protocol for classes implementing an `apply()` method."""
+    def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
+        """Applies the check to the descriptor and creates issues on failure.
+
+        Args:
+            descriptor: The descriptor to check.
+
+        Returns:
+            A list of `Issue`s.
+        """
+        ...
 
 
 @dataclass(frozen=True)
@@ -68,7 +82,7 @@ class CustomCheck:
         )
 
 
-class RequiredCheck(CustomCheck):
+class RequiredCheck:
     """A custom check that checks that a field is present (i.e. not None).
 
     Attributes:
@@ -102,12 +116,9 @@ class RequiredCheck(CustomCheck):
             )
 
         self._field_name = field_name_match.group(1)
-        super().__init__(
-            jsonpath=jsonpath,
-            message=message,
-            check=lambda value: value is not None,
-            type="required",
-        )
+        self.jsonpath = jsonpath
+        self.message = message
+    
 
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
         """Checks the descriptor against this check and creates issues on failure.
@@ -129,14 +140,14 @@ class RequiredCheck(CustomCheck):
             missing_paths,
             lambda path: Issue(
                 jsonpath=path + self._field_name,
-                type=self.type,
+                type="required",
                 message=self.message,
             ),
         )
 
 
 def apply_custom_checks(
-    custom_checks: list[CustomCheck], descriptor: dict[str, Any]
+    custom_checks: Sequence[SupportsApply], descriptor: dict[str, Any]
 ) -> list[Issue]:
     """Checks the descriptor for all custom checks and creates issues if any fail.
 

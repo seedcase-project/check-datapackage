@@ -148,12 +148,12 @@ def test_required_check_array_wildcard():
     assert issues == [
         Issue(
             jsonpath="$.contributors[0].name",
-            type=name_check.type,
+            type="required",
             message=name_check.message,
         ),
         Issue(
             jsonpath="$.contributors[1].name",
-            type=name_check.type,
+            type="required",
             message=name_check.message,
         ),
     ]
