@@ -118,7 +118,7 @@ class RequiredCheck:
                 " (e.g., `$.resources[0]`) are not allowed."
             )
         super().__setattr__("_field_name", field_name_match.group(1))
-    
+
 
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
         """Checks the descriptor against this check and creates issues on failure.
