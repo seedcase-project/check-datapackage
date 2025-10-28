@@ -169,7 +169,7 @@ class Extensions:
     Examples:
 
         ```python
-        # Add curly brackets around python on the line above when the class has been implemented.
+        # TODO: Add curly brackets around python on the line above when the class has been implemented.
         import check_datapackage as cdp
 
         extensions = cdp.Extensions(
