@@ -14,6 +14,7 @@ from check_datapackage.issue import Issue
 
 class SupportsApply(Protocol):
     """A protocol for classes implementing an `apply()` method."""
+
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
         """Applies the check to the descriptor and creates issues on failure.
 
@@ -61,6 +62,14 @@ class CustomCheck:
     check: Callable[[Any], bool]
     type: str = "custom"
 
+    def __post_init__(self) -> None:
+        """Checks that `CustomCheck`s don't have their type set to `required`."""
+        if self.type == "required":
+            raise ValueError(
+                "Cannot define `CustomCheck` with `type='required'`."
+                " Use `RequiredCheck` to mark fields as required instead."
+            )
+
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
         """Checks the descriptor against this check and creates issues on failure.
 
@@ -101,10 +110,10 @@ class RequiredCheck:
         )
         ```
     """
+
     jsonpath: str
     message: str
     _field_name: str = field(init=False, repr=False)
-
 
     def __post_init__(self) -> None:
         """Checks that `RequiredCheck`s have sensible `jsonpath`s."""
@@ -118,7 +127,6 @@ class RequiredCheck:
                 " (e.g., `$.resources[0]`) are not allowed."
             )
         super().__setattr__("_field_name", field_name_match.group(1))
-
 
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
         """Checks the descriptor against this check and creates issues on failure.
