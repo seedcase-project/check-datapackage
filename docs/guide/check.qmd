@@ -72,9 +72,8 @@ package_properties = {
 cdp.check(properties=package_properties)
 ```
 
-Now let's define `package_properties` without the required `description`
-field and give a `name` with the wrong type (a number instead of a
-string) and run `check()` again:
+Now let's edit `package_properties` to have a `name` of the wrong type
+(a number instead of a string) and run `check()` again:
 
 ```{python}
 package_properties = {
