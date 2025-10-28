@@ -11,18 +11,19 @@ are available:
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
 -   `exclusions`: A list of checks to exclude.
--   `extensions`: A list of extensions, which are additional checks
-    that supplement those specified by the Data Package standard.
+-   `extensions`: A list of extensions, which are additional checks that
+    supplement those specified by the Data Package standard.
 -   `strict`: Whether to include "SHOULD" checks in addition to "MUST"
     checks. Defaults to `False`.
 
 ::: callout-important
 The Data Package standard uses language from [RFC
-2119](https://www.ietf.org/rfc/rfc2119.txt) to define its specifications.
-They use "MUST" for required properties and "SHOULD" for properties that
-should be included but are not strictly required. We try to match this
-language in `check-datapackage` by using the terms "MUST" and "SHOULD",
-though we also use "required" for "MUST" in our documentation.
+2119](https://www.ietf.org/rfc/rfc2119.txt) to define its
+specifications. They use "MUST" for required properties and "SHOULD" for
+properties that should be included but are not strictly required. We try
+to match this language in `check-datapackage` by using the terms "MUST"
+and "SHOULD", though we also use "required" for "MUST" in our
+documentation.
 :::
 
 ## Excluding checks
@@ -99,10 +100,11 @@ these, the function will flag no issues.
 
 ## Adding extensions
 
-It is possible to add checks in addition to the ones defined in the
-Data Package standard. We call these additional checks *extensions*. There are currently two types of extensions
-supported: `CustomCheck` and `RequiredCheck`. You can add as many
-`CustomCheck`s and `RequiredCheck`s to your `Config` as you want to fit your needs.
+It is possible to add checks in addition to the ones defined in the Data
+Package standard. We call these additional checks *extensions*. There
+are currently two types of extensions supported: `CustomCheck` and
+`RequiredCheck`. You can add as many `CustomCheck`s and `RequiredCheck`s
+to your `Config` as you want to fit your needs.
 
 ### Custom checks
 
@@ -163,10 +165,11 @@ issue flagging the first license attached to the Data Package.
 
 ### Required checks
 
-You can also set specific properties in the `datapackage.json` file to be
-required, even when they aren't required by the Data Package standard with a `RequiredCheck`.
-For example, if you want to make the `description` field of Data Package
-a required field, you can define a `RequiredCheck` like this:
+You can also set specific properties in the `datapackage.json` file to
+be required, even when they aren't required by the Data Package standard
+with a `RequiredCheck`. For example, if you want to make the
+`description` field of Data Package a required field, you can define a
+`RequiredCheck` like this:
 
 ```{python}
 #| eval: false
@@ -179,7 +182,8 @@ description_required = cdp.RequiredCheck(
 See the [`RequiredCheck`](/docs/reference/required_check.qmd)
 documentation for more details on its parameters.
 
-To apply this `RequiredCheck`, it should be added to the `Config` object passed to `check()` like shown below:
+To apply this `RequiredCheck`, it should be added to the `Config` object
+passed to `check()` like shown below:
 
 ```{python}
 #| eval: false
@@ -190,12 +194,12 @@ cdp.check(properties=package_properties, config=config)
 ## Strict mode
 
 The Data Package standard includes properties that "MUST" and "SHOULD"
-be included and/or have a specific format in a compliant Data Package. By default, `check()` only
-the `check()` function only includes "MUST" checks. To include "SHOULD" checks,
-set the `strict` argument to `True`. For example,
-the `name` field of a Data Package "SHOULD" not contain special
-characters. So running `check()` in strict mode (`strict=True`) on the following
-properties would output an issue.
+be included and/or have a specific format in a compliant Data Package.
+By default, `check()` only the `check()` function only includes "MUST"
+checks. To include "SHOULD" checks, set the `strict` argument to `True`.
+For example, the `name` field of a Data Package "SHOULD" not contain
+special characters. So running `check()` in strict mode (`strict=True`)
+on the following properties would output an issue.
 
 ```{python}
 #| eval: false
