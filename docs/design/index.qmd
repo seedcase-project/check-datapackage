@@ -16,10 +16,9 @@ there.
 ## Purpose
 
 The overall aim of `check-datapackage` is to check the compliance of a
-[Data Package
-descriptor](https://datapackage.org/standard/glossary/#descriptor)
-against the [Data Package standard](https://datapackage.org/). The
-contents of the `datapackage.json` are called
+Data Package's metadata, found in the `datapackage.json` file, against
+the [Data Package standard](https://datapackage.org/). The contents of
+the `datapackage.json` are called
 ["properties"](https://datapackage.org/standard/data-package/#properties).
 
 Specifically, `check-datapackage` should:
