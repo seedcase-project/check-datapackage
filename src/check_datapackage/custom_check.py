@@ -118,7 +118,7 @@ class RequiredCheck:
         self._field_name = field_name_match.group(1)
         self.jsonpath = jsonpath
         self.message = message
-    
+
 
     def apply(self, descriptor: dict[str, Any]) -> list[Issue]:
         """Checks the descriptor against this check and creates issues on failure.
