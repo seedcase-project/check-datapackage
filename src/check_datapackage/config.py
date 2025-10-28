@@ -12,7 +12,7 @@ class Config:
     Attributes:
         exclusions (list[Exclusion]): Any issues matching any of Exclusion objects will
             be excluded (i.e., removed from the output of the check function).
-        extensions (list[Extensions]): Additional checks (called extensions)
+        extensions (Extensions): Additional checks (called extensions)
             that supplement those specified by the Data Package standard.
         strict (bool): Whether to include "SHOULD" checks in addition to "MUST" checks
             from the Data Package standard. If True, "SHOULD" checks will also be
