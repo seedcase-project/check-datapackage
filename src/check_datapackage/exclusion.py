@@ -36,6 +36,13 @@ class Exclusion:
             type="required",
             jsonpath="$.resources[*].description"
         )
+        config = cdp.Config(
+            exclusions=[
+                exclusion_required,
+                exclusion_name,
+                exclusion_desc_required
+            ]
+        )
         ```
     """
 
