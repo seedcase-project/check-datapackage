@@ -8,12 +8,12 @@ The purpose of `check-datapackage` is to make sure a Data Package's
 metadata---stored in its `datapackage.json` file---complies with the
 [Data Package standard](https://datapackage.org). This standard defines
 the available properties at each level of the `datapackage.json`, which
-are required, and what values are allowed.
+ones are required, and what values are allowed.
 
-This guide shows how to use the main function `check()` to run these
+This guide shows you how to use the main function `check()` to run these
 checks. Each section walks you through a different part of `check()`,
 starting with its basic usage with the `properties` argument,
-introducing the default checks and how to configure which checks run
+introducing the default checks, how to configure which checks you want to run
 with the `config` argument, and how to handle failed checks with the
 `error` argument.
 
@@ -36,7 +36,7 @@ these properties from the JSON file using the helper function
 By default, if any issues are found, `check()` returns a list of `Issue`
 objects---each one describing a failed check on a property. If no issues
 are found, `check()` returns an empty list. If you'd rather have the
-function raise an error if it finds any issues, see the [Stop program on
+function give an error if it finds any issues, see the [Stop program on
 failed checks (`error=True`)](#stop-program-on-failed-checks-errortrue)
 section below.
 
