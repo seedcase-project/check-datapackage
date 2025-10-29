@@ -50,6 +50,7 @@ website:
            - auto: "docs/guide/*.qmd"
 
 quartodoc:
+  title: "API Reference"
   sidebar: "docs/reference/_sidebar.yml"
   style: "pkgdown"
   dir: "docs/reference"
@@ -62,18 +63,31 @@ quartodoc:
     show_signature_annotations: true
   options: null
   sections:
-  - title: check_datapackage
-    desc: Classes and functions in `check_datapackage`.
+  - title: Functions
+    desc: Core functions used to check Data Packages.
     contents:
     - name: check
     - name: read_json
+
+  - title: Configuration
+    desc: Classes to configure behaviour of the checks.
+    contents:
     - name: Config
     - name: CustomCheck
     - name: RequiredCheck
     - name: Exclusion
+
+  - title: Output
+    desc: Classes that contain details about the output.
+    contents:
     - name: Issue
+
+  - title: Examples
+    desc: Example Data Package properties used for documents and testing.
+    contents:
     - name: example_package_properties
     - name: example_resource_properties
+
 
 metadata-files:
   - docs/reference/_sidebar.yml
