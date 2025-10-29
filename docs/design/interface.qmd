@@ -167,30 +167,30 @@ class Extensions:
 
     Examples:
 
-        ```{python}
-#| eval: false
-import check_datapackage as cdp
+        ```python
+        # TODO: Add curly brackets around python on the line above when the class has been implemented.
+        import check_datapackage as cdp
 
-extensions = cdp.Extensions(
-    required_checks=[
-cdp.RequiredCheck(
-    jsonpath="$.description",
-    message="Data Packages must include a description."
-),
-cdp.RequiredCheck(
-    jsonpath="$.contributors[*].email",
-    message="All contributors must have an email address."
-)
-    ],
-    custom_checks=[cdp.CustomCheck(
-type="only-mit",
-jsonpath="$.licenses[*].name",
-message="Data Packages may only be licensed under MIT.",
-check=lambda license_name: license_name == "mit",
-    )]
-)
-# check(properties, config=cdp.Config(extensions=extensions))
-```
+        extensions = cdp.Extensions(
+            required_checks=[
+                cdp.RequiredCheck(
+                    jsonpath="$.description",
+                    message="Data Packages must include a description."
+                ),
+                cdp.RequiredCheck(
+                    jsonpath="$.contributors[*].email",
+                    message="All contributors must have an email address."
+                )
+            ],
+            custom_checks=[cdp.CustomCheck(
+                type="only-mit",
+                jsonpath="$.licenses[*].name",
+                message="Data Packages may only be licensed under MIT.",
+                check=lambda license_name: license_name == "mit",
+            )]
+        )
+        # check(properties, config=cdp.Config(extensions=extensions))
+        ```
     """
     required_checks : list[RequiredCheck] = field(default_factory=list)
     custom_checks : list[CustomCheck] = field(default_factory=list)
