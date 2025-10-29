@@ -7,6 +7,13 @@ def example_resource_properties() -> dict[str, Any]:
 
     Returns:
         A set of example resource properties.
+
+    Examples:
+        ```{python}
+        import check_datapackage as cdp
+
+        cdp.example_resource_properties()
+        ```
     """
     return {
         "name": "woolly-dormice-2015",
@@ -20,6 +27,13 @@ def example_package_properties() -> dict[str, Any]:
 
     Returns:
         A set of example package properties.
+
+    Examples:
+        ```{python}
+        import check_datapackage as cdp
+
+        cdp.example_package_properties()
+        ```
     """
     return {
         "name": "woolly-dormice",
