@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
-from check_datapackage.custom_check import CustomCheck
 from check_datapackage.exclusion import Exclusion
+from check_datapackage.extensions import CustomCheck
 
 
 @dataclass
