@@ -1,5 +1,5 @@
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable
 
 from check_datapackage.internals import (
@@ -47,14 +47,6 @@ class CustomCheck:
     check: Callable[[Any], bool]
     type: str = "custom"
 
-    def __post_init__(self) -> None:
-        """Checks that `CustomCheck`s don't have their type set to `required`."""
-        if self.type == "required":
-            raise ValueError(
-                "Cannot define `CustomCheck` with `type='required'`."
-                " Use `RequiredCheck` to mark fields as required instead."
-            )
-
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
         """Checks the properties against this check and creates issues on failure.
 
@@ -98,20 +90,6 @@ class RequiredCheck:
 
     jsonpath: str
     message: str
-    _field_name: str = field(init=False, repr=False)
-
-    def __post_init__(self) -> None:
-        """Checks that `RequiredCheck`s have sensible `jsonpath`s."""
-        field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
-        if not field_name_match:
-            raise ValueError(
-                f"Cannot define `RequiredCheck` for JSON path `{self.jsonpath}`."
-                " A `RequiredCheck` must target a concrete object field (e.g.,"
-                " `$.title`) or set of fields (e.g., `$.resources[*].title`)."
-                " Ambiguous paths (e.g., `$..title`) or paths pointing to array items"
-                " (e.g., `$.resources[0]`) are not allowed."
-            )
-        super().__setattr__("_field_name", field_name_match.group(1))
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
         """Checks the properties against this check and creates issues on failure.
@@ -122,17 +100,23 @@ class RequiredCheck:
         Returns:
             A list of `Issue`s.
         """
+        # TODO: check jsonpath when checking other user input
+        field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
+        if not field_name_match:
+            return []
+        field_name = field_name_match.group(1)
+
         matching_paths = _get_direct_jsonpaths(self.jsonpath, properties)
-        indirect_parent_path = self.jsonpath.removesuffix(self._field_name)
+        indirect_parent_path = self.jsonpath.removesuffix(field_name)
         direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, properties)
         missing_paths = _filter(
             direct_parent_paths,
-            lambda path: f"{path}{self._field_name}" not in matching_paths,
+            lambda path: f"{path}{field_name}" not in matching_paths,
         )
         return _map(
             missing_paths,
             lambda path: Issue(
-                jsonpath=path + self._field_name,
+                jsonpath=path + field_name,
                 type="required",
                 message=self.message,
             ),

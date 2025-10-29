@@ -1,5 +1,3 @@
-from pytest import mark, raises
-
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.custom_check import CustomCheck, RequiredCheck
@@ -157,33 +155,3 @@ def test_required_check_array_wildcard():
             message=name_check.message,
         ),
     ]
-
-
-@mark.parametrize(
-    "jsonpath",
-    [
-        "$",
-        "..*",
-        "created",
-        "$..path",
-        "..resources",
-        "$.resources[0].*",
-        "$.resources[*]",
-    ],
-)
-def test_required_check_cannot_apply_to_ambiguous_path(jsonpath):
-    with raises(ValueError):
-        RequiredCheck(
-            jsonpath=jsonpath,
-            message="This should fail.",
-        )
-
-
-def test_custom_check_cannot_be_type_required():
-    with raises(ValueError):
-        CustomCheck(
-            jsonpath="$.name",
-            message="A message.",
-            check=lambda _: True,
-            type="required",
-        )
