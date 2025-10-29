@@ -1,6 +1,6 @@
 from check_datapackage.check import check
 from check_datapackage.config import Config
-from check_datapackage.custom_check import CustomCheck
+from check_datapackage.custom_check import CustomCheck, Extensions
 from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
@@ -24,7 +24,7 @@ resource_name_check = CustomCheck(
 def test_direct_jsonpath():
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
-    config = Config(custom_checks=[lowercase_check])
+    config = Config(extensions=Extensions(custom_checks=[lowercase_check]))
     issues = check(properties, config=config)
 
     assert issues == [
@@ -41,7 +41,7 @@ def test_indirect_jsonpath():
     properties["resources"].append(example_resource_properties())
     properties["resources"][1]["name"] = "not starting with woolly"
 
-    config = Config(custom_checks=[resource_name_check])
+    config = Config(extensions=Extensions(custom_checks=[resource_name_check]))
     issues = check(properties, config=config)
 
     assert issues == [
@@ -58,7 +58,9 @@ def test_multiple_custom_checks():
     properties["name"] = "ALLCAPS"
     properties["resources"][0]["name"] = "not starting with woolly"
 
-    config = Config(custom_checks=[lowercase_check, resource_name_check])
+    config = Config(
+        extensions=Extensions(custom_checks=[lowercase_check, resource_name_check])
+    )
     issues = check(properties, config=config)
 
     assert issues == [
@@ -79,7 +81,7 @@ def test_custom_checks_and_default_checks():
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
     del properties["resources"]
-    config = Config(custom_checks=[lowercase_check])
+    config = Config(extensions=Extensions(custom_checks=[lowercase_check]))
     issues = check(properties, config=config)
 
     assert [issue.type for issue in issues] == ["lowercase", "required"]
@@ -93,7 +95,7 @@ def test_no_matching_jsonpath():
         check=lambda value: False,
         type="always-fail",
     )
-    config = Config(custom_checks=[custom_check])
+    config = Config(extensions=Extensions(custom_checks=[custom_check]))
     issues = check(properties, config=config)
 
     assert issues == []
