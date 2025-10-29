@@ -1,18 +1,21 @@
+import re
 from dataclasses import dataclass
 from typing import Any, Callable
 
 from check_datapackage.internals import (
+    DescriptorField,
     _filter,
     _flat_map,
+    _get_direct_jsonpaths,
     _get_fields_at_jsonpath,
     _map,
 )
 from check_datapackage.issue import Issue
 
 
-@dataclass
+@dataclass(frozen=True)
 class CustomCheck:
-    """A custom check to be done on a Data Package descriptor.
+    """A custom check to be done on Data Package metadata.
 
     Attributes:
         jsonpath (str): The location of the field or fields the custom check applies to,
@@ -45,49 +48,101 @@ class CustomCheck:
     check: Callable[[Any], bool]
     type: str = "custom"
 
+    def apply(self, properties: dict[str, Any]) -> list[Issue]:
+        """Applies the custom check to the properties.
 
-def apply_custom_checks(
-    custom_checks: list[CustomCheck], descriptor: dict[str, Any]
+        Args:
+            properties: The properties to check.
+
+        Returns:
+            A list of `Issue`s.
+        """
+        fields: list[DescriptorField] = _get_fields_at_jsonpath(
+            self.jsonpath,
+            properties,
+        )
+        matches: list[DescriptorField] = _filter(
+            fields,
+            lambda field: not self.check(field.value),
+        )
+        return _map(
+            matches,
+            lambda field: Issue(
+                jsonpath=field.jsonpath, type=self.type, message=self.message
+            ),
+        )
+
+
+@dataclass(frozen=True)
+class RequiredCheck:
+    """Set a specific property as required.
+
+    Attributes:
+        jsonpath (str): The location of the field or fields, expressed in [JSON
+            path](https://jg-rp.github.io/python-jsonpath/syntax/) notation, to which
+            the check applies (e.g., `$.resources[*].name`).
+        message (str): The message that is shown when the check fails.
+
+    Examples:
+        ```{python}
+        import check_datapackage as cdp
+        required_title_check = cdp.RequiredCheck(
+            jsonpath="$.title",
+            message="A title is required.",
+        )
+        ```
+    """
+
+    jsonpath: str
+    message: str
+
+    def apply(self, properties: dict[str, Any]) -> list[Issue]:
+        """Applies the required check to the properties.
+
+        Args:
+            properties: The properties to check.
+
+        Returns:
+            A list of `Issue`s.
+        """
+        # TODO: check jsonpath when checking other user input
+        field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
+        if not field_name_match:
+            return []
+        field_name = field_name_match.group(1)
+
+        matching_paths = _get_direct_jsonpaths(self.jsonpath, properties)
+        indirect_parent_path = self.jsonpath.removesuffix(field_name)
+        direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, properties)
+        missing_paths = _filter(
+            direct_parent_paths,
+            lambda path: f"{path}{field_name}" not in matching_paths,
+        )
+        return _map(
+            missing_paths,
+            lambda path: Issue(
+                jsonpath=path + field_name,
+                type="required",
+                message=self.message,
+            ),
+        )
+
+
+def apply_extensions(
+    properties: dict[str, Any],
+    # TODO: extensions: Extensions once Extensions implemented
+    extensions: list[CustomCheck | RequiredCheck],
 ) -> list[Issue]:
-    """Checks the descriptor for all custom checks and creates issues if any fail.
+    """Applies the extension checks to the properties.
 
     Args:
-        custom_checks: The custom checks to apply to the descriptor.
-        descriptor: The descriptor to check.
+        properties: The properties to check.
+        extensions: The user-defined extensions to apply to the properties.
 
     Returns:
         A list of `Issue`s.
     """
     return _flat_map(
-        custom_checks,
-        lambda custom_check: _apply_custom_check(custom_check, descriptor),
-    )
-
-
-def _apply_custom_check(
-    custom_check: CustomCheck, descriptor: dict[str, Any]
-) -> list[Issue]:
-    """Applies the custom check to the descriptor.
-
-    If any fields fail the custom check, this function creates a list of issues
-    for those fields.
-
-    Args:
-        custom_check: The custom check to apply to the descriptor.
-        descriptor: The descriptor to check.
-
-    Returns:
-        A list of `Issue`s.
-    """
-    matching_fields = _get_fields_at_jsonpath(custom_check.jsonpath, descriptor)
-    failed_fields = _filter(
-        matching_fields, lambda field: not custom_check.check(field.value)
-    )
-    return _map(
-        failed_fields,
-        lambda field: Issue(
-            jsonpath=field.jsonpath,
-            type=custom_check.type,
-            message=custom_check.message,
-        ),
+        extensions,
+        lambda extension: extension.apply(properties),
     )
