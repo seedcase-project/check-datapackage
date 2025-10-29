@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from check_datapackage.internals import (
+    DescriptorField,
     _filter,
     _flat_map,
     _get_direct_jsonpaths,
@@ -48,7 +49,7 @@ class CustomCheck:
     type: str = "custom"
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
-        """Checks the properties against this check and creates issues on failure.
+        """Applies the custom check to the properties.
 
         Args:
             properties: The properties to check.
@@ -56,12 +57,16 @@ class CustomCheck:
         Returns:
             A list of `Issue`s.
         """
-        matching_fields = _get_fields_at_jsonpath(self.jsonpath, properties)
-        failed_fields = _filter(
-            matching_fields, lambda field: not self.check(field.value)
+        fields: list[DescriptorField] = _get_fields_at_jsonpath(
+            self.jsonpath,
+            properties,
+        )
+        matches: list[DescriptorField] = _filter(
+            fields,
+            lambda field: not self.check(field.value),
         )
         return _map(
-            failed_fields,
+            matches,
             lambda field: Issue(
                 jsonpath=field.jsonpath, type=self.type, message=self.message
             ),
@@ -70,7 +75,7 @@ class CustomCheck:
 
 @dataclass(frozen=True)
 class RequiredCheck:
-    """A check that checks if a field is present (i.e. not None).
+    """Set a specific property as required.
 
     Attributes:
         jsonpath (str): The location of the field or fields, expressed in [JSON
@@ -92,7 +97,7 @@ class RequiredCheck:
     message: str
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
-        """Checks the properties against this check and creates issues on failure.
+        """Applies the required check to the properties.
 
         Args:
             properties: The properties to check.
@@ -123,19 +128,21 @@ class RequiredCheck:
         )
 
 
-def apply_checks(
-    checks: list[CustomCheck | RequiredCheck], properties: dict[str, Any]
+def apply_extensions(
+    properties: dict[str, Any],
+    # TODO: extensions: Extensions once Extensions implemented
+    extensions: list[CustomCheck | RequiredCheck],
 ) -> list[Issue]:
-    """Checks the properties for all user-defined checks and creates issues if any fail.
+    """Applies the extension checks to the properties.
 
     Args:
-        checks: The user-defined checks to apply to the properties.
         properties: The properties to check.
+        extensions: The user-defined extensions to apply to the properties.
 
     Returns:
         A list of `Issue`s.
     """
     return _flat_map(
-        checks,
-        lambda check: check.apply(properties),
+        extensions,
+        lambda extension: extension.apply(properties),
     )
