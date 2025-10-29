@@ -56,9 +56,9 @@ class CustomCheck:
 class Extensions:
     """Extensions to the standard checks.
 
-    This sub-class of `Config` defines extensions, i.e., additional checks
+    This sub-item of `Config` defines extensions, i.e., additional checks
     that supplement those specified by the Data Package standard. It
-    contains sub-classes that store additional checks. This `Extensions` class
+    contains sub-items that store additional checks. This `Extensions` class
     can be expanded to include more types of extensions.
 
     Each extension class must implement its own `apply()` method that takes
