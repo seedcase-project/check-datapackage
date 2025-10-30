@@ -212,7 +212,7 @@ def _handle_S_resources_x_path(
     return edits
 
 
-schema_path_to_handler: dict[
+_schema_path_to_handler: dict[
     str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]
 ] = {
     "resources/items/oneOf": _handle_S_resources_x,
@@ -232,15 +232,28 @@ def _handle_grouped_error(
     Returns:
         The schema errors after processing.
     """
-    add = []
-    remove = []
-    for schema_path, handler in schema_path_to_handler.items():
+
+    def _get_edits(
+        handlers: list[
+            tuple[str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]]
+        ],
+    ) -> SchemaErrorEdits:
+        schema_path, handler = handlers[0]
+        edits = SchemaErrorEdits()
         if parent_error.schema_path.endswith(schema_path):
             edits = handler(parent_error, schema_errors)
-            add.extend(edits.add)
-            remove.extend(edits.remove)
 
-    return _filter(schema_errors, lambda error: error not in remove) + add
+        if len(handlers) == 1:
+            return edits
+
+        next_edits = _get_edits(handlers[1:])
+        return SchemaErrorEdits(
+            add=edits.add + next_edits.add,
+            remove=edits.remove + next_edits.remove,
+        )
+
+    edits = _get_edits(list(_schema_path_to_handler.items()))
+    return _filter(schema_errors, lambda error: error not in edits.remove) + edits.add
 
 
 def _validation_error_to_schema_errors(error: ValidationError) -> list[SchemaError]:
