@@ -186,6 +186,7 @@ def test_exclusion_jsonpath_resources():
     )
     assert len(issues) == 0
 
+
 def test_exclude_issue_on_array_item():
     properties = example_package_properties()
     properties["resources"].append("not a resource")
