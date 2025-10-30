@@ -7,7 +7,7 @@ from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
-from check_datapackage.custom_check import apply_custom_checks
+from check_datapackage.custom_check import apply_extensions
 from check_datapackage.exclusion import exclude
 from check_datapackage.internals import (
     _filter,
@@ -44,7 +44,7 @@ def check(
         _set_should_fields_to_required(schema)
 
     issues = _check_object_against_json_schema(properties, schema)
-    issues += apply_custom_checks(config.custom_checks, properties)
+    issues += apply_extensions(properties, config.custom_checks)
     issues = exclude(issues, config.exclusions, properties)
 
     return sorted(set(issues))
