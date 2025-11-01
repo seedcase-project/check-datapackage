@@ -55,7 +55,7 @@ used throughout the package can be found in the tables below.
 
 | Action | Description |
 |----------------------------|--------------------------------------------|
-| check | Check that a descriptor conforms to the Data Package standard. |
+| check | Check that properties comply with the Data Package standard. |
 | explain | Explain issues flagged by the check action in more detail using non-technical language. |
 | read | Read various files, such as a Data Package descriptor or a configuration file. |
 
