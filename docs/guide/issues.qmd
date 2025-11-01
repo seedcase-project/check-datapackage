@@ -7,36 +7,36 @@ order: 2
 ## The `Issue` class
 
 One `Issue` corresponds to one failed check on one field in the
-properties. An `Issue` has three attributes:
+properties. An `Issue` has attributes that provide information about the
+failed check, which are described in more detail in the
+[`Issue`](/docs/reference/Issue.qmd) documentation.
 
--   `type`: The type of the check that failed and caused the issue. This
-    can be a type that exists in the Data Package standard (e.g.,
-    `required` or `pattern`) or a custom type.
--   `jsonpath`: The [JSON path](https://en.wikipedia.org/wiki/JSONPath)
-    of the field that failed the check. For example,
-    `$.resources[2].name`.
--   `message`: An explanation of what went wrong.
+<!-- TODO: Unhide this after it has been implemented. -->
 
+::: content-hidden
 ## The `explain()` function
 
 The `explain()` function provides a more verbose and user-friendly
-description of a list of `Issue`s. To use it, pass it the issues output
-by `check()`:
+description of a list of `Issue`s. If you have package properties that
+looks like the below, with the missing `resources` field (that we remove
+here to demonstrate the `explain()` function):
 
 ```{python}
 import check_datapackage as cdp
+package_properties = cdp.example_package_properties()
+del package_properties["resources"]
+package_properties
+```
 
-package_properties = {
-    "name": 123,
-    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "id": "123-abc-123",
-    "created": "2014-05-14T05:00:01+00:00",
-    "version": "1.0.0",
-    "licenses": [{"name": "odc-pddl"}],
-}
+You can give the issues found by `check()` to `explain()` to get a more
+human-friendly version of the problems:
 
-cdp.check(properties=package_properties)
+```{python}
+#| eval: false
+issues = cdp.check(properties=package_properties)
+cdp.explain(issues)
 ```
 
 When setting `error=True` in `check()`, error messages will be generated
 by the `explain()` function.
+:::
