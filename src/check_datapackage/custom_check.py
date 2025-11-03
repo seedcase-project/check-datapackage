@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass, field
+from itertools import chain
 from typing import Any, Callable
 
 from check_datapackage.internals import (
@@ -187,8 +188,7 @@ class Extensions:
 
 def apply_extensions(
     properties: dict[str, Any],
-    # TODO: extensions: Extensions once Extensions implemented
-    extensions: list[CustomCheck | RequiredCheck],
+    extensions: Extensions,
 ) -> list[Issue]:
     """Applies the extension checks to the properties.
 
@@ -199,7 +199,9 @@ def apply_extensions(
     Returns:
         A list of `Issue`s.
     """
+    extensions_as_one = chain(extensions.required_checks, extensions.custom_checks)
     return _flat_map(
-        extensions,
-        lambda extension: extension.apply(properties),
+        extensions_as_one,
+        # TODO: fix type ignore when we use Protocols/ABCs
+        lambda extension: extension.apply(properties),  # type: ignore[attr-defined]
     )
