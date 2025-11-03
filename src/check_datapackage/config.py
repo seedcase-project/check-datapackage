@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from check_datapackage.exclusion import Exclusion
-from check_datapackage.extensions import CustomCheck
+from check_datapackage.extensions import CustomCheck, RequiredCheck
 
 
 @dataclass
@@ -12,10 +12,11 @@ class Config:
     Attributes:
         exclusions (list[Exclusion]): Any issues matching any of Exclusion objects will
             be excluded (i.e., removed from the output of the check function).
-        custom_checks (list[CustomCheck]): Custom checks listed here will be done in
-            addition to checks defined in the Data Package standard.
-        strict (bool): Whether to run recommended as well as required checks. If
-            True, recommended checks will also be run. Defaults to False.
+        custom_checks (list[CustomCheck | RequiredCheck]): Custom checks listed here
+            will be done in addition to checks defined in the Data Package standard.
+        strict (bool): Whether to include "SHOULD" checks in addition to "MUST" checks
+            from the Data Package standard. If True, "SHOULD" checks will also be
+            included. Defaults to False.
         version (str): The version of the Data Package standard to check against.
             Defaults to "v2".
 
@@ -30,14 +31,18 @@ class Config:
             message="Data Packages may only be licensed under MIT.",
             check=lambda license_name: license_name == "mit",
         )
+        required_title_check = cdp.RequiredCheck(
+            jsonpath="$.title",
+            message="A title is required.",
+        )
         config = cdp.Config(
             exclusions=[exclusion_required],
-            custom_checks=[license_check],
+            custom_checks=[license_check, required_title_check],
         )
         ```
     """
 
     exclusions: list[Exclusion] = field(default_factory=list)
-    custom_checks: list[CustomCheck] = field(default_factory=list)
+    custom_checks: list[CustomCheck | RequiredCheck] = field(default_factory=list)
     strict: bool = False
     version: Literal["v1", "v2"] = "v2"
