@@ -44,7 +44,7 @@ def check(
         _set_should_fields_to_required(schema)
 
     issues = _check_object_against_json_schema(properties, schema)
-    issues += apply_extensions(properties, config.custom_checks)
+    issues += apply_extensions(properties, config.extensions)
     issues = exclude(issues, config.exclusions, properties)
 
     return sorted(set(issues))

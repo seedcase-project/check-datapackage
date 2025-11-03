@@ -144,63 +144,15 @@ Package standard that are not relevant to your use case.
 
 See the help documentation with `help(Exclusion)` for more details.
 
-#### {{< var wip >}} `Extensions`
+#### {{< var done >}} `Extensions`
 
 This sub-item of `Config` defines extensions, i.e., additional checks
-that supplement those specified by the Data Package standard. It
-contains subitems that store additional checks, such as `RequiredCheck`
-and `CustomCheck`. This `Extensions` class might be expanded to include
-more types of extensions.
+that supplement those specified by the Data Package standard.
 
-```` python
-@dataclass(frozen=True)
-class Extensions:
-    """Extensions to the standard checks.
+See the help documentation with
+[`Extensions`](/docs/reference/Extensions.qmd) for more details.
 
-    This contains additional checks to be made alongside the standard
-    Data Package checks.
-
-    Attributes:
-        required_checks: A list of `RequiredCheck` objects defining properties to set as required.
-        custom_checks: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
-            checks.
-
-    Examples:
-
-        ```python
-        # TODO: Add curly brackets around python on the line above when the class has been implemented.
-        import check_datapackage as cdp
-
-        extensions = cdp.Extensions(
-            required_checks=[
-                cdp.RequiredCheck(
-                    jsonpath="$.description",
-                    message="Data Packages must include a description."
-                ),
-                cdp.RequiredCheck(
-                    jsonpath="$.contributors[*].email",
-                    message="All contributors must have an email address."
-                )
-            ],
-            custom_checks=[cdp.CustomCheck(
-                type="only-mit",
-                jsonpath="$.licenses[*].name",
-                message="Data Packages may only be licensed under MIT.",
-                check=lambda license_name: license_name == "mit",
-            )]
-        )
-        # check(properties, config=cdp.Config(extensions=extensions))
-        ```
-    """
-    required_checks : list[RequiredCheck] = field(default_factory=list)
-    custom_checks : list[CustomCheck] = field(default_factory=list)
-````
-
-Each extension class must implement its own `apply()` method that takes
-the `datapackage.json` properties `dict` as input and outputs an `Issue`
-list that contains the issues found by that extension.
-
-#### {{< var wip >}} `RequiredCheck`
+#### {{< var done >}} `RequiredCheck`
 
 A sub-item of `Extensions` that allows users to set specific properties
 as required that are not required by the Data Package standard. See the
