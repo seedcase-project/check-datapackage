@@ -150,9 +150,9 @@ This sub-item of `Config` defines extensions, i.e., additional checks
 that supplement those specified by the Data Package standard.
 
 See the help documentation with
-[`Extensions`](/docs/reference/extensions.qmd) for more details.
+[`Extensions`](/docs/reference/Extensions.qmd) for more details.
 
-#### {{< var wip >}} `RequiredCheck`
+#### {{< var done >}} `RequiredCheck`
 
 A sub-item of `Extensions` that allows users to set specific properties
 as required that are not required by the Data Package standard. See the
