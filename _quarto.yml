@@ -74,6 +74,7 @@ quartodoc:
     contents:
     - name: Config
     - name: CustomCheck
+    - name: RequiredCheck
     - name: Exclusion
 
   - title: Output
