@@ -2,6 +2,7 @@ import re
 import sys
 from dataclasses import dataclass
 from functools import reduce
+from types import TracebackType
 from typing import Any, Iterator, Optional
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
@@ -17,6 +18,28 @@ from check_datapackage.internals import (
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
+
+
+def _no_traceback_hook(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
+    if IssuesAsErrors in exc_type.__bases__:
+        # Only print the message, without traceback
+        print("{0}".format(exc_value))
+    else:
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+
+# Need to use a custom exception hook to hide tracebacks for our custom exceptions
+sys.excepthook = _no_traceback_hook
+
+
+class IssuesAsErrors(Exception):
+    """Converting issues to errors and hiding the traceback."""
+
+    pass
 
 
 def check(
@@ -54,9 +77,7 @@ def check(
             issues,
             lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
         )
-        # Should hide the traceback for the user
-        sys.tracebacklimit = 0
-        raise Exception(
+        raise IssuesAsErrors(
             "There were some issues found in your `datapackage.json`:\n\n"
             + "\n".join(errors)
         )
