@@ -212,12 +212,12 @@ def _handle_S_resources_x_path(
     return edits
 
 
-_schema_path_to_handler: dict[
-    str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]
-] = {
-    "resources/items/oneOf": _handle_S_resources_x,
-    "resources/items/properties/path/oneOf": _handle_S_resources_x_path,
-}
+_schema_path_to_handler: list[
+    tuple[str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]]
+] = [
+    ("resources/items/oneOf", _handle_S_resources_x),
+    ("resources/items/properties/path/oneOf", _handle_S_resources_x_path),
+]
 
 
 def _handle_grouped_error(
@@ -252,7 +252,7 @@ def _handle_grouped_error(
             remove=edits.remove + next_edits.remove,
         )
 
-    edits = _get_edits(list(_schema_path_to_handler.items()))
+    edits = _get_edits(_schema_path_to_handler)
     return _filter(schema_errors, lambda error: error not in edits.remove) + edits.add
 
 
