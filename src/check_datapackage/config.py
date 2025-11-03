@@ -31,9 +31,16 @@ class Config:
             message="Data Packages may only be licensed under MIT.",
             check=lambda license_name: license_name == "mit",
         )
+        required_title_check = cdp.RequiredCheck(
+            jsonpath="$.title",
+            message="A title is required.",
+        )
         config = cdp.Config(
             exclusions=[exclusion_required],
-            extensions=cdp.Extensions(custom_checks=[license_check]),
+            extensions=cdp.Extensions(
+                custom_checks=[license_check],
+                required_checks=[required_title_check]
+            )
         )
 
         # check(properties, config=config)

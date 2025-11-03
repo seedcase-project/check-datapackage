@@ -1,6 +1,6 @@
 from check_datapackage.check import check
 from check_datapackage.config import Config
-from check_datapackage.custom_check import CustomCheck, Extensions
+from check_datapackage.custom_check import CustomCheck, Extensions, RequiredCheck
 from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
@@ -57,9 +57,17 @@ def test_multiple_custom_checks():
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
     properties["resources"][0]["name"] = "not starting with woolly"
+    del properties["version"]
 
+    version_check = RequiredCheck(
+        jsonpath="$.version",
+        message="Version is required.",
+    )
     config = Config(
-        extensions=Extensions(custom_checks=[lowercase_check, resource_name_check])
+        extensions=Extensions(
+            required_checks=[version_check],
+            custom_checks=[lowercase_check, resource_name_check],
+        )
     )
     issues = check(properties, config=config)
 
@@ -73,6 +81,11 @@ def test_multiple_custom_checks():
             jsonpath="$.resources[0].name",
             type=resource_name_check.type,
             message=resource_name_check.message,
+        ),
+        Issue(
+            jsonpath=version_check.jsonpath,
+            type="required",
+            message=version_check.message,
         ),
     ]
 
@@ -99,3 +112,44 @@ def test_no_matching_jsonpath():
     issues = check(properties, config=config)
 
     assert issues == []
+
+
+def test_required_check_wildcard():
+    properties = example_package_properties()
+    id_check = RequiredCheck(
+        jsonpath="$.*.id",
+        message="All fields must have an id.",
+    )
+    config = Config(extensions=Extensions(required_checks=[id_check]))
+
+    issues = check(properties, config=config)
+
+    assert len(issues) == 8
+
+
+def test_required_check_array_wildcard():
+    properties = example_package_properties()
+    properties["contributors"] = [
+        {"path": "a/path"},
+        {"path": "a/path"},
+        {"path": "a/path", "name": "a name"},
+    ]
+    name_check = RequiredCheck(
+        jsonpath="$.contributors[*].name",
+        message="Contributor name is required.",
+    )
+    config = Config(extensions=Extensions(required_checks=[name_check]))
+    issues = check(properties, config=config)
+
+    assert issues == [
+        Issue(
+            jsonpath="$.contributors[0].name",
+            type="required",
+            message=name_check.message,
+        ),
+        Issue(
+            jsonpath="$.contributors[1].name",
+            type="required",
+            message=name_check.message,
+        ),
+    ]

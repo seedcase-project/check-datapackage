@@ -2,7 +2,7 @@
 
 from .check import check
 from .config import Config
-from .custom_check import CustomCheck, Extensions
+from .custom_check import CustomCheck, Extensions, RequiredCheck
 from .examples import example_package_properties, example_resource_properties
 from .exclusion import Exclusion
 from .issue import Issue
@@ -12,8 +12,9 @@ __all__ = [
     "Config",
     "Exclusion",
     "Issue",
-    "CustomCheck",
     "Extensions",
+    "CustomCheck",
+    "RequiredCheck",
     "example_package_properties",
     "example_resource_properties",
     "check",

@@ -73,8 +73,9 @@ quartodoc:
     desc: Classes to configure behaviour of the checks.
     contents:
     - name: Config
-    - name: CustomCheck
     - name: Extensions
+    - name: CustomCheck
+    - name: RequiredCheck
     - name: Exclusion
 
   - title: Output
