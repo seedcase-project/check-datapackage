@@ -87,6 +87,7 @@ quartodoc:
     contents:
     - name: example_package_properties
     - name: example_resource_properties
+    - name: example_field_properties
 
 
 metadata-files:
