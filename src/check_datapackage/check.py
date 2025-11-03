@@ -113,6 +113,7 @@ class SchemaError:
         schema_path (str): The path to the violated check in the JSON schema.
             Path components are separated by '/'.
         jsonpath (str): The JSON path to the field that violates the check.
+        instance (Any): The part of the object that failed the check.
         parent (Optional[SchemaError]): The error group the error belongs to, if any.
     """
 
@@ -236,7 +237,10 @@ def _handle_S_resources_x_schema_fields_x(
     # The field's type is unknown
     if field_type not in FIELD_TYPES:
         unknown_field_error = SchemaError(
-            message=f"Unknown field type. Please use one of {', '.join(FIELD_TYPES)}.",
+            message=(
+                "Unknown Data Package field type. Please use one of"
+                f" {', '.join(FIELD_TYPES)}."
+            ),
             type="enum",
             jsonpath=f"{parent_error.jsonpath}.type",
             schema_path=parent_error.schema_path,
