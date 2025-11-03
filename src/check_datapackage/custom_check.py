@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass, field
-from itertools import chain
 from typing import Any, Callable
 
 from check_datapackage.internals import (
@@ -199,9 +198,10 @@ def apply_extensions(
     Returns:
         A list of `Issue`s.
     """
-    extensions_as_one = chain(extensions.required_checks, extensions.custom_checks)
+    extensions_as_one: list[CustomCheck | RequiredCheck] = (
+        extensions.required_checks + extensions.custom_checks
+    )
     return _flat_map(
         extensions_as_one,
-        # TODO: fix type ignore when we use Protocols/ABCs
-        lambda extension: extension.apply(properties),  # type: ignore[attr-defined]
+        lambda extension: extension.apply(properties),
     )
