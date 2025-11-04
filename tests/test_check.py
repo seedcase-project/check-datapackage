@@ -1,8 +1,8 @@
 from typing import Any
 
-from pytest import mark
+from pytest import mark, raises
 
-from check_datapackage.check import check
+from check_datapackage.check import DataPackageError, check
 from check_datapackage.config import Config
 from check_datapackage.examples import (
     example_package_properties,
@@ -272,3 +272,12 @@ def test_fail_with_bad_resource_path(path, location, type):
     assert len(issues) == 1
     assert issues[0].type == type
     assert issues[0].jsonpath == location
+
+
+def test_error_as_true():
+    properties = {
+        "name": 123,
+    }
+
+    with raises(DataPackageError):
+        check(properties, error=True)
