@@ -331,3 +331,63 @@ def test_fail_unknown_field_with_bad_property():
     assert len(issues) == 1
     assert issues[0].type == "enum"
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
+
+
+def test_fail_unknown_field_with_bad_enum_constraint():
+    """Fail a field whose enum constraint is the wrong type when the field's
+    type is unknown."""
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["type"] = "unknown"
+    properties["resources"][0]["schema"]["fields"][0]["constraints"] = {"enum": {}}
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "enum"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
+
+
+def test_fail_simple_field_with_bad_enum_constraint():
+    """Fail a field whose enum values are the wrong type when enum values can
+    have only one type."""
+    properties = example_package_properties()
+    # Expecting enum array to contain strings
+    properties["resources"][0]["schema"]["fields"][0]["constraints"] = {"enum": [1]}
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].constraints.enum[0]"
+
+
+def test_fail_complex_field_with_bad_enum_constraint():
+    """Fail a field whose enum values are the wrong type when enum values can
+    have multiple types."""
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["type"] = "number"
+    # Expecting enum array to contain numbers or strings
+    properties["resources"][0]["schema"]["fields"][0]["constraints"] = {
+        "enum": [{}],
+    }
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].constraints.enum"
+
+
+def test_fail_field_with_mixed_type_enum_constraint():
+    """Fail a field whose enum values are not all the same type."""
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["type"] = "geopoint"
+    properties["resources"][0]["schema"]["fields"][0]["constraints"] = {
+        "enum": [{}, [], "string", 1],
+    }
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].constraints.enum"

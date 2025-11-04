@@ -114,6 +114,7 @@ class SchemaError:
             Path components are separated by '/'.
         jsonpath (str): The JSON path to the field that violates the check.
         instance (Any): The part of the object that failed the check.
+        schema_value (Optional[Any]): The part of the schema violated by this error.
         parent (Optional[SchemaError]): The error group the error belongs to, if any.
     """
 
@@ -122,6 +123,7 @@ class SchemaError:
     schema_path: str
     jsonpath: str
     instance: Any
+    schema_value: Optional[Any] = None
     parent: Optional["SchemaError"] = None
 
 
@@ -262,12 +264,85 @@ def _handle_S_resources_x_schema_fields_x(
     return edits
 
 
+def _handle_S_resources_x_schema_fields_x_constraints_enum(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Only flag errors for the relevant field type.
+
+    E.g., if the field type is `string`, flag enum errors for the string-based
+    schema only.
+    """
+    edits = SchemaErrorEdits()
+    if not parent_error.parent:
+        return edits
+
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+    field_type: str = parent_error.parent.instance.get("type", "string")
+    edits.remove.append(parent_error)
+
+    # The field's type is unknown; this is already flagged, so remove all errors
+    if field_type not in FIELD_TYPES:
+        edits.remove.extend(errors_in_group)
+        return edits
+
+    # The field's type is known; keep only errors for this field type
+    schema_index = FIELD_TYPES.index(field_type)
+    path_for_type = f"fields/items/oneOf/{schema_index}/"
+
+    errors_for_this_type = _filter(
+        errors_in_group,
+        lambda error: path_for_type in error.schema_path and error.type == "type",
+    )
+    errors_for_other_types = _filter(
+        errors_in_group, lambda error: path_for_type not in error.schema_path
+    )
+
+    edits.remove.extend(errors_for_other_types)
+    if not errors_for_this_type:
+        return edits
+
+    # Unify multiple enum errors
+    an_error = errors_for_this_type[0]
+    same_type = all(
+        _map(
+            errors_for_this_type,
+            lambda error: type(error.instance) is type(an_error.instance),
+        )
+    )
+    message = "All enum values must be the same type."
+    if same_type:
+        allowed_types = set(
+            _map(errors_for_this_type, lambda error: str(error.schema_value))
+        )
+        message = (
+            "Incorrect enum value type. Enum values should be "
+            f"one of {', '.join(allowed_types)}."
+        )
+
+    unified_error = SchemaError(
+        message=message,
+        type="type",
+        schema_path=an_error.schema_path,
+        jsonpath=_strip_index(an_error.jsonpath),
+        instance=an_error.instance,
+    )
+    edits.add.append(unified_error)
+    edits.remove.extend(errors_for_this_type)
+
+    return edits
+
+
 _schema_path_to_handler: list[
     tuple[str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]]
 ] = [
     ("resources/items/oneOf", _handle_S_resources_x),
     ("resources/items/properties/path/oneOf", _handle_S_resources_x_path),
     ("fields/items/oneOf", _handle_S_resources_x_schema_fields_x),
+    (
+        "constraints/properties/enum/oneOf",
+        _handle_S_resources_x_schema_fields_x_constraints_enum,
+    ),
 ]
 
 
@@ -340,6 +415,7 @@ def _create_schema_error(error: ValidationError) -> SchemaError:
         jsonpath=_get_full_json_path_from_error(error),
         schema_path="/".join(_map(error.absolute_schema_path, str)),
         instance=error.instance,
+        schema_value=error.validator_value,
         parent=_create_schema_error(error.parent) if error.parent else None,  # type: ignore[arg-type]
     )
 
@@ -364,3 +440,7 @@ def _get_errors_in_group(
     schema_errors: list[SchemaError], parent_error: SchemaError
 ) -> list[SchemaError]:
     return _filter(schema_errors, lambda error: error.parent == parent_error)
+
+
+def _strip_index(jsonpath: str) -> str:
+    return re.sub(r"\[\d+\]$", "", jsonpath)
