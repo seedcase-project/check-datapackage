@@ -38,7 +38,7 @@ sys.excepthook = no_traceback_hook
 
 
 class DataPackageError(Exception):
-    """Convert Data Package issues to an error and hiding the traceback."""
+    """Convert Data Package issues to an error and hide the traceback."""
 
     def __init__(
         self,
