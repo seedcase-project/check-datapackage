@@ -20,12 +20,13 @@ from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
 
 
-def _no_traceback_hook(
+def no_traceback_hook(
     exc_type: type[BaseException],
     exc_value: BaseException,
     exc_traceback: TracebackType | None,
 ) -> None:
-    if IssuesAsErrors in exc_type.__bases__:
+    """Exception hook to hide tracebacks for DataPackageError."""
+    if issubclass(exc_type, DataPackageError):
         # Only print the message, without traceback
         print("{0}".format(exc_value))
     else:
@@ -33,13 +34,31 @@ def _no_traceback_hook(
 
 
 # Need to use a custom exception hook to hide tracebacks for our custom exceptions
-sys.excepthook = _no_traceback_hook
+sys.excepthook = no_traceback_hook
 
 
-class IssuesAsErrors(Exception):
-    """Converting issues to errors and hiding the traceback."""
+class DataPackageError(Exception):
+    """Convert Data Package issues to an error and hiding the traceback."""
 
-    pass
+    def __init__(
+        self,
+        issues: list[Issue],
+    ) -> None:
+        """Create the DataPackageError attributes from issues."""
+        # TODO: Switch to using `explain()` once implemented
+        errors: list[str] = _map(
+            issues,
+            lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
+        )
+        self.message = (
+            "There were some issues found in your `datapackage.json`:\n\n"
+            + "\n".join(errors)
+        )
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        """Message to show when outputting the exception."""
+        return f"{self.message}"
 
 
 def check(
@@ -72,15 +91,7 @@ def check(
     issues = exclude(issues, config.exclusions, properties)
 
     if error and issues:
-        # TODO: Switch to using `explain()` once implemented
-        errors: list[str] = _map(
-            issues,
-            lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
-        )
-        raise IssuesAsErrors(
-            "There were some issues found in your `datapackage.json`:\n\n"
-            + "\n".join(errors)
-        )
+        raise DataPackageError(issues)
 
     return sorted(set(issues))
 

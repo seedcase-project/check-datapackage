@@ -2,7 +2,7 @@ from typing import Any
 
 from pytest import mark, raises
 
-from check_datapackage.check import IssuesAsErrors, check
+from check_datapackage.check import DataPackageError, check
 from check_datapackage.config import Config
 from check_datapackage.examples import (
     example_package_properties,
@@ -279,5 +279,5 @@ def test_error_as_true():
         "name": 123,
     }
 
-    with raises(IssuesAsErrors):
+    with raises(DataPackageError):
         check(properties, error=True)
