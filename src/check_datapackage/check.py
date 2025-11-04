@@ -1,6 +1,8 @@
 import re
+import sys
 from dataclasses import dataclass, field
 from functools import reduce
+from types import TracebackType
 from typing import Any, Callable, Iterator, Optional
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
@@ -11,8 +13,8 @@ from check_datapackage.constants import (
     FIELD_TYPES,
     GROUP_ERRORS,
 )
-from check_datapackage.custom_check import apply_extensions
 from check_datapackage.exclusion import exclude
+from check_datapackage.extensions import apply_extensions
 from check_datapackage.internals import (
     _filter,
     _flat_map,
@@ -20,6 +22,43 @@ from check_datapackage.internals import (
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
+
+
+def no_traceback_hook(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
+    """Exception hook to hide tracebacks for DataPackageError."""
+    if issubclass(exc_type, DataPackageError):
+        # Only print the message, without traceback
+        print("{0}".format(exc_value))
+    else:
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+
+# Need to use a custom exception hook to hide tracebacks for our custom exceptions
+sys.excepthook = no_traceback_hook
+
+
+class DataPackageError(Exception):
+    """Convert Data Package issues to an error and hide the traceback."""
+
+    def __init__(
+        self,
+        issues: list[Issue],
+    ) -> None:
+        """Create the DataPackageError attributes from issues."""
+        # TODO: Switch to using `explain()` once implemented
+        errors: list[str] = _map(
+            issues,
+            lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
+        )
+        message: str = (
+            "There were some issues found in your `datapackage.json`:\n\n"
+            + "\n".join(errors)
+        )
+        super().__init__(message)
 
 
 def check(
@@ -50,6 +89,9 @@ def check(
     issues = _check_object_against_json_schema(properties, schema)
     issues += apply_extensions(properties, config.extensions)
     issues = exclude(issues, config.exclusions, properties)
+
+    if error and issues:
+        raise DataPackageError(issues)
 
     return sorted(set(issues))
 

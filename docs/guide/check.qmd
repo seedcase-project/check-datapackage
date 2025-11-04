@@ -112,7 +112,6 @@ example as before, we can call `check()` with `error=True` like this:
 
 ```{python}
 #| error: true
-#| eval: false
 cdp.check(properties=package_properties, error=True)
 ```
 
