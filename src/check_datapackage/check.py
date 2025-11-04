@@ -7,8 +7,8 @@ from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.config import Config
 from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
-from check_datapackage.custom_check import apply_extensions
 from check_datapackage.exclusion import exclude
+from check_datapackage.extensions import apply_extensions
 from check_datapackage.internals import (
     _filter,
     _flat_map,

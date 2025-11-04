@@ -4,13 +4,13 @@ from pytest import mark
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
-from check_datapackage.custom_check import Extensions
 from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
 )
 from check_datapackage.exclusion import Exclusion
-from tests.test_custom_check import lowercase_check
+from check_datapackage.extensions import Extensions
+from tests.test_extensions import lowercase_check
 
 # "MUST" checks
 
