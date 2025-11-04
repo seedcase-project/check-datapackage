@@ -1,17 +1,17 @@
 from typing import Any
 
-from pytest import mark
+from pytest import mark, raises
 
-from check_datapackage.check import check
+from check_datapackage.check import DataPackageError, check
 from check_datapackage.config import Config
 from check_datapackage.constants import FIELD_TYPES
-from check_datapackage.custom_check import Extensions
 from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
 )
 from check_datapackage.exclusion import Exclusion
-from tests.test_custom_check import lowercase_check
+from check_datapackage.extensions import Extensions
+from tests.test_extensions import lowercase_check
 
 # "MUST" checks
 
@@ -331,3 +331,12 @@ def test_fail_unknown_field_with_bad_property():
     assert len(issues) == 1
     assert issues[0].type == "enum"
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
+
+
+def test_error_as_true():
+    properties = {
+        "name": 123,
+    }
+
+    with raises(DataPackageError):
+        check(properties, error=True)

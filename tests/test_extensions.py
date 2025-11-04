@@ -1,10 +1,10 @@
 from check_datapackage.check import check
 from check_datapackage.config import Config
-from check_datapackage.custom_check import CustomCheck, Extensions, RequiredCheck
 from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
 )
+from check_datapackage.extensions import CustomCheck, Extensions, RequiredCheck
 from check_datapackage.issue import Issue
 
 lowercase_check = CustomCheck(
