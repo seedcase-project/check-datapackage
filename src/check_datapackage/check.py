@@ -50,15 +50,11 @@ class DataPackageError(Exception):
             issues,
             lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
         )
-        self.message = (
+        message: str = (
             "There were some issues found in your `datapackage.json`:\n\n"
             + "\n".join(errors)
         )
-        super().__init__(self.message)
-
-    def __str__(self) -> str:
-        """Message to show when outputting the exception."""
-        return f"{self.message}"
+        super().__init__(message)
 
 
 def check(
