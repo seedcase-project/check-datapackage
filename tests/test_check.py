@@ -1,3 +1,5 @@
+from typing import Any
+
 from pytest import mark, raises
 
 from check_datapackage.check import check
@@ -7,7 +9,8 @@ from check_datapackage.examples import (
     example_resource_properties,
 )
 from check_datapackage.exclusion import Exclusion
-from tests.test_custom_check import lowercase_check
+from check_datapackage.extensions import Extensions
+from tests.test_extensions import lowercase_check
 
 # "MUST" checks
 
@@ -32,7 +35,7 @@ def test_fails_properties_without_resources():
 
 def test_fails_properties_with_empty_resources():
     """Should fail properties with an empty resources array."""
-    properties = {
+    properties: dict[str, Any] = {
         "name": "a name with spaces",
         "resources": [],
     }
@@ -45,7 +48,7 @@ def test_fails_properties_with_empty_resources():
 
 def test_fails_properties_with_bad_type():
     """Should fail properties with a field of the wrong type."""
-    properties = {
+    properties: dict[str, Any] = {
         "name": 123,
         "resources": [{"name": "a name", "path": "data.csv"}],
     }
@@ -58,7 +61,7 @@ def test_fails_properties_with_bad_type():
 
 def test_fails_properties_with_bad_format():
     """Should fail properties with a field of the wrong format."""
-    properties = {
+    properties: dict[str, Any] = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "homepage": "not a URL",
@@ -73,7 +76,7 @@ def test_fails_properties_with_bad_format():
 
 def test_fails_properties_with_pattern_mismatch():
     """Should fail properties with a field that does not match the pattern."""
-    properties = {
+    properties: dict[str, Any] = {
         "name": "a name",
         "resources": [{"name": "a name", "path": "data.csv"}],
         "contributors": [{"path": "/a/bad/path"}],
@@ -91,7 +94,7 @@ def test_fails_properties_with_pattern_mismatch():
 
 def test_passes_matching_properties_with_should():
     """Should pass properties matching "SHOULD" specifications."""
-    properties = {
+    properties: dict[str, Any] = {
         "name": "a-name-with-no-spaces",
         "title": "A Title",
         "id": "123",
@@ -108,7 +111,7 @@ def test_passes_matching_properties_with_should():
 
 def test_fails_properties_with_missing_required_fields_in_should():
     """Should fail properties with missing required properties in strict mode."""
-    properties = {
+    properties: dict[str, Any] = {
         "resources": [{"name": "a-name-with-no-spaces", "path": "data.csv"}],
     }
 
@@ -120,7 +123,7 @@ def test_fails_properties_with_missing_required_fields_in_should():
 
 def test_fails_properties_violating_should():
     """Should fail properties that do not meet "SHOULD" specifications."""
-    properties = {
+    properties: dict[str, Any] = {
         "name": "a name with spaces",
         "id": "123",
         "version": "not semver",
@@ -148,7 +151,10 @@ def test_exclusion_does_not_exclude_custom_check():
     properties["name"] = "ALLCAPS"
     del properties["resources"]
     exclusion_required = Exclusion(type="required")
-    config = Config(custom_checks=[lowercase_check], exclusions=[exclusion_required])
+    config = Config(
+        extensions=Extensions(custom_checks=[lowercase_check]),
+        exclusions=[exclusion_required],
+    )
 
     issues = check(properties, config=config)
 
@@ -161,7 +167,10 @@ def test_exclusion_does_exclude_custom_check():
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
     exclusion_lowercase = Exclusion(type=lowercase_check.type)
-    config = Config(custom_checks=[lowercase_check], exclusions=[exclusion_lowercase])
+    config = Config(
+        extensions=Extensions(custom_checks=[lowercase_check]),
+        exclusions=[exclusion_lowercase],
+    )
 
     issues = check(properties, config=config)
 
