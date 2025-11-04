@@ -4,7 +4,10 @@ from pytest import mark
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
-from check_datapackage.examples import example_package_properties
+from check_datapackage.examples import (
+    example_package_properties,
+    example_resource_properties,
+)
 from check_datapackage.exclusion import Exclusion
 
 
@@ -182,3 +185,48 @@ def test_exclusion_jsonpath_resources():
         properties, config=Config(exclusions=[Exclusion(jsonpath="$.resources")])
     )
     assert len(issues) == 0
+
+
+def test_exclude_issue_on_array_item():
+    properties = example_package_properties()
+    properties["resources"].append("not a resource")
+    exclusions = [Exclusion(jsonpath="$.resources[*]")]
+    config = Config(exclusions=exclusions)
+
+    issues = check(properties, config=config)
+
+    assert issues == []
+
+
+@mark.parametrize(
+    "jsonpath",
+    ["$.resources[*].name", "$.resources[1].*"],
+)
+def test_exclude_required_at_jsonpath_array(jsonpath):
+    properties = example_package_properties()
+    properties["resources"].append(example_resource_properties())
+    del properties["resources"][1]["name"]
+    exclusions = [
+        Exclusion(jsonpath=jsonpath, type="required"),
+    ]
+    config = Config(exclusions=exclusions)
+
+    issues = check(properties, config=config)
+
+    assert issues == []
+
+
+@mark.parametrize(
+    "jsonpath", ["$.*", "$..resources", "..resources", "resources", "..*"]
+)
+def test_exclude_required_at_jsonpath_dict_field(jsonpath):
+    properties = example_package_properties()
+    del properties["resources"]
+    exclusions = [
+        Exclusion(jsonpath=jsonpath, type="required"),
+    ]
+    config = Config(exclusions=exclusions)
+
+    issues = check(properties, config=config)
+
+    assert issues == []

@@ -100,7 +100,7 @@ Data Package standard, or add your own custom checks.
 ::: callout-tip
 For more details on configuring checks, see the [Configuring
 checks](config.qmd) guide or the [`Config` reference
-documentation](/docs/reference/config.qmd).
+documentation](/docs/reference/Config.qmd).
 :::
 
 ## Stop program on failed checks (`error=True`) {#stop-program-on-failed-checks-errortrue}

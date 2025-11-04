@@ -4,7 +4,7 @@ from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
 )
-from check_datapackage.extensions import CustomCheck, RequiredCheck
+from check_datapackage.extensions import CustomCheck, Extensions, RequiredCheck
 from check_datapackage.issue import Issue
 
 lowercase_check = CustomCheck(
@@ -24,7 +24,7 @@ resource_name_check = CustomCheck(
 def test_direct_jsonpath():
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
-    config = Config(custom_checks=[lowercase_check])
+    config = Config(extensions=Extensions(custom_checks=[lowercase_check]))
     issues = check(properties, config=config)
 
     assert issues == [
@@ -41,7 +41,7 @@ def test_indirect_jsonpath():
     properties["resources"].append(example_resource_properties())
     properties["resources"][1]["name"] = "not starting with woolly"
 
-    config = Config(custom_checks=[resource_name_check])
+    config = Config(extensions=Extensions(custom_checks=[resource_name_check]))
     issues = check(properties, config=config)
 
     assert issues == [
@@ -54,24 +54,22 @@ def test_indirect_jsonpath():
 
 
 def test_multiple_custom_checks():
-    descriptor = example_package_properties()
-    descriptor["name"] = "ALLCAPS"
-    descriptor["resources"][0]["name"] = "not starting with woolly"
-    del descriptor["version"]
+    properties = example_package_properties()
+    properties["name"] = "ALLCAPS"
+    properties["resources"][0]["name"] = "not starting with woolly"
+    del properties["version"]
 
     version_check = RequiredCheck(
         jsonpath="$.version",
         message="Version is required.",
     )
-
     config = Config(
-        custom_checks=[
-            lowercase_check,
-            resource_name_check,
-            version_check,
-        ]
+        extensions=Extensions(
+            required_checks=[version_check],
+            custom_checks=[lowercase_check, resource_name_check],
+        )
     )
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert issues == [
         Issue(
@@ -96,7 +94,7 @@ def test_custom_checks_and_default_checks():
     properties = example_package_properties()
     properties["name"] = "ALLCAPS"
     del properties["resources"]
-    config = Config(custom_checks=[lowercase_check])
+    config = Config(extensions=Extensions(custom_checks=[lowercase_check]))
     issues = check(properties, config=config)
 
     assert [issue.type for issue in issues] == ["lowercase", "required"]
@@ -110,28 +108,28 @@ def test_no_matching_jsonpath():
         check=lambda value: False,
         type="always-fail",
     )
-    config = Config(custom_checks=[custom_check])
+    config = Config(extensions=Extensions(custom_checks=[custom_check]))
     issues = check(properties, config=config)
 
     assert issues == []
 
 
 def test_required_check_wildcard():
-    descriptor = example_package_properties()
+    properties = example_package_properties()
     id_check = RequiredCheck(
         jsonpath="$.*.id",
         message="All fields must have an id.",
     )
-    config = Config(custom_checks=[id_check])
+    config = Config(extensions=Extensions(required_checks=[id_check]))
 
-    issues = check(descriptor, config=config)
+    issues = check(properties, config=config)
 
     assert len(issues) == 8
 
 
 def test_required_check_array_wildcard():
-    descriptor = example_package_properties()
-    descriptor["contributors"] = [
+    properties = example_package_properties()
+    properties["contributors"] = [
         {"path": "a/path"},
         {"path": "a/path"},
         {"path": "a/path", "name": "a name"},
@@ -140,8 +138,8 @@ def test_required_check_array_wildcard():
         jsonpath="$.contributors[*].name",
         message="Contributor name is required.",
     )
-    config = Config(custom_checks=[name_check])
-    issues = check(descriptor, config=config)
+    config = Config(extensions=Extensions(required_checks=[name_check]))
+    issues = check(properties, config=config)
 
     assert issues == [
         Issue(

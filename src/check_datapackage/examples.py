@@ -2,6 +2,26 @@ from textwrap import dedent
 from typing import Any
 
 
+def example_field_properties() -> dict[str, Any]:
+    """Create a set of example field properties.
+
+    Returns:
+        A set of example field properties.
+
+    Examples:
+        ```{python}
+        import check_datapackage as cdp
+
+        cdp.example_field_properties()
+        ```
+    """
+    return {
+        "name": "eye-colour",
+        "type": "string",
+        "title": "Woolly dormouse eye colour",
+    }
+
+
 def example_resource_properties() -> dict[str, Any]:
     """Create a set of example resource properties.
 
@@ -19,6 +39,7 @@ def example_resource_properties() -> dict[str, Any]:
         "name": "woolly-dormice-2015",
         "title": "Body fat percentage in the hibernating woolly dormouse",
         "path": "resources/woolly-dormice-2015/data.parquet",
+        "schema": {"fields": [example_field_properties()]},
     }
 
 
