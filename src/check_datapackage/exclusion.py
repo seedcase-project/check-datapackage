@@ -1,10 +1,10 @@
+import re
 from dataclasses import dataclass
 from typing import Any, Optional
 
 from check_datapackage.internals import (
-    DescriptorField,
     _filter,
-    _get_fields_at_jsonpath,
+    _get_direct_jsonpaths,
     _map,
 )
 from check_datapackage.issue import Issue
@@ -35,6 +35,13 @@ class Exclusion:
         exclusion_desc_required = cdp.Exclusion(
             type="required",
             jsonpath="$.resources[*].description"
+        )
+        config = cdp.Config(
+            exclusions=[
+                exclusion_required,
+                exclusion_name,
+                exclusion_desc_required
+            ]
         )
         ```
     """
@@ -72,7 +79,7 @@ def _get_matches(
         return False
 
     if exclusion.jsonpath:
-        matches.append(_same_jsonpath(issue, exclusion.jsonpath, descriptor))
+        matches.append(_jsonpaths_match(issue, exclusion.jsonpath))
 
     if exclusion.type:
         matches.append(_same_type(issue, exclusion.type))
@@ -80,11 +87,40 @@ def _get_matches(
     return all(matches)
 
 
-def _same_jsonpath(issue: Issue, jsonpath: str, descriptor: dict[Any, str]) -> bool:
-    fields: list[DescriptorField] = _get_fields_at_jsonpath(jsonpath, descriptor)
-    jsonpaths: list[str] = _map(fields, lambda field: field.jsonpath)
+def _jsonpaths_match(issue: Issue, jsonpath: str) -> bool:
+    json_object: dict[str, Any] = _get_json_object_from_jsonpath(issue.jsonpath)
+    jsonpaths = _get_direct_jsonpaths(jsonpath, json_object)
     return issue.jsonpath in jsonpaths
 
 
 def _same_type(issue: Issue, type: str) -> bool:
     return type == issue.type
+
+
+def _get_json_object_from_jsonpath(jsonpath: str) -> dict[str, Any]:
+    """Builds an object with a property at the given JSON Path location."""
+    path_parts = jsonpath.removeprefix("$.").split(".")
+    return _get_object_from_path_parts(path_parts)
+
+
+def _get_object_from_path_parts(path_parts: list[str]) -> dict[str, Any]:
+    current_part = path_parts[0]
+    next_value = {}
+    if len(path_parts) > 1:
+        next_value = _get_object_from_path_parts(path_parts[1:])
+
+    array_parts = _get_array_parts(current_part)
+    if array_parts:
+        # If the current field is an array, insert the next value as the last item
+        # in the array
+        name, index = array_parts.groups()
+        value: list[dict[str, Any]] = _map(range(int(index)), lambda _: {})
+        return {name: value + [next_value]}
+
+    # If the current field is a dict, insert the next value as a property
+    return {current_part: next_value}
+
+
+def _get_array_parts(path_part: str) -> Optional[re.Match[str]]:
+    """Extract the name and index from a JSON path part representing an array."""
+    return re.search(r"(\w+)\[(\d+)\]$", path_part)

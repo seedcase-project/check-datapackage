@@ -28,11 +28,10 @@ components, along with their descriptions.
 
 This section describes the inputs accepted by `check-datapackage`.
 
--   **Descriptor:** This is a Python dictionary containing the
-    properties of a Data Package or Data Resource. Allowed properties
-    are defined in the [Data Package
-    standard](https://datapackage.org/). A common use case is loading
-    the descriptor from the `datapackage.json` file.
+-   **Properties**: This is a Python dictionary containing the
+    properties of a Data Package. Allowed properties are defined in the
+    [Data Package standard](https://datapackage.org/). A common use case
+    is loading the properties from the `datapackage.json` file.
 -   **Config:** A `Config` object can optionally be passed to
     `check-datapackage` with settings to modify the behaviour and output
     of the check mechanism.
@@ -42,7 +41,7 @@ This section describes the inputs accepted by `check-datapackage`.
 ## Outputs
 
 For each failed check, `check-datapackage` flags the corresponding issue
-in the descriptor. If all checks pass, an empty list is returned.
+in the properties. If all checks pass, an empty list is returned.
 
 -   Default mode: The issues are returned as a list without stopping
     program execution.
@@ -64,7 +63,7 @@ for now though.
 ### {{< var wip >}} `check()`
 
 This is the main function of this package, which will check a Data
-Package descriptor against the Data Package standard, as well as include
+Package properties against the Data Package standard, as well as include
 any custom exclusions or custom checks listed in the configuration.
 
 See the help documentation with `help(check)` for more details.
@@ -91,7 +90,7 @@ def explain(issues: list[Issue]) -> list[str]:
 
     Args:
         issues: A list of `Issue` objects representing issues found while
-            checking a Data Package descriptor.
+            checking a Data Package properties.
 
     Returns:
         A list of user-friendly, human-readable messages
@@ -145,62 +144,15 @@ Package standard that are not relevant to your use case.
 
 See the help documentation with `help(Exclusion)` for more details.
 
-#### {{< var wip >}} `Extensions`
+#### {{< var done >}} `Extensions`
 
 This sub-item of `Config` defines extensions, i.e., additional checks
-that supplement those specified by the Data Package standard. It
-contains subitems that store additional checks, such as `RequiredCheck`
-and `CustomCheck`. This `Extensions` class might be expanded to include
-more types of extensions.
+that supplement those specified by the Data Package standard.
 
-```` python
-@dataclass(frozen=True)
-class Extensions:
-    """Extensions to the standard checks.
+See the help documentation with
+[`Extensions`](/docs/reference/Extensions.qmd) for more details.
 
-    This contains additional checks to be made alongside the standard
-    Data Package checks.
-
-    Attributes:
-        required_checks: A list of `RequiredCheck` objects defining properties to set as required.
-        custom_checks: A list of `CustomCheck` objects defining extra, custom checks to run alongside the standard
-            checks.
-
-    Examples:
-
-        ```{python}
-        import check_datapackage as cdp
-
-        extensions = cdp.Extensions(
-            required_checks=[
-                cdp.RequiredCheck(
-                    jsonpath="$.description",
-                    message="Data Packages must include a description."
-                ),
-                cdp.RequiredCheck(
-                    jsonpath="$.contributors[*].email",
-                    message="All contributors must have an email address."
-                )
-            ],
-            custom_checks=[cdp.CustomCheck(
-                type="only-mit",
-                jsonpath="$.licenses[*].name",
-                message="Data Packages may only be licensed under MIT.",
-                check=lambda license_name: license_name == "mit",
-            )]
-        )
-        # check(descriptor, config=cdp.Config(extensions=extensions))
-        ```
-    """
-    required_checks : list[RequiredCheck] = field(default_factory=list)
-    custom_checks : list[CustomCheck] = field(default_factory=list)
-````
-
-Each extension class must implement its own `apply()` method that takes
-the `datapackage.json` properties `dict` as input and outputs an `Issue`
-list that contains the issues found by that extension.
-
-#### {{< var wip >}} `RequiredCheck`
+#### {{< var done >}} `RequiredCheck`
 
 A sub-item of `Extensions` that allows users to set specific properties
 as required that are not required by the Data Package standard. See the
@@ -208,9 +160,10 @@ help documentation with `help(RequiredCheck)` for more details.
 
 #### {{< var done >}} `CustomCheck`
 
-A sub-item of `Extensions` that allows users to add an additional, custom
-check that `check-datapackage` will run alongside the standard checks.
-See the help documentation with `help(CustomCheck)` for more details.
+A sub-item of `Extensions` that allows users to add an additional,
+custom check that `check-datapackage` will run alongside the standard
+checks. See the help documentation with `help(CustomCheck)` for more
+details.
 
 ### {{< var done >}} `Issue`
 
@@ -268,11 +221,11 @@ This is the potential flow of using `check-datapackage`:
 ```{mermaid}
 %%| label: fig-interface-flow
 %%| fig-cap: "Flow of functions and classes when using `check-datapackage`."
-%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the descriptor with the config, and finally explaining any issues found."
+%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the properties with the config, and finally explaining any issues found."
 flowchart TD
     descriptor_file[(datapackage.json)]
     read_json["read_json()"]
-    descriptor[/"Descriptor<br>(dict)"/]
+    properties[/"Properties<br>(dict)"/]
 
     config_file[(.cdp.toml)]
     read_config["read_config()"]
@@ -286,10 +239,10 @@ flowchart TD
     explain["explain()"]
     messages[/messages/]
 
-    descriptor_file --> read_json --> descriptor
+    descriptor_file --> read_json --> properties
     config_file --> read_config --> config
     custom_check & exclusion --> config
     custom_check & exclusion -.-> config_file
 
-    descriptor & config --> check --> issues --> explain --> messages
+    properties & config --> check --> issues --> explain --> messages
 ```
