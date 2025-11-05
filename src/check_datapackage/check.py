@@ -1,14 +1,20 @@
 import re
-from dataclasses import dataclass
+import sys
+from dataclasses import dataclass, field
 from functools import reduce
-from typing import Any, Iterator, Optional
+from types import TracebackType
+from typing import Any, Callable, Iterator, Optional
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
 from check_datapackage.config import Config
-from check_datapackage.constants import DATA_PACKAGE_SCHEMA_PATH, GROUP_ERRORS
-from check_datapackage.custom_check import apply_custom_checks
+from check_datapackage.constants import (
+    DATA_PACKAGE_SCHEMA_PATH,
+    FIELD_TYPES,
+    GROUP_ERRORS,
+)
 from check_datapackage.exclusion import exclude
+from check_datapackage.extensions import apply_extensions
 from check_datapackage.internals import (
     _filter,
     _flat_map,
@@ -16,6 +22,43 @@ from check_datapackage.internals import (
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
+
+
+def no_traceback_hook(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
+    """Exception hook to hide tracebacks for DataPackageError."""
+    if issubclass(exc_type, DataPackageError):
+        # Only print the message, without traceback
+        print("{0}".format(exc_value))
+    else:
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+
+# Need to use a custom exception hook to hide tracebacks for our custom exceptions
+sys.excepthook = no_traceback_hook
+
+
+class DataPackageError(Exception):
+    """Convert Data Package issues to an error and hide the traceback."""
+
+    def __init__(
+        self,
+        issues: list[Issue],
+    ) -> None:
+        """Create the DataPackageError attributes from issues."""
+        # TODO: Switch to using `explain()` once implemented
+        errors: list[str] = _map(
+            issues,
+            lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
+        )
+        message: str = (
+            "There were some issues found in your `datapackage.json`:\n\n"
+            + "\n".join(errors)
+        )
+        super().__init__(message)
 
 
 def check(
@@ -44,8 +87,11 @@ def check(
         _set_should_fields_to_required(schema)
 
     issues = _check_object_against_json_schema(properties, schema)
-    issues += apply_custom_checks(config.custom_checks, properties)
+    issues += apply_extensions(properties, config.extensions)
     issues = exclude(issues, config.exclusions, properties)
+
+    if error and issues:
+        raise DataPackageError(issues)
 
     return sorted(set(issues))
 
@@ -109,6 +155,7 @@ class SchemaError:
         schema_path (str): The path to the violated check in the JSON schema.
             Path components are separated by '/'.
         jsonpath (str): The JSON path to the field that violates the check.
+        instance (Any): The part of the object that failed the check.
         parent (Optional[SchemaError]): The error group the error belongs to, if any.
     """
 
@@ -116,6 +163,7 @@ class SchemaError:
     type: str
     schema_path: str
     jsonpath: str
+    instance: Any
     parent: Optional["SchemaError"] = None
 
 
@@ -137,6 +185,134 @@ def _validation_errors_to_issues(
     return _map(schema_errors, _create_issue)
 
 
+@dataclass(frozen=True)
+class SchemaErrorEdits:
+    """Expresses which errors to add to or remove from schema errors."""
+
+    add: list[SchemaError] = field(default_factory=list)
+    remove: list[SchemaError] = field(default_factory=list)
+
+
+def _handle_S_resources_x(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Do not flag missing `path` and `data` separately."""
+    edits = SchemaErrorEdits()
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+    # If the parent error is caused by other errors, remove it
+    if errors_in_group:
+        edits.remove.append(parent_error)
+
+    path_or_data_required_errors = _filter(
+        errors_in_group, _path_or_data_required_error
+    )
+    # If path and data are both missing, add a more informative error
+    if len(path_or_data_required_errors) > 1:
+        edits.add.append(
+            SchemaError(
+                message=(
+                    "This resource has no `path` or `data` field. "
+                    "One of them must be provided."
+                ),
+                type="required",
+                jsonpath=parent_error.jsonpath,
+                schema_path=parent_error.schema_path,
+                instance=parent_error.instance,
+            )
+        )
+
+    # Remove all required errors on path and data
+    edits.remove.extend(path_or_data_required_errors)
+    return edits
+
+
+def _handle_S_resources_x_path(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Only flag errors for the relevant type.
+
+    If `path` is a string, flag errors for the string-based schema.
+    If `path` is an array, flag errors for the array-based schema.
+    """
+    edits = SchemaErrorEdits()
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+    type_errors = _filter(errors_in_group, _is_path_type_error)
+    only_type_errors = len(errors_in_group) == len(type_errors)
+
+    if type_errors:
+        edits.remove.append(parent_error)
+
+    # If the only error is that $.resources[x].path is of the wrong type,
+    # add a more informative error
+    if only_type_errors:
+        edits.add.append(
+            SchemaError(
+                message="The `path` property must be either a string or an array.",
+                type="type",
+                jsonpath=type_errors[0].jsonpath,
+                schema_path=type_errors[0].schema_path,
+                instance=parent_error.instance,
+            )
+        )
+
+    # Remove all original type errors on $.resources[x].path
+    edits.remove.extend(type_errors)
+    return edits
+
+
+def _handle_S_resources_x_schema_fields_x(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Only flag errors for the relevant field type.
+
+    E.g., if the field type is `string`, flag errors for the string-based schema only.
+    """
+    edits = SchemaErrorEdits()
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+    edits.remove.append(parent_error)
+
+    field_type: str = parent_error.instance.get("type", "string")
+
+    # The field's type is unknown
+    if field_type not in FIELD_TYPES:
+        unknown_field_error = SchemaError(
+            message=(
+                "The type property in this resource schema field is incorrect. "
+                f"The value can only be one of these types: {', '.join(FIELD_TYPES)}."
+            ),
+            type="enum",
+            jsonpath=f"{parent_error.jsonpath}.type",
+            schema_path=parent_error.schema_path,
+            instance=parent_error.instance,
+        )
+        # Replace all errors with an unknown field error
+        edits.add.append(unknown_field_error)
+        edits.remove.extend(errors_in_group)
+        return edits
+
+    # The field's type is known; keep only errors for this field type
+    schema_index = FIELD_TYPES.index(field_type)
+
+    errors_for_other_types = _filter(
+        errors_in_group,
+        lambda error: f"fields/items/oneOf/{schema_index}/" not in error.schema_path,
+    )
+    edits.remove.extend(errors_for_other_types)
+    return edits
+
+
+_schema_path_to_handler: list[
+    tuple[str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]]
+] = [
+    ("resources/items/oneOf", _handle_S_resources_x),
+    ("resources/items/properties/path/oneOf", _handle_S_resources_x_path),
+    ("fields/items/oneOf", _handle_S_resources_x_schema_fields_x),
+]
+
+
 def _handle_grouped_error(
     schema_errors: list[SchemaError], parent_error: SchemaError
 ) -> list[SchemaError]:
@@ -149,81 +325,28 @@ def _handle_grouped_error(
     Returns:
         The schema errors after processing.
     """
-    # Handle issues at $.resources[x]
 
-    if parent_error.schema_path.endswith("resources/items/oneOf"):
-        schema_errors = _handle_S_resources_x(parent_error, schema_errors)
+    def _get_edits(
+        handlers: list[
+            tuple[str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]]
+        ],
+    ) -> SchemaErrorEdits:
+        schema_path, handler = handlers[0]
+        edits = SchemaErrorEdits()
+        if parent_error.schema_path.endswith(schema_path):
+            edits = handler(parent_error, schema_errors)
 
-    # Handle issues at $.resources[x].path
-    if parent_error.schema_path.endswith("resources/items/properties/path/oneOf"):
-        schema_errors = _handle_S_resources_x_path(parent_error, schema_errors)
+        if len(handlers) == 1:
+            return edits
 
-    return schema_errors
-
-
-def _handle_S_resources_x(
-    parent_error: SchemaError,
-    schema_errors: list[SchemaError],
-) -> list[SchemaError]:
-    """Do not flag missing `path` and `data` separately."""
-    errors_in_group = _filter(schema_errors, lambda error: error.parent == parent_error)
-    # If the parent error is caused by other errors, remove it
-    if errors_in_group:
-        schema_errors.remove(parent_error)
-
-    path_or_data_required_errors = _filter(
-        errors_in_group, _path_or_data_required_error
-    )
-    # If path and data are both missing, add a more informative error
-    if len(path_or_data_required_errors) > 1:
-        schema_errors.append(
-            SchemaError(
-                message=(
-                    "This resource has no `path` or `data` field. "
-                    "One of them must be provided."
-                ),
-                type="required",
-                jsonpath=parent_error.jsonpath,
-                schema_path=parent_error.schema_path,
-            )
+        next_edits = _get_edits(handlers[1:])
+        return SchemaErrorEdits(
+            add=edits.add + next_edits.add,
+            remove=edits.remove + next_edits.remove,
         )
 
-    # Remove all required errors on path and data
-    return _filter(
-        schema_errors, lambda error: error not in path_or_data_required_errors
-    )
-
-
-def _handle_S_resources_x_path(
-    parent_error: SchemaError,
-    schema_errors: list[SchemaError],
-) -> list[SchemaError]:
-    """Only flag errors for the relevant type.
-
-    If `path` is a string, flag errors for the string-based schema.
-    If `path` is an array, flag errors for the array-based schema.
-    """
-    errors_in_group = _filter(schema_errors, lambda error: error.parent == parent_error)
-    type_errors = _filter(errors_in_group, _is_path_type_error)
-    only_type_errors = len(errors_in_group) == len(type_errors)
-
-    if type_errors:
-        schema_errors.remove(parent_error)
-
-    # If the only error is that $.resources[x].path is of the wrong type,
-    # add a more informative error
-    if only_type_errors:
-        schema_errors.append(
-            SchemaError(
-                message="The `path` property must be either a string or an array.",
-                type="type",
-                jsonpath=type_errors[0].jsonpath,
-                schema_path=type_errors[0].schema_path,
-            )
-        )
-
-    # Remove all original type errors on $.resources[x].path
-    return _filter(schema_errors, lambda error: error not in type_errors)
+    edits = _get_edits(_schema_path_to_handler)
+    return _filter(schema_errors, lambda error: error not in edits.remove) + edits.add
 
 
 def _validation_error_to_schema_errors(error: ValidationError) -> list[SchemaError]:
@@ -258,6 +381,7 @@ def _create_schema_error(error: ValidationError) -> SchemaError:
         type=str(error.validator),
         jsonpath=_get_full_json_path_from_error(error),
         schema_path="/".join(_map(error.absolute_schema_path, str)),
+        instance=error.instance,
         parent=_create_schema_error(error.parent) if error.parent else None,  # type: ignore[arg-type]
     )
 
@@ -276,3 +400,9 @@ def _create_issue(error: SchemaError) -> Issue:
         jsonpath=error.jsonpath,
         type=error.type,
     )
+
+
+def _get_errors_in_group(
+    schema_errors: list[SchemaError], parent_error: SchemaError
+) -> list[SchemaError]:
+    return _filter(schema_errors, lambda error: error.parent == parent_error)

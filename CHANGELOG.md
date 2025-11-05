@@ -9,6 +9,54 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.14.0 (2025-11-05)
+
+### Feat
+
+- :sparkles: handle grouped errors under resource fields (#175)
+
+## 0.13.0 (2025-11-04)
+
+### Feat
+
+- :sparkles: implement `error=True` in `check()` (#167)
+
+## 0.12.1 (2025-11-04)
+
+### Refactor
+
+- :truck: rename to `extensions.py` from `custom_checks.py` (#158)
+
+## 0.12.0 (2025-11-03)
+
+### Feat
+
+- :sparkles: adds `Extensions` meta-class (#165)
+
+## 0.11.1 (2025-11-03)
+
+### Refactor
+
+- :recycle: handle grouped errors without modifying input (#177)
+
+## 0.11.0 (2025-11-03)
+
+### Feat
+
+- :sparkles: add example field in resource (#174)
+
+## 0.10.0 (2025-11-03)
+
+### Feat
+
+- :sparkles: exclude required issues at a given JSON path (#138)
+
+## 0.9.0 (2025-10-29)
+
+### Feat
+
+- :sparkles: add `RequiredCheck` (#122)
+
 ## 0.8.7 (2025-10-21)
 
 ### Refactor
