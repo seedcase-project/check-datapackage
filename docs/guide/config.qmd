@@ -135,6 +135,7 @@ To register your custom checks with the `check()` function, you add them
 to the `Config` object passed to the function:
 
 ```{python}
+#| eval: false
 package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",

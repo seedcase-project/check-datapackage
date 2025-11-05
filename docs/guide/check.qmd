@@ -1,50 +1,61 @@
 ---
-title: "Checking a Data Package's properties"
+title: "Checking a Data Package's metadata"
 jupyter: python3
 order: 1
 ---
 
-The structure and content of the Data Package's `datapackage.json`
-should follow the [Data Package standard](https://datapackage.org). This
-standard defines the available properties at each level of the Data
-Package's descriptor file, specifies which properties are required, and
-describes the allowed values for each.
+The purpose of `check-datapackage` is to make sure a Data Package's
+metadata---stored in its `datapackage.json` file---complies with the
+[Data Package standard](https://datapackage.org). This standard defines
+the available properties at each level of the `datapackage.json`, which
+ones are required, and what values are allowed.
 
-::: callout-note
-Note that we use the word *descriptor* to refer to the JSON file
-containing the Data Package's metadata, i.e., the `datapackage.json`
-file. In contrast, we use the word *properties* to refer to the contents
-of the Data Package's descriptor loaded into memory as a Python `dict`.
+This guide shows you how to use the main function `check()` to run these
+checks. Each section walks you through a different part of `check()`,
+starting with its basic usage with the `properties` argument,
+introducing the default checks, how to configure which checks you want
+to run with the `config` argument, and how to handle failed checks with
+the `error` argument.
+
+::: callout-tip
+For the full reference of the `check()` function, see the [reference
+documentation](/docs/reference/check.qmd).
 :::
 
-`check-datapackage` provides the `check()` function to verify that a
-Data Package's properties meets these requirements. `check()` takes a
-Python `dict` as input, representing the properties in the descriptor,
-and by default returns a list of `Issue` objects, each corresponding to
-a failed check on a field in the properties. If you prefer the output as
-an error, you can also run `check()` with `error=True`. When checking
-the properties, you can customise the function's behaviour by specifying
-issues to ignore and additional custom checks to perform.
+## Getting started with `check()` (`properties`)
 
-By default, `check()` returns a list of `Issue` objects, each
-corresponding to one failed check on one field in the properties. If
-there are no failed checks, an empty list is returned.
+[`check()`](/docs/reference/check.qmd) checks a Data Package's metadata
+against the Data Package standard and reports any issues it finds.
 
-In the example below, all required fields in the properties are present
-and well-formed, so the output of `check()`, `issues`, is an empty list.
+It requires one main input, `properties`, which is a Python `dict`
+representing the properties in the `datapackage.json` file. You can load
+these properties from the JSON file using the helper function
+[`read_json()`](/docs/reference/read_json.qmd) included in
+`check-datapackage`.
+
+By default, if any issues are found, `check()` returns a list of `Issue`
+objects---each one describing a failed check on a property. If no issues
+are found, `check()` returns an empty list. If you'd rather have the
+function give an error if it finds any issues, see the [Stop program on
+failed checks (`error=True`)](#stop-program-on-failed-checks-errortrue)
+section below.
+
+Let's look at an example. The code below defines a `package_properties`
+dictionary that includes all the required properties in a correct
+format. When we call `check()` on these properties, it returns an empty
+list:
 
 ```{python}
-from textwrap import dedent
 import check_datapackage as cdp
 
 package_properties = {
     "name": "woolly-dormice",
     "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "description": dedent("""
+    "description": """
         This scoping review explores the hibernation physiology of the
         woolly dormouse, drawing on data collected over a 10-year period
         along the Taurus Mountain range in Turkey.
-        """),
+    """,
     "id": "123-abc-123",
     "created": "2014-05-14T05:00:01+00:00",
     "version": "1.0.0",
@@ -61,25 +72,11 @@ package_properties = {
 cdp.check(properties=package_properties)
 ```
 
-Now let's remove the required `description` field from the properties
-and give a `name` of the wrong type (a number instead of a string).
+Now let's edit `package_properties` to have a `name` of the wrong type
+(a number instead of a string) and run `check()` again:
 
 ```{python}
-package_properties = {
-    "name": 123,
-    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "id": "123-abc-123",
-    "created": "2014-05-14T05:00:01+00:00",
-    "version": "1.0.0",
-    "licenses": [{"name": "odc-pddl"}],
-    "resources": [
-        {
-            "name": "woolly-dormice-2015",
-            "title": "Body fat percentage in the hibernating woolly dormouse",
-            "path": "resources/woolly-dormice-2015/data.parquet",
-        }
-    ],
-}
+package_properties["name"] = 123
 
 cdp.check(properties=package_properties)
 ```
@@ -87,32 +84,36 @@ cdp.check(properties=package_properties)
 The output now lists two issues: one for the missing `description` field
 and one for the `name` field of the wrong type.
 
-## Checks as errors
+## Default checks and configuration (`config`)
+
+By default, `check()` runs the standard checks defined as `MUST`s in the
+Data Package standard. These include checking that all required
+properties are present and that their values have the correct types and
+formats. This happens through a default `Config` object passed to the
+`config` argument of `check()`.
+
+If you want to configure which checks are performed, you can provide
+your own `Config` object in `check()`. With this object you can exclude
+certain checks, include additional `SHOULD` recommendations from the
+Data Package standard, or add your own custom checks.
+
+::: callout-tip
+For more details on configuring checks, see the [Configuring
+checks](config.qmd) guide or the [`Config` reference
+documentation](/docs/reference/Config.qmd).
+:::
+
+## Stop program on failed checks (`error=True`) {#stop-program-on-failed-checks-errortrue}
 
 If you want failed checks to result in errors and terminate program
 execution, you can achieve this by setting the `error` argument of
-`check()` to `True`.
+`check()` to `True`. Using the same incorrect `package_properties`
+example as before, we can call `check()` with `error=True` like this:
 
 ```{python}
 #| error: true
-#| eval: false
-package_properties = {
-    "name": 123,
-    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "id": "123-abc-123",
-    "created": "2014-05-14T05:00:01+00:00",
-    "version": "1.0.0",
-    "licenses": [{"name": "odc-pddl"}],
-}
-
 cdp.check(properties=package_properties, error=True)
 ```
 
-Now, if any issues are found, the function will produce an error instead
-of outputting the list of issues. When setting `error=True`, internally
-`check()` uses `explain()` to generate the error messages.
-
-::: callout-note
-You can configure the checks by using the `Config` class. See the
-[Configuration](config.qmd) guide for more details.
-:::
+Since some checks failed, the function now raises an error rather than
+returning the list of issues.

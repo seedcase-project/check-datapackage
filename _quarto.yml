@@ -73,7 +73,9 @@ quartodoc:
     desc: Classes to configure behaviour of the checks.
     contents:
     - name: Config
+    - name: Extensions
     - name: CustomCheck
+    - name: RequiredCheck
     - name: Exclusion
 
   - title: Output
@@ -86,6 +88,7 @@ quartodoc:
     contents:
     - name: example_package_properties
     - name: example_resource_properties
+    - name: example_field_properties
 
 
 metadata-files:
