@@ -61,8 +61,8 @@ class CustomCheck(BaseModel, frozen=True):
     def _check_not_required(cls, value: str) -> str:
         if value == "required":
             raise ValueError(
-                "Cannot define `CustomCheck` with `type='required'`."
-                " Use `RequiredCheck` to mark fields as required instead."
+                "Cannot use `CustomCheck` with `type='required'`."
+                " Use `RequiredCheck` to set properties as required instead."
             )
         return value
 
@@ -119,9 +119,9 @@ class RequiredCheck(BaseModel, frozen=True):
         field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
         if not field_name_match:
             raise ValueError(
-                f"Cannot define `RequiredCheck` for JSON path `{self.jsonpath}`."
+                f"Cannot use `RequiredCheck` for this JSON path `{self.jsonpath}`."
                 " A `RequiredCheck` must target a concrete object field (e.g.,"
-                " `$.title`) or set of fields (e.g., `$.resources[*].title`)."
+                " `$.title`) or set of properties/JSON paths (e.g., `$.resources[*].title`)."
                 " Ambiguous paths (e.g., `$..title`) or paths pointing to array items"
                 " (e.g., `$.resources[0]`) are not allowed."
             )
