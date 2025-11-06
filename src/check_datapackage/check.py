@@ -310,67 +310,54 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
     parent_error: SchemaError,
     schema_errors: list[SchemaError],
 ) -> SchemaErrorEdits:
-    """Only flag errors for the relevant field type.
+    """Only flag errors for the relevant field type and simplify errors."""
 
-    E.g., if the field type is `string`, flag enum errors for the string-based
-    schema only.
-    """
-    edits = SchemaErrorEdits()
-    if not parent_error.parent:
-        return edits
+    def _error_is_for_field_type() -> bool:
+        if not parent_error.parent:
+            return False
+        field_type: str = parent_error.parent.instance.get("type", "string")
+        if field_type not in FIELD_TYPES:
+            return False
+        schema_index = FIELD_TYPES.index(field_type)
+        return f"fields/items/oneOf/{schema_index}/" in parent_error.schema_path
 
+    edits = SchemaErrorEdits(remove=[parent_error])
     errors_in_group = _get_errors_in_group(schema_errors, parent_error)
-    field_type: str = parent_error.parent.instance.get("type", "string")
-    edits.remove.append(parent_error)
 
-    # The field's type is unknown; this is already flagged, so remove all errors
-    if field_type not in FIELD_TYPES:
+    # Remove errors for other field types
+    if not _error_is_for_field_type():
         edits.remove.extend(errors_in_group)
         return edits
 
-    # The field's type is known; keep only errors for this field type
-    schema_index = FIELD_TYPES.index(field_type)
-    path_for_type = f"fields/items/oneOf/{schema_index}/"
-
-    errors_for_this_type = _filter(
-        errors_in_group,
-        lambda error: path_for_type in error.schema_path and error.type == "type",
+    enum_errors = _filter(
+        errors_in_group, lambda error: error.jsonpath.endswith("enum")
     )
-    errors_for_other_types = _filter(
-        errors_in_group, lambda error: path_for_type not in error.schema_path
-    )
+    value_errors = _filter(errors_in_group, lambda error: error not in enum_errors)
+    edits.remove.extend(value_errors)
 
-    edits.remove.extend(errors_for_other_types)
-    if not errors_for_this_type:
+    # Keep only top-level enum errors, if any
+    if enum_errors:
         return edits
 
-    # Unify multiple enum errors
-    an_error = errors_for_this_type[0]
-    same_type = all(
-        _map(
-            errors_for_this_type,
-            lambda error: type(error.instance) is type(an_error.instance),
-        )
-    )
+    # Replace value errors with a simpler error
     message = "All enum values must be the same type."
+    same_type = len(set(_map(parent_error.instance, lambda value: type(value)))) == 1
     if same_type:
-        allowed_types = set(
-            _map(errors_for_this_type, lambda error: str(error.schema_value))
-        )
+        allowed_types = set(_map(value_errors, lambda error: str(error.schema_value)))
         message = (
             "Incorrect enum value type. Enum values should be "
             f"one of {', '.join(allowed_types)}."
         )
 
-    unified_error = SchemaError(
-        message=message,
-        type="type",
-        schema_path=an_error.schema_path,
-        jsonpath=_strip_index(an_error.jsonpath),
-        instance=an_error.instance,
+    edits.add.append(
+        SchemaError(
+            message=message,
+            type="type",
+            schema_path=value_errors[0].schema_path,
+            jsonpath=_strip_index(value_errors[0].jsonpath),
+            instance=value_errors[0].instance,
+        )
     )
-    edits.add.append(unified_error)
-    edits.remove.extend(errors_for_this_type)
 
     return edits
 

@@ -333,6 +333,19 @@ def test_fail_unknown_field_with_bad_property():
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
 
 
+def test_fail_field_with_non_unique_enum_values():
+    """Fail a field whose enum array contains duplicate values."""
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["type"] = "number"
+    properties["resources"][0]["schema"]["fields"][0]["constraints"] = {"enum": [1, 1]}
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "uniqueItems"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].constraints.enum"
+
+
 def test_fail_unknown_field_with_bad_enum_constraint():
     """Fail a field whose enum constraint is the wrong type when the field's
     type is unknown."""
