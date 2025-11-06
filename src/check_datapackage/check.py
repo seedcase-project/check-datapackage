@@ -282,8 +282,8 @@ def _handle_S_resources_x_schema_fields_x(
     if field_type not in FIELD_TYPES:
         unknown_field_error = SchemaError(
             message=(
-                "Unknown Data Package field type. Please use one of"
-                f" {', '.join(FIELD_TYPES)}."
+                "The type property in this resource schema field is incorrect. "
+                f"The value can only be one of these types: {', '.join(FIELD_TYPES)}."
             ),
             type="enum",
             jsonpath=f"{parent_error.jsonpath}.type",
