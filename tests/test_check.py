@@ -11,6 +11,7 @@ from check_datapackage.examples import (
 )
 from check_datapackage.exclusion import Exclusion
 from check_datapackage.extensions import Extensions
+from check_datapackage.internals import _map
 from tests.test_extensions import lowercase_check
 
 # "MUST" checks
@@ -331,6 +332,163 @@ def test_fail_unknown_field_with_bad_property():
     assert len(issues) == 1
     assert issues[0].type == "enum"
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
+
+
+def test_pass_good_foreign_keys():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            "fields": "purchase",
+            "reference": {
+                "resource": "purchases",
+                "fields": "purchase_id",
+            },
+        },
+        {
+            "fields": ["first_name", "last_name"],
+            "reference": {
+                "resource": "customers",
+                "fields": ["first_name", "last_name"],
+            },
+        },
+    ]
+
+    issues = check(properties)
+
+    assert issues == []
+
+
+def test_fail_foreign_keys_of_bad_type():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = 123
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys"
+
+
+@mark.parametrize("ref_fields", ["purchase_id", ["purchase_id"], 123, []])
+def test_fail_foreign_keys_with_missing_fields(ref_fields):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            # fields missing
+            "reference": {
+                "resource": "purchases",
+                "fields": ref_fields,
+            },
+        },
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys[0].fields"
+
+
+@mark.parametrize("ref_fields", ["purchase_id", ["purchase_id"], 123, []])
+def test_fail_foreign_keys_with_bad_fields(ref_fields):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            "fields": 123,
+            "reference": {
+                "fields": ref_fields,
+            },
+        },
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys[0].fields"
+
+
+def test_fail_foreign_keys_with_bad_fields_while_keeping_other_issues():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            "fields": 123,
+            # reference.fields missing
+            "reference": {"resource": 123},
+        },
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 3
+    assert _map(issues, lambda issue: issue.type) == ["type", "required", "type"]
+
+
+@mark.parametrize(
+    "fields, ref_fields",
+    [
+        ("purchase", ["purchase_id"]),
+        (["purchase"], "purchase_id"),
+    ],
+)
+def test_fail_foreign_keys_with_mismatched_types(fields, ref_fields):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            "fields": fields,
+            "reference": {
+                "fields": ref_fields,
+            },
+        },
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys[0].reference.fields"
+
+
+def test_fail_foreign_keys_with_bad_array():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            "fields": ["first_name", "last_name"],
+            "reference": {
+                "resource": "customers",
+                "fields": [],
+            },
+        }
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "minItems"
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys[0].reference.fields"
+
+
+def test_fail_foreign_keys_with_bad_array_item():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            "fields": ["first_name", 1],
+            "reference": {
+                "resource": "customers",
+                "fields": ["first_name", 1],
+            },
+        }
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 2
+    assert issues[0].type == "type"
+    assert issues[1].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys[0].fields[1]"
+    assert issues[1].jsonpath == (
+        "$.resources[0].schema.foreignKeys[0].reference.fields[1]"
+    )
 
 
 def test_error_as_true():
