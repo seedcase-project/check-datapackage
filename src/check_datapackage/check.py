@@ -311,21 +311,11 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
     schema_errors: list[SchemaError],
 ) -> SchemaErrorEdits:
     """Only flag errors for the relevant field type and simplify errors."""
-
-    def _error_is_for_field_type() -> bool:
-        if not parent_error.parent:
-            return False
-        field_type: str = parent_error.parent.instance.get("type", "string")
-        if field_type not in FIELD_TYPES:
-            return False
-        schema_index = FIELD_TYPES.index(field_type)
-        return f"fields/items/oneOf/{schema_index}/" in parent_error.schema_path
-
     edits = SchemaErrorEdits(remove=[parent_error])
     errors_in_group = _get_errors_in_group(schema_errors, parent_error)
 
     # Remove errors for other field types
-    if not _error_is_for_field_type():
+    if _error_not_for_field_type(parent_error):
         edits.remove.extend(errors_in_group)
         return edits
 
@@ -360,6 +350,16 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
     )
 
     return edits
+
+
+def _error_not_for_field_type(parent_error: SchemaError) -> bool:
+    if not parent_error.parent:
+        return True
+    field_type: str = parent_error.parent.instance.get("type", "string")
+    if field_type not in FIELD_TYPES:
+        return True
+    schema_index = FIELD_TYPES.index(field_type)
+    return f"fields/items/oneOf/{schema_index}/" not in parent_error.schema_path
 
 
 _schema_path_to_handler: list[
