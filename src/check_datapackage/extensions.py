@@ -120,10 +120,10 @@ class RequiredCheck(BaseModel, frozen=True):
         if not field_name_match:
             raise ValueError(
                 f"Cannot use `RequiredCheck` for this JSON path `{self.jsonpath}`."
-                " A `RequiredCheck` must target a concrete object field (e.g.,"
-                " `$.title`) or set of properties/JSON paths (e.g.,"
-                " `$.resources[*].title`). Ambiguous paths (e.g., `$..title`)"
-                " or paths pointing to array items (e.g., `$.resources[0]`) are"
+                " A `RequiredCheck` must use a JSON path that targets a specific and"
+                " real property (e.g., `$.title`) or set of properties (e.g.,"
+                " `$.resources[*].title`). Unspecific JSON paths (e.g., `$..title`)"
+                " or JSON paths pointing to array items (e.g., `$.resources[0]`) are"
                 " not allowed."
             )
 
