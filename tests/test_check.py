@@ -2,8 +2,9 @@ from typing import Any
 
 from pytest import mark, raises
 
-from check_datapackage.check import check
+from check_datapackage.check import DataPackageError, check
 from check_datapackage.config import Config
+from check_datapackage.constants import FIELD_TYPES
 from check_datapackage.examples import (
     example_package_properties,
     example_resource_properties,
@@ -274,10 +275,68 @@ def test_fail_with_bad_resource_path(path, location, type):
     assert issues[0].jsonpath == location
 
 
+def test_fail_empty_field():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0] = {}
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].name"
+
+
+def test_fail_unknown_field():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["type"] = "unknown"
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "enum"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
+
+
+@mark.parametrize("type", FIELD_TYPES)
+def test_fail_field_with_bad_property(type):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["type"] = type
+    properties["resources"][0]["schema"]["fields"][0]["title"] = 4
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].title"
+
+
+def test_fail_field_with_bad_format():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["format"] = 4
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "enum"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].format"
+
+
+def test_fail_unknown_field_with_bad_property():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0]["title"] = 4
+    properties["resources"][0]["schema"]["fields"][0]["type"] = "unknown"
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "enum"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
+
+
 def test_error_as_true():
     properties = {
         "name": 123,
     }
 
-    with raises(Exception):
+    with raises(DataPackageError):
         check(properties, error=True)

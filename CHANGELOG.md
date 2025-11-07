@@ -9,6 +9,18 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.14.0 (2025-11-05)
+
+### Feat
+
+- :sparkles: handle grouped errors under resource fields (#175)
+
+## 0.13.0 (2025-11-04)
+
+### Feat
+
+- :sparkles: implement `error=True` in `check()` (#167)
+
 ## 0.12.1 (2025-11-04)
 
 ### Refactor
