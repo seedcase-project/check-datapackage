@@ -319,17 +319,24 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
         edits.remove.extend(errors_in_group)
         return edits
 
-    enum_errors = _filter(
-        errors_in_group, lambda error: error.jsonpath.endswith("enum")
+    value_errors = _filter(
+        errors_in_group,
+        lambda error: not error.jsonpath.endswith("enum"),
     )
-    value_errors = _filter(errors_in_group, lambda error: error not in enum_errors)
+
+    # If there are only value errors, simplify them
+    if value_errors == errors_in_group:
+        edits.add.append(_get_unified_enum_values_error(parent_error, value_errors))
+
+    # Otherwise, keep only top-level enum errors
     edits.remove.extend(value_errors)
+    return edits
 
-    # Keep only top-level enum errors, if any
-    if enum_errors:
-        return edits
 
-    # Replace value errors with a simpler error
+def _get_unified_enum_values_error(
+    parent_error: SchemaError,
+    value_errors: list[SchemaError],
+) -> SchemaError:
     message = "All enum values must be the same type."
     same_type = len(set(_map(parent_error.instance, lambda value: type(value)))) == 1
     if same_type:
@@ -338,18 +345,13 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
             "Incorrect enum value type. Enum values should be "
             f"one of {', '.join(allowed_types)}."
         )
-
-    edits.add.append(
-        SchemaError(
-            message=message,
-            type="type",
-            schema_path=value_errors[0].schema_path,
-            jsonpath=_strip_index(value_errors[0].jsonpath),
-            instance=value_errors[0].instance,
-        )
+    return SchemaError(
+        message=message,
+        type="type",
+        schema_path=value_errors[0].schema_path,
+        jsonpath=_strip_index(value_errors[0].jsonpath),
+        instance=value_errors[0].instance,
     )
-
-    return edits
 
 
 def _error_not_for_field_type(parent_error: SchemaError) -> bool:
