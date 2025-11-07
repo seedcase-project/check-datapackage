@@ -333,6 +333,49 @@ def test_fail_unknown_field_with_bad_property():
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
 
 
+@mark.parametrize("primary_key", ["id", ["name", "address"]])
+def test_pass_good_primary_key(primary_key):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = primary_key
+
+    issues = check(properties)
+
+    assert issues == []
+
+
+def test_fail_primary_key_of_bad_type():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = 123
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.primaryKey"
+
+
+def test_fail_primary_key_with_bad_array():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = []
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "minItems"
+    assert issues[0].jsonpath == "$.resources[0].schema.primaryKey"
+
+
+def test_fail_primary_key_with_bad_array_item():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = [123, "name"]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.primaryKey[0]"
+
+
 def test_error_as_true():
     properties = {
         "name": 123,
