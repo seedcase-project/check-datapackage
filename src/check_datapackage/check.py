@@ -304,12 +304,36 @@ def _handle_S_resources_x_schema_fields_x(
     return edits
 
 
+def _handle_S_licenses_x(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Only include one error if both `name` and `path` are missing."""
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+    return SchemaErrorEdits(
+        remove=errors_in_group + [parent_error],
+        add=[
+            SchemaError(
+                message=(
+                    "Licenses must have at least one of the following properties: "
+                    "`name`, `path`."
+                ),
+                type="required",
+                schema_path=parent_error.schema_path,
+                jsonpath=parent_error.jsonpath,
+                instance=parent_error.instance,
+            )
+        ],
+    )
+
+
 _schema_path_to_handler: list[
     tuple[str, Callable[[SchemaError, list[SchemaError]], SchemaErrorEdits]]
 ] = [
     ("resources/items/oneOf", _handle_S_resources_x),
     ("resources/items/properties/path/oneOf", _handle_S_resources_x_path),
     ("fields/items/oneOf", _handle_S_resources_x_schema_fields_x),
+    ("licenses/items/anyOf", _handle_S_licenses_x),
 ]
 
 
