@@ -304,7 +304,7 @@ def _handle_S_resources_x_schema_fields_x(
     return edits
 
 
-def _handle_S_licenses_x(
+def _handle_licenses(
     parent_error: SchemaError,
     schema_errors: list[SchemaError],
 ) -> SchemaErrorEdits:
@@ -333,7 +333,7 @@ _schema_path_to_handler: list[
     ("resources/items/oneOf", _handle_S_resources_x),
     ("resources/items/properties/path/oneOf", _handle_S_resources_x_path),
     ("fields/items/oneOf", _handle_S_resources_x_schema_fields_x),
-    ("licenses/items/anyOf", _handle_S_licenses_x),
+    ("licenses/items/anyOf", _handle_licenses),
 ]
 
 
