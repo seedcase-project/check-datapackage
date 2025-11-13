@@ -1,6 +1,6 @@
 """Check functions and constants for the Frictionless Data Package standard."""
 
-from .check import check, DataPackageError
+from .check import DataPackageError, check
 from .config import Config
 from .examples import (
     example_field_properties,
