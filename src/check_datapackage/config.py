@@ -1,12 +1,12 @@
-from dataclasses import dataclass, field
 from typing import Literal
+
+from pydantic import BaseModel
 
 from check_datapackage.exclusion import Exclusion
 from check_datapackage.extensions import Extensions
 
 
-@dataclass
-class Config:
+class Config(BaseModel, frozen=True):
     """Configuration for checking a Data Package descriptor.
 
     Attributes:
@@ -47,7 +47,7 @@ class Config:
         ```
     """
 
-    exclusions: list[Exclusion] = field(default_factory=list[Exclusion])
+    exclusions: list[Exclusion] = []
     extensions: Extensions = Extensions()
     strict: bool = False
     version: Literal["v1", "v2"] = "v2"

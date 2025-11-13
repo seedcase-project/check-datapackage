@@ -1,9 +1,12 @@
 import re
-from dataclasses import dataclass, field
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any, Self
+
+from pydantic import BaseModel, PrivateAttr, field_validator, model_validator
 
 from check_datapackage.internals import (
     DescriptorField,
+    JsonPath,
     _filter,
     _flat_map,
     _get_direct_jsonpaths,
@@ -13,8 +16,7 @@ from check_datapackage.internals import (
 from check_datapackage.issue import Issue
 
 
-@dataclass(frozen=True)
-class CustomCheck:
+class CustomCheck(BaseModel, frozen=True):
     """A custom check to be done on Data Package metadata.
 
     Attributes:
@@ -49,10 +51,20 @@ class CustomCheck:
         ```
     """
 
-    jsonpath: str
+    jsonpath: JsonPath
     message: str
     check: Callable[[Any], bool]
     type: str = "custom"
+
+    @field_validator("type", mode="after")
+    @classmethod
+    def _check_not_required(cls, value: str) -> str:
+        if value == "required":
+            raise ValueError(
+                "Cannot use `CustomCheck` with `type='required'`."
+                " Use `RequiredCheck` to set properties as required instead."
+            )
+        return value
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
         """Applies the custom check to the properties.
@@ -79,8 +91,7 @@ class CustomCheck:
         )
 
 
-@dataclass(frozen=True)
-class RequiredCheck:
+class RequiredCheck(BaseModel, frozen=True):
     """Set a specific property as required.
 
     Attributes:
@@ -99,8 +110,25 @@ class RequiredCheck:
         ```
     """
 
-    jsonpath: str
+    jsonpath: JsonPath
     message: str
+    _field_name: str = PrivateAttr()
+
+    @model_validator(mode="after")
+    def _check_field_name_in_jsonpath(self) -> Self:
+        field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
+        if not field_name_match:
+            raise ValueError(
+                f"Cannot use `RequiredCheck` for this JSON path `{self.jsonpath}`."
+                " A `RequiredCheck` must use a JSON path that targets a specific and"
+                " real property (e.g., `$.title`) or set of properties (e.g.,"
+                " `$.resources[*].title`). Unspecific JSON paths (e.g., `$..title`)"
+                " or JSON paths pointing to array items (e.g., `$.resources[0]`) are"
+                " not allowed."
+            )
+
+        object.__setattr__(self, "_field_name", field_name_match.group(1))
+        return self
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
         """Applies the required check to the properties.
@@ -111,31 +139,24 @@ class RequiredCheck:
         Returns:
             A list of `Issue`s.
         """
-        # TODO: check jsonpath when checking other user input
-        field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
-        if not field_name_match:
-            return []
-        field_name = field_name_match.group(1)
-
         matching_paths = _get_direct_jsonpaths(self.jsonpath, properties)
-        indirect_parent_path = self.jsonpath.removesuffix(field_name)
+        indirect_parent_path = self.jsonpath.removesuffix(self._field_name)
         direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, properties)
         missing_paths = _filter(
             direct_parent_paths,
-            lambda path: f"{path}{field_name}" not in matching_paths,
+            lambda path: f"{path}{self._field_name}" not in matching_paths,
         )
         return _map(
             missing_paths,
             lambda path: Issue(
-                jsonpath=path + field_name,
+                jsonpath=path + self._field_name,
                 type="required",
                 message=self.message,
             ),
         )
 
 
-@dataclass(frozen=True)
-class Extensions:
+class Extensions(BaseModel, frozen=True):
     """Extensions to the standard checks.
 
     This sub-item of `Config` defines extensions, i.e., additional checks
@@ -181,8 +202,8 @@ class Extensions:
         ```
     """
 
-    required_checks: list[RequiredCheck] = field(default_factory=list[RequiredCheck])
-    custom_checks: list[CustomCheck] = field(default_factory=list[CustomCheck])
+    required_checks: list[RequiredCheck] = []
+    custom_checks: list[CustomCheck] = []
 
 
 def apply_extensions(
