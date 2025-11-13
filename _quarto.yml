@@ -82,6 +82,7 @@ quartodoc:
     desc: Classes that contain details about the output.
     contents:
     - name: Issue
+    - name: DataPackageError
 
   - title: Examples
     desc: Example Data Package properties used for documents and testing.
