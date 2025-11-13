@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from itertools import chain
-from typing import Any, Callable, Iterable, TypeVar
+from typing import Annotated, Any, Callable, Iterable, TypeVar
 
-from jsonpath import JSONPathMatch, finditer
+from jsonpath import JSONPathMatch, JSONPathSyntaxError, compile, finditer
+from pydantic import AfterValidator
 
 
 @dataclass
@@ -54,3 +55,17 @@ def _filter(x: Iterable[In], fn: Callable[[In], bool]) -> list[In]:
 def _flat_map(items: Iterable[In], fn: Callable[[In], Iterable[Out]]) -> list[Out]:
     """Maps and flattens the items by one level."""
     return list(chain.from_iterable(map(fn, items)))
+
+
+def _is_jsonpath(value: str) -> str:
+    try:
+        compile(value)
+    except JSONPathSyntaxError:
+        raise ValueError(
+            f"'{value}' is not a correct JSON path. See "
+            "https://jg-rp.github.io/python-jsonpath/syntax/ for the expected syntax."
+        )
+    return value
+
+
+type JsonPath = Annotated[str, AfterValidator(_is_jsonpath)]
