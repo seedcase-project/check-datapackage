@@ -333,6 +333,28 @@ def test_fail_unknown_field_with_bad_property():
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].type"
 
 
+def test_fail_package_license_with_no_name_or_path():
+    properties = example_package_properties()
+    del properties["licenses"][0]["name"]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+    assert issues[0].jsonpath == "$.licenses[0]"
+
+
+def test_fail_resource_license_with_no_name_or_path():
+    properties = example_package_properties()
+    properties["resources"][0]["licenses"] = [{}]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+    assert issues[0].jsonpath == "$.resources[0].licenses[0]"
+
+
 def test_fail_field_with_non_unique_enum_values():
     """Fail a field whose enum array contains duplicate values."""
     properties = example_package_properties()
