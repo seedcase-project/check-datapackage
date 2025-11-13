@@ -389,6 +389,28 @@ def test_fail_foreign_keys_with_missing_fields(ref_fields):
     assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys[0].fields"
 
 
+def test_fail_package_license_with_no_name_or_path():
+    properties = example_package_properties()
+    del properties["licenses"][0]["name"]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+    assert issues[0].jsonpath == "$.licenses[0]"
+
+
+def test_fail_resource_license_with_no_name_or_path():
+    properties = example_package_properties()
+    properties["resources"][0]["licenses"] = [{}]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "required"
+    assert issues[0].jsonpath == "$.resources[0].licenses[0]"
+
+
 @mark.parametrize("ref_fields", ["purchase_id", ["purchase_id"], 123, []])
 def test_fail_foreign_keys_with_bad_fields(ref_fields):
     properties = example_package_properties()
