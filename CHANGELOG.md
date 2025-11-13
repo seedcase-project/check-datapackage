@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.16.0 (2025-11-13)
+
+### Feat
+
+- ✨ handle grouped errors for licenses (#189)
+
 ## 0.15.0 (2025-11-13)
 
 ### Feat
