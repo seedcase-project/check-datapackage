@@ -156,6 +156,8 @@ class SchemaError:
             Path components are separated by '/'.
         jsonpath (str): The JSON path to the field that violates the check.
         instance (Any): The part of the object that failed the check.
+        schema_value (Optional[Any]): The expected value that is checked against,
+            which is part of the schema violated by this error.
         parent (Optional[SchemaError]): The error group the error belongs to, if any.
     """
 
@@ -164,6 +166,7 @@ class SchemaError:
     schema_path: str
     jsonpath: str
     instance: Any
+    schema_value: Optional[Any] = None
     parent: Optional["SchemaError"] = None
 
 
@@ -304,6 +307,64 @@ def _handle_S_resources_x_schema_fields_x(
     return edits
 
 
+def _handle_S_resources_x_schema_fields_x_constraints_enum(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Only flag errors for the relevant field type and simplify errors."""
+    edits = SchemaErrorEdits(remove=[parent_error])
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+
+    # Remove errors for other field types
+    if _not_field_type_error(parent_error):
+        edits.remove.extend(errors_in_group)
+        return edits
+
+    value_errors = _filter(
+        errors_in_group,
+        lambda error: not error.jsonpath.endswith("enum"),
+    )
+
+    # If there are only value errors, simplify them
+    if value_errors == errors_in_group:
+        edits.add.append(_get_enum_values_error(parent_error, value_errors))
+
+    # Otherwise, keep only top-level enum errors
+    edits.remove.extend(value_errors)
+    return edits
+
+
+def _get_enum_values_error(
+    parent_error: SchemaError,
+    value_errors: list[SchemaError],
+) -> SchemaError:
+    message = "All enum values must be the same type."
+    same_type = len(set(_map(parent_error.instance, lambda value: type(value)))) == 1
+    if same_type:
+        allowed_types = set(_map(value_errors, lambda error: str(error.schema_value)))
+        message = (
+            "The enum value type is not correct. Enum values should be "
+            f"one of {', '.join(allowed_types)}."
+        )
+    return SchemaError(
+        message=message,
+        type="type",
+        schema_path=value_errors[0].schema_path,
+        jsonpath=_strip_index(value_errors[0].jsonpath),
+        instance=value_errors[0].instance,
+    )
+
+
+def _not_field_type_error(parent_error: SchemaError) -> bool:
+    if not parent_error.parent:
+        return True
+    field_type: str = parent_error.parent.instance.get("type", "string")
+    if field_type not in FIELD_TYPES:
+        return True
+    schema_index = FIELD_TYPES.index(field_type)
+    return f"fields/items/oneOf/{schema_index}/" not in parent_error.schema_path
+
+
 def _handle_S_resources_x_schema_primary_key(
     parent_error: SchemaError,
     schema_errors: list[SchemaError],
@@ -420,6 +481,10 @@ _schema_path_to_handler: list[
     ("resources/items/oneOf", _handle_S_resources_x),
     ("resources/items/properties/path/oneOf", _handle_S_resources_x_path),
     ("fields/items/oneOf", _handle_S_resources_x_schema_fields_x),
+    (
+        "constraints/properties/enum/oneOf",
+        _handle_S_resources_x_schema_fields_x_constraints_enum,
+    ),
     ("primaryKey/oneOf", _handle_S_resources_x_schema_primary_key),
     ("foreignKeys/items/oneOf", _handle_S_resources_x_schema_foreign_keys),
     ("licenses/items/anyOf", _handle_licenses),
@@ -495,6 +560,7 @@ def _create_schema_error(error: ValidationError) -> SchemaError:
         jsonpath=_get_full_json_path_from_error(error),
         schema_path="/".join(_map(error.absolute_schema_path, str)),
         instance=error.instance,
+        schema_value=error.validator_value,
         parent=_create_schema_error(error.parent) if error.parent else None,  # type: ignore[arg-type]
     )
 
@@ -519,3 +585,7 @@ def _get_errors_in_group(
     schema_errors: list[SchemaError], parent_error: SchemaError
 ) -> list[SchemaError]:
     return _filter(schema_errors, lambda error: error.parent == parent_error)
+
+
+def _strip_index(jsonpath: str) -> str:
+    return re.sub(r"\[\d+\]$", "", jsonpath)
