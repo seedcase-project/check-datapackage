@@ -365,6 +365,40 @@ def _not_field_type_error(parent_error: SchemaError) -> bool:
     return f"fields/items/oneOf/{schema_index}/" not in parent_error.schema_path
 
 
+def _handle_S_resources_x_schema_primary_key(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Only flag errors for the relevant type and simplify errors."""
+    PRIMARY_KEY_TYPES: tuple[type[Any], ...] = (list, str)
+    edits = SchemaErrorEdits(remove=[parent_error])
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+
+    key_type = type(parent_error.instance)
+    if key_type in PRIMARY_KEY_TYPES:
+        schema_for_type = f"primaryKey/oneOf/{PRIMARY_KEY_TYPES.index(key_type)}/"
+        edits.remove.extend(
+            _filter(
+                errors_in_group,
+                lambda error: schema_for_type not in error.schema_path,
+            )
+        )
+        return edits
+
+    edits.remove.extend(errors_in_group)
+    edits.add.append(
+        SchemaError(
+            message="The `primaryKey` property must be a string or an array.",
+            type="type",
+            jsonpath=parent_error.jsonpath,
+            schema_path=parent_error.schema_path,
+            instance=parent_error.instance,
+        )
+    )
+
+    return edits
+
+
 def _handle_S_resources_x_schema_foreign_keys(
     parent_error: SchemaError,
     schema_errors: list[SchemaError],
@@ -451,6 +485,7 @@ _schema_path_to_handler: list[
         "constraints/properties/enum/oneOf",
         _handle_S_resources_x_schema_fields_x_constraints_enum,
     ),
+    ("primaryKey/oneOf", _handle_S_resources_x_schema_primary_key),
     ("foreignKeys/items/oneOf", _handle_S_resources_x_schema_foreign_keys),
     ("licenses/items/anyOf", _handle_licenses),
 ]
