@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.20.0 (2025-11-14)
+
+### Feat
+
+- ✨ handle grouped errors under the enum constraint (#183)
+
 ## 0.19.0 (2025-11-14)
 
 ### Feat
