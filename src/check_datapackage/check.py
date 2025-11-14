@@ -156,7 +156,8 @@ class SchemaError:
             Path components are separated by '/'.
         jsonpath (str): The JSON path to the field that violates the check.
         instance (Any): The part of the object that failed the check.
-        schema_value (Optional[Any]): The part of the schema violated by this error.
+        schema_value (Optional[Any]): The expected value that is checked against,
+            which is part of the schema violated by this error.
         parent (Optional[SchemaError]): The error group the error belongs to, if any.
     """
 
