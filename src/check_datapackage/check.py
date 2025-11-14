@@ -364,6 +364,59 @@ def _not_field_type_error(parent_error: SchemaError) -> bool:
     return f"fields/items/oneOf/{schema_index}/" not in parent_error.schema_path
 
 
+def _handle_S_resources_x_schema_foreign_keys(
+    parent_error: SchemaError,
+    schema_errors: list[SchemaError],
+) -> SchemaErrorEdits:
+    """Only flag errors for the relevant type and simplify errors.
+
+    The sub-schema to use is determined based on the type of the top-level foreign
+    key fields property.
+    """
+    FOREIGN_KEY_TYPES: tuple[type[Any], ...] = (list, str)
+    edits = SchemaErrorEdits(remove=[parent_error])
+    errors_in_group = _get_errors_in_group(schema_errors, parent_error)
+
+    key = parent_error.instance.get("fields", None)
+    key_type = type(key)
+
+    # If the key type is correct, use that schema
+    if key_type in FOREIGN_KEY_TYPES:
+        schema_part = f"foreignKeys/items/oneOf/{FOREIGN_KEY_TYPES.index(key_type)}/"
+        edits.remove.extend(
+            _filter(
+                errors_in_group,
+                lambda error: schema_part not in error.schema_path,
+            )
+        )
+        return edits
+
+    # If the key type is incorrect, remove all errors that depend on it
+    key_type_errors = _filter(
+        errors_in_group,
+        lambda error: error.schema_path.endswith("fields/type")
+        or "reference/properties/fields" in error.schema_path,
+    )
+    edits.remove.extend(key_type_errors)
+
+    # If the key exists, flag incorrect type
+    if key is not None:
+        edits.add.append(
+            SchemaError(
+                message=(
+                    "The `fields` property of a foreign key must be a string or "
+                    "an array."
+                ),
+                type="type",
+                jsonpath=f"{parent_error.jsonpath}.fields",
+                schema_path=parent_error.schema_path,
+                instance=parent_error.instance,
+            )
+        )
+
+    return edits
+
+
 def _handle_licenses(
     parent_error: SchemaError,
     schema_errors: list[SchemaError],
@@ -397,6 +450,7 @@ _schema_path_to_handler: list[
         "constraints/properties/enum/oneOf",
         _handle_S_resources_x_schema_fields_x_constraints_enum,
     ),
+    ("foreignKeys/items/oneOf", _handle_S_resources_x_schema_foreign_keys),
     ("licenses/items/anyOf", _handle_licenses),
 ]
 

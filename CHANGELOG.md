@@ -9,6 +9,18 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.18.0 (2025-11-13)
+
+### Feat
+
+- :sparkles: handle grouped foreign key errors (#188)
+
+## 0.17.0 (2025-11-13)
+
+### Feat
+
+- :sparkles: expose `DataPackageError` (#192)
+
 ## 0.16.0 (2025-11-13)
 
 ### Feat
