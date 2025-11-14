@@ -1,8 +1,10 @@
 import re
-from dataclasses import dataclass
 from typing import Any, Optional
 
+from pydantic import BaseModel
+
 from check_datapackage.internals import (
+    JsonPath,
     _filter,
     _get_direct_jsonpaths,
     _map,
@@ -10,8 +12,7 @@ from check_datapackage.internals import (
 from check_datapackage.issue import Issue
 
 
-@dataclass
-class Exclusion:
+class Exclusion(BaseModel, frozen=True):
     r"""A check to be excluded when checking properties.
 
     When you use both `jsonpath` and `type` in the same `Exclusion` object, only issues
@@ -46,7 +47,7 @@ class Exclusion:
         ```
     """
 
-    jsonpath: Optional[str] = None
+    jsonpath: Optional[JsonPath] = None
     type: Optional[str] = None
 
 
