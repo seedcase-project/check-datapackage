@@ -1,6 +1,6 @@
 from json import JSONDecodeError, loads
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 
 def read_json(path: Path) -> dict[str, Any]:
