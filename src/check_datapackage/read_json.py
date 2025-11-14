@@ -35,6 +35,4 @@ def read_json(path: Path) -> dict[str, Any]:
             "missing a curly bracket `{` at the beginning or `}` at the end?"
         ) from None  # To hide the original traceback
 
-    # Can't determine type at end from the above input and processing,
-    # so ignore the pyright/pylance warning.
-    return properties  # pyright: ignore[reportUnknownVariableType]
+    return cast(dict[str, Any], properties)
