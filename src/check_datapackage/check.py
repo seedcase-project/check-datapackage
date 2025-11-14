@@ -315,7 +315,7 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
     errors_in_group = _get_errors_in_group(schema_errors, parent_error)
 
     # Remove errors for other field types
-    if _error_not_for_field_type(parent_error):
+    if _not_field_type_error(parent_error):
         edits.remove.extend(errors_in_group)
         return edits
 
@@ -326,14 +326,14 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
 
     # If there are only value errors, simplify them
     if value_errors == errors_in_group:
-        edits.add.append(_get_unified_enum_values_error(parent_error, value_errors))
+        edits.add.append(_get_enum_values_error(parent_error, value_errors))
 
     # Otherwise, keep only top-level enum errors
     edits.remove.extend(value_errors)
     return edits
 
 
-def _get_unified_enum_values_error(
+def _get_enum_values_error(
     parent_error: SchemaError,
     value_errors: list[SchemaError],
 ) -> SchemaError:
@@ -342,7 +342,7 @@ def _get_unified_enum_values_error(
     if same_type:
         allowed_types = set(_map(value_errors, lambda error: str(error.schema_value)))
         message = (
-            "Incorrect enum value type. Enum values should be "
+            "The enum value type is not correct. Enum values should be "
             f"one of {', '.join(allowed_types)}."
         )
     return SchemaError(
@@ -354,7 +354,7 @@ def _get_unified_enum_values_error(
     )
 
 
-def _error_not_for_field_type(parent_error: SchemaError) -> bool:
+def _not_field_type_error(parent_error: SchemaError) -> bool:
     if not parent_error.parent:
         return True
     field_type: str = parent_error.parent.instance.get("type", "string")
