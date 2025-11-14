@@ -19,7 +19,7 @@ def read_json(path: Path) -> dict[str, Any]:
             dictionary.
     """
     try:
-        properties: dict[str, Any] = loads(path.read_text())
+        properties: Any = loads(path.read_text())
     except JSONDecodeError as error:
         raise JSONDecodeError(
             f"The path {path} couldn't be parsed as JSON. Is there a typo or other "
@@ -28,11 +28,13 @@ def read_json(path: Path) -> dict[str, Any]:
             pos=error.pos,
         ) from None  # To hide the original traceback
 
-    if not isinstance(properties, dict):  # pyright: ignore
+    if not isinstance(properties, dict):
         raise TypeError(
             f"The file {path} should parse into a Python dictionary (`dict`) "
             f"but it converts to the type `{type(properties)}`. Is the file "
             "missing a curly bracket `{` at the beginning or `}` at the end?"
         ) from None  # To hide the original traceback
 
-    return properties
+    # Can't determine type at end from the above input and processing,
+    # so ignore the pyright/pylance warning.
+    return properties  # pyright: ignore[reportUnknownVariableType]
