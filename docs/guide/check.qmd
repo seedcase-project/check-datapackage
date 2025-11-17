@@ -10,12 +10,12 @@ metadata---stored in its `datapackage.json` file---complies with the
 the available properties at each level of the `datapackage.json`, which
 ones are required, and what values are allowed.
 
-This guide shows you how to use the main function `check()` to run these
-checks. Each section walks you through a different part of `check()`,
-starting with its basic usage with the `properties` argument,
-introducing the default checks, how to configure which checks you want
-to run with the `config` argument, and how to handle failed checks with
-the `error` argument.
+This guide shows you how to use the main function
+[`check()`](/docs/reference/check.qmd) to run these checks. Each section
+walks you through a different part of `check()`, starting with its basic
+usage with the `properties` argument, introducing the default checks,
+how to configure which checks you want to run with the `config`
+argument, and how to handle failed checks with the `error` argument.
 
 ::: callout-tip
 For the full reference of the `check()` function, see the [reference
@@ -42,33 +42,21 @@ section below.
 
 Let's look at an example. The code below defines a `package_properties`
 dictionary that includes all the required properties in a correct
-format. When we call `check()` on these properties, it returns an empty
-list:
+format. The example looks like this (from the
+[`example_package_properties()`](/docs/reference/example_package_properties.qmd):
 
 ```{python}
 import check_datapackage as cdp
+import pprint
 
-package_properties = {
-    "name": "woolly-dormice",
-    "title": "Hibernation Physiology of the Woolly Dormouse: A Scoping Review.",
-    "description": """
-        This scoping review explores the hibernation physiology of the
-        woolly dormouse, drawing on data collected over a 10-year period
-        along the Taurus Mountain range in Turkey.
-    """,
-    "id": "123-abc-123",
-    "created": "2014-05-14T05:00:01+00:00",
-    "version": "1.0.0",
-    "licenses": [{"name": "odc-pddl"}],
-    "resources": [
-        {
-            "name": "woolly-dormice-2015",
-            "title": "Body fat percentage in the hibernating woolly dormouse",
-            "path": "resources/woolly-dormice-2015/data.parquet",
-        }
-    ],
-}
 
+package_properties = cdp.example_package_properties()
+pprint.pp(package_properties)
+```
+
+When we call `check()` on these properties, it returns an empty list:
+
+```{python}
 cdp.check(properties=package_properties)
 ```
 
@@ -89,8 +77,9 @@ and one for the `name` field of the wrong type.
 By default, `check()` runs the standard checks defined as `MUST`s in the
 Data Package standard. These include checking that all required
 properties are present and that their values have the correct types and
-formats. This happens through a default `Config` object passed to the
-`config` argument of `check()`.
+formats. This happens through a default
+[`Config`](/docs/reference/Config.qmd) object passed to the `config`
+argument of `check()`.
 
 If you want to configure which checks are performed, you can provide
 your own `Config` object in `check()`. With this object you can exclude
