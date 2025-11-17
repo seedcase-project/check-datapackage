@@ -39,6 +39,67 @@ things consistent. However, we also introduce some new terms and
 concepts specific to `check-datapackage`. The main objects and actions
 used throughout the package can be found in the tables below.
 
+### Why "check" and not "validate"?
+
+If you have ever searched for tools that check something against a
+specification, you'll often see the word "validate". And you might
+notice that we never use the word "validate" in our package and
+documentation. This is intentional.
+
+While the word is ubiquitous in programming, it often doesn't actually
+mean what these tools do. What these tools often do is *verify*,
+*check*, or *confirm* that something matches some explicitly described
+expectation or specification. There are many websites and articles
+comparing the difference between validate and verify, and we won't get
+into a detailed explanation here. For a good overview, see the Wikipedia
+on this topic in
+[general](https://en.wikipedia.org/wiki/Verification_and_validation) and
+on
+[software](https://en.wikipedia.org/wiki/Software_verification_and_validation)
+specifically.
+
+Briefly, to "validate" something means to ask the question of "are we
+building the right product". To "verify" something is asking the
+question "are we building the product right". The key difference is
+where the word "right" is placed.
+
+"Validate" is in the overlapy between human need and a product that
+solves that need. Are we actually solving the right problem? To answer
+that question depends heavily on human judgement and context. Meanwhile,
+"verifying" is to ensure that the product is being built well, based on
+best practices, regulations, and specifications. It is about the quality
+of the product, not whether it fulfills the human need. Usually,
+verification can be automated as long as there is a formal and clear
+specification to compare against. Validate on the other hand requires
+regular human review and input to confirm, "does this still solve the
+right need?"
+
+Sometimes, these two overlap, but often they don't. For example, if you
+are involved in creating a specification that accurately describes
+something that will solve a need you have, then you are both validating
+and verifying the product that you will build. However, if someone else
+takes your specification to help them build their own product and they
+don't seek our extensive validation from the humans who will use that
+product, they are now likely verifying their product, rather than
+validating it.
+
+For many generic software tools that do checks, they often use the word
+"validate". For example, in the
+[`frictionless`](https://pypi.org/project/frictionless/) package, they
+have a command called
+["validate"](https://framework.frictionlessdata.io/docs/guides/validating-data.html).
+Even widely used tools like
+[Pydantic](https://docs.pydantic.dev/latest/) use the word "validate".
+However, without knowing the human context, what they are most likely
+doing is verifying that something matches some other specification or
+expectation. Most of these software tool that "validate" can't know if
+they are truly "validating" something since only human judgement and
+review can answer that. We can, however, be sure that we're verifying or
+checking something.
+
+So, this is the reason we called the package `check-datapackage` and not
+`validate-datapackage`.
+
 ### Objects
 
 | Object | Description |
@@ -78,8 +139,8 @@ Data Package standard.
 `check-datapackage` receives the definitions of the Data Package
 descriptor's structure---including properties that [must or
 should](https://datapackage.org/standard/data-package/#language) be
-included and their formats---from the Data Package standard (version 2). The
-standard provides this information through versioned JSON Schema
+included and their formats---from the Data Package standard (version 2).
+The standard provides this information through versioned JSON Schema
 profiles that define required properties and textual descriptions that
 outline compliance.
 
