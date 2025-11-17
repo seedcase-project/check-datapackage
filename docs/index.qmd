@@ -11,10 +11,10 @@ specification](https://datapackage.org/standard/data-package/).
 
 ## Why use it?
 
-[Frictionless Data](https://frictionlessdata.io), who initially
-started and developed the Data Package specification, has several tools
-(listed on the [Frictionless](https://frictionlessdata.io/universe/) and
-[Data Package](https://datapackage.org/overview/software/) websites) for
+[Frictionless Data](https://frictionlessdata.io), who initially started
+and developed the Data Package specification, has several tools (listed
+on the [Frictionless](https://frictionlessdata.io/universe/) and [Data
+Package](https://datapackage.org/overview/software/) websites) for
 working with Data Packages, including a Python package called
 [`frictionless`](https://pypi.org/project/frictionless/). However, the
 `frictionless` package is a large package that does many things, and it
@@ -22,13 +22,13 @@ can be difficult to navigate the documentation and interface to find and
 use the specific functionality you need. It also still implements Data
 Package version 1, while the latest is version 2.
 
-Since we found ourselves missing a tool we needed for our project, the
-[Seedcase Project](https://github.com/seedcase-project), we decided to
-build this package. We wanted a small, well-designed, and easy-to-use
-package that only checks the compliance of a Data Package against the
-current standard. We designed it for future CLI support, for instance
-using it in a [pre-commit](https://pre-commit.com/) hook or in CI
-pipelines like [GitHub Actions](https://docs.github.com/en/actions).
+Since we found ourselves missing a tool we needed for our [Seedcase
+Project](https://github.com/seedcase-project), we decided to build this
+package. We wanted a small, well-designed, and easy-to-use package that
+only checks the compliance of a Data Package against the current
+standard. We designed it for future CLI support, for instance using it
+in a [pre-commit](https://pre-commit.com/) hook or in CI pipelines like
+[GitHub Actions](https://docs.github.com/en/actions).
 
 ## Learning more
 
