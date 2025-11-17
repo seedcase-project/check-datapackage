@@ -11,18 +11,19 @@ are available:
 -   `version`: The version of Data Package standard to check against.
     Defaults to `v2`.
 -   `exclusions`: A list of checks to exclude.
--   `custom_checks`: The list of custom checks to run in addition to the
-    checks defined in the standard.
+-   `extensions`: A list of extensions, which are additional checks that
+    supplement those specified by the Data Package standard.
 -   `strict`: Whether to include "SHOULD" checks in addition to "MUST"
     checks. Defaults to `False`.
 
 ::: callout-important
 The Data Package standard uses language from [RFC
-2119](https://www.ietf.org/rfc/rfc2119.txt) to define its specifications.
-They use "MUST" for required properties and "SHOULD" for properties that
-should be included but are not strictly required. We try to match this
-language in `check-datapackage` by using the terms "MUST" and "SHOULD",
-though we also use "required" for "MUST" in our documentation.
+2119](https://www.ietf.org/rfc/rfc2119.txt) to define its
+specifications. They use "MUST" for required properties and "SHOULD" for
+properties that should be included but are not strictly required. We try
+to match this language in `check-datapackage` by using the terms "MUST"
+and "SHOULD", though we also use "required" for "MUST" in our
+documentation.
 :::
 
 ## Excluding checks
@@ -97,13 +98,18 @@ the package and resource properties, and the resource `path` doesn't
 point to a data file. However, as we have defined exclusions for all of
 these, the function will flag no issues.
 
-## Adding custom checks
+## Adding extensions
 
-It is possible to create custom checks in addition to the ones defined
-in the Data Package standard.
+It is possible to add checks in addition to the ones defined in the Data
+Package standard. We call these additional checks *extensions*. There
+are currently two types of extensions supported: `CustomCheck` and
+`RequiredCheck`. You can add as many `CustomCheck`s and `RequiredCheck`s
+to your `Config` as you want to fit your needs.
+
+### Custom checks
 
 Let's say your organisation only accepts Data Packages licensed under
-MIT. You can express this requirement in a `CustomCheck` as follows:
+MIT. You can express this `CustomCheck` as follows:
 
 ```{python}
 license_check = cdp.CustomCheck(
@@ -117,19 +123,12 @@ license_check = cdp.CustomCheck(
 )
 ```
 
-Here's a breakdown of what each argument does:
-
--   `type`: An identifier for your custom check. This is what will show
-    up in error messages and what you will use if you want to exclude
-    your check. Each `CustomCheck` should have a unique `type`.
--   `jsonpath`: The location of the field or fields the custom check
-    applies to, expressed in [JSON
-    path](https://en.wikipedia.org/wiki/JSONPath) notation. This check
-    applies to the `name` field of all package licenses.
--   `message`: The message that is shown when the check is violated.
--   `check`: A function that expresses the custom check. It takes the
-    value at the `jsonpath` location as input and returns true if the
-    check is met, false if it isn't.
+For more details on what each parameter means, see the
+[`CustomCheck`](/docs/reference/custom_check.qmd) documentation.
+Specific to this example, the `type` is setting the identifier of the
+check to `only-mit` and the `jsonpath` is indicating to only check the
+`name` property of each license in the `licenses` property of the Data
+Package.
 
 To register your custom checks with the `check()` function, you add them
 to the `Config` object passed to the function:
@@ -157,22 +156,50 @@ package_properties = {
     ],
 }
 
-config = cdp.Config(custom_checks=[license_check])
+config = cdp.Config(extensions=cdp.Extensions(custom_checks=[license_check]))
 cdp.check(properties=package_properties, config=config)
 ```
 
 We can see that the custom check was applied: `check()` returned one
 issue flagging the first license attached to the Data Package.
 
+### Required checks
+
+You can also set specific properties in the `datapackage.json` file to
+be required, even when they aren't required by the Data Package standard
+with a `RequiredCheck`. For example, if you want to make the
+`description` field of Data Package a required field, you can define a
+`RequiredCheck` like this:
+
+```{python}
+#| eval: false
+description_required = cdp.RequiredCheck(
+    jsonpath="$.description",
+    message="The 'description' field is required in the Data Package properties.",
+)
+```
+
+See the [`RequiredCheck`](/docs/reference/required_check.qmd)
+documentation for more details on its parameters.
+
+To apply this `RequiredCheck`, it should be added to the `Config` object
+passed to `check()` like shown below:
+
+```{python}
+#| eval: false
+config = cdp.Config(extensions=cdp.Extensions(required_checks=[description_required]))
+cdp.check(properties=package_properties, config=config)
+```
+
 ## Strict mode
 
 The Data Package standard includes properties that "MUST" and "SHOULD"
-be included and/or have a specific format in a compliant Data Package. By default, `check()` only
-the `check()` function only includes "MUST" checks. To include "SHOULD" checks,
-set the `strict` argument to `True`. For example,
-the `name` field of a Data Package "SHOULD" not contain special
-characters. So running `check()` in strict mode (`strict=True`) on the following
-properties would output an issue.
+be included and/or have a specific format in a compliant Data Package.
+By default, `check()` only the `check()` function only includes "MUST"
+checks. To include "SHOULD" checks, set the `strict` argument to `True`.
+For example, the `name` field of a Data Package "SHOULD" not contain
+special characters. So running `check()` in strict mode (`strict=True`)
+on the following properties would output an issue.
 
 ```{python}
 #| eval: false
