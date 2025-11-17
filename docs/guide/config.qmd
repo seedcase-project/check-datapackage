@@ -1,5 +1,6 @@
 ---
 title: "Configuring the checks"
+description: "Customise the types of checks that are done against your `datapackage.json` by using the `Config` class, such as excluding certain checks or adding your own."
 jupyter: python3
 order: 3
 ---

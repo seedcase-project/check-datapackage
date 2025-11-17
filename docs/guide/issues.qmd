@@ -1,5 +1,6 @@
 ---
 title: "Understanding issues"
+description: "A short description about the `Issue` class that contains any problems found in your metadata when using `check()` on a `datapackage.json` file."
 jupyter: python3
 order: 2
 ---
