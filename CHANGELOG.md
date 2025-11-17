@@ -9,6 +9,48 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.20.1 (2025-11-14)
+
+### Refactor
+
+- :recycle: rename to `properties` in `read_json()` (#169)
+
+## 0.20.0 (2025-11-14)
+
+### Feat
+
+- ✨ handle grouped errors under the enum constraint (#183)
+
+## 0.19.0 (2025-11-14)
+
+### Feat
+
+- :sparkles: handle grouped errors for primary key (#185)
+
+## 0.18.0 (2025-11-13)
+
+### Feat
+
+- :sparkles: handle grouped foreign key errors (#188)
+
+## 0.17.0 (2025-11-13)
+
+### Feat
+
+- :sparkles: expose `DataPackageError` (#192)
+
+## 0.16.0 (2025-11-13)
+
+### Feat
+
+- ✨ handle grouped errors for licenses (#189)
+
+## 0.15.0 (2025-11-13)
+
+### Feat
+
+- ✨ use Pydantic in config classes (#184)
+
 ## 0.14.0 (2025-11-05)
 
 ### Feat
