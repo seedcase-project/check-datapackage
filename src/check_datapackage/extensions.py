@@ -5,8 +5,8 @@ from typing import Any, Self
 from pydantic import BaseModel, PrivateAttr, field_validator, model_validator
 
 from check_datapackage.internals import (
-    DescriptorField,
     JsonPath,
+    PropertyField,
     _filter,
     _flat_map,
     _get_direct_jsonpaths,
@@ -75,11 +75,11 @@ class CustomCheck(BaseModel, frozen=True):
         Returns:
             A list of `Issue`s.
         """
-        fields: list[DescriptorField] = _get_fields_at_jsonpath(
+        fields: list[PropertyField] = _get_fields_at_jsonpath(
             self.jsonpath,
             properties,
         )
-        matches: list[DescriptorField] = _filter(
+        matches: list[PropertyField] = _filter(
             fields,
             lambda field: not self.check(field.value),
         )

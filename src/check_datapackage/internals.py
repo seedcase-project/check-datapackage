@@ -7,8 +7,8 @@ from pydantic import AfterValidator
 
 
 @dataclass
-class DescriptorField:
-    """A field in the Data Package descriptor.
+class PropertyField:
+    """The field of a Data Package property.
 
     Attributes:
         jsonpath (str): The direct JSON path to the field.
@@ -21,10 +21,10 @@ class DescriptorField:
 
 def _get_fields_at_jsonpath(
     jsonpath: str, json_object: dict[str, Any]
-) -> list[DescriptorField]:
+) -> list[PropertyField]:
     """Returns all fields that match the JSON path."""
     matches = finditer(jsonpath, json_object)
-    return _map(matches, _create_descriptor_field)
+    return _map(matches, _create_property_field)
 
 
 def _get_direct_jsonpaths(jsonpath: str, json_object: dict[str, Any]) -> list[str]:
@@ -33,8 +33,8 @@ def _get_direct_jsonpaths(jsonpath: str, json_object: dict[str, Any]) -> list[st
     return _map(fields, lambda field: field.jsonpath)
 
 
-def _create_descriptor_field(match: JSONPathMatch) -> DescriptorField:
-    return DescriptorField(
+def _create_property_field(match: JSONPathMatch) -> PropertyField:
+    return PropertyField(
         jsonpath=match.path.replace("['", ".").replace("']", ""),
         value=match.obj,
     )
