@@ -1,64 +1,37 @@
 ---
-title: "Installing `check-datapackage`"
+title: "Installing"
+description: "Steps to install `check-datapackage` in a Python project."
 order: 0
 ---
 
 Before installing `check-datapackage`, you need to have
 [Python](https://www.python.org/downloads/) and
-[pipx](https://pipx.pypa.io/latest/installation/) installed.
+[uv](https://docs.astral.sh/uv/) installed.
 
 To check that these programs are installed, run the following commands
 in your Terminal:
 
 ``` {.bash filename="Terminal"}
 python3 --version
-pipx --version
+uv --version
 ```
 
-If Python and pipx are installed, these commands will show you the
+If Python and uv are installed, these commands will show you the
 versions installed on your system. If you get an error, you need to
 install them before continuing.
 
-## Install in a project (recommended)
+## Install it in a Python project
 
 It's generally recommended to install Python packages in a project's
 virtual environment to keep the project's dependencies isolated from the
-system-wide Python setup and avoid conflicts. There are several tools to
-manage package dependencies and create virtual environments, such as
-venv, virtualenv, and uv. For this guide, we will use
+system-wide Python setup and avoid conflicts. We use (and recommend)
 [uv](https://docs.astral.sh/uv/).
 
-If you don't have uv installed, you can install it in your Terminal with
-pipx:
-
-``` {.bash filename="Terminal"}
-pipx install uv
-```
-
-To check that uv is installed, run this command:
-
-``` {.bash filename="Terminal"}
-uv
-```
-
-If you get a list of uv commands, you've installed it successfully.
-
-Then, create a Python project using uv by running the following command
-in your Terminal (replace `<project-name>` with your desired project
-name, e.g., `diabetes-study`):
-
-``` {.bash filename="Terminal"}
-uv init <project-name>
-```
-
-This will create a new directory with the project name you provided with
-the basic structure of a Python project, including a `pyproject.toml`
-file.
-
-With uv installed, you can now install `check-datapackage` directly from
-the [GitHub
-repository](https://github.com/seedcase-project/check-datapackage) with
-this command:
+We assume you've already created a Python project that has a
+`pyproject.toml` file. If not, review uv's guide on making
+[projects](https://docs.astral.sh/uv/guides/projects/). While in the
+Terminal and in the project's directoyr, add `check-datapackage` to your
+project's virtual environment by running:
 
 ``` {.bash filename="Terminal"}
 uv add "check-datapackage @ git+https://github.com/seedcase-project/check-datapackage"
@@ -75,23 +48,3 @@ uv pip show check-datapackage
 
 If `check-datapackage` has been installed successfully, the output will
 show details about `check-datapackage`.
-
-## Install system-wide
-
-We strongly recommend using `check-datapackage` in a virtual environment
-(as described in the section above), but you can also install it
-system-wide. The easiest way to do that is to use pipx:
-
-``` {.bash filename="Terminal"}
-pipx install check-datapackage
-```
-
-To check that `check-datapackage` has been installed correctly, run the
-following and make sure `check-datapackage` is listed:
-
-``` {.bash filename="Terminal"}
-pipx list
-```
-
-Now you can use `check-datapackage` in any Python script on your
-computer.
