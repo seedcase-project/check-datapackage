@@ -43,15 +43,14 @@ used throughout the package can be found in the tables below.
 
 If you have ever searched for tools that check something against a
 specification, you'll often see the word "validate". And you might
-notice that we never use the word "validate" in our package and
+notice that we don't use the word "validate" in our package and
 documentation. This is intentional.
 
-While the word is ubiquitous in programming, it often doesn't actually
-mean what these tools do. What these tools often do is *verify*,
-*check*, or *confirm* that something matches some explicitly described
+Although the word is ubiquitous in programming, it's often used loosely and in ways that deviate
+from its actual meaning. Tools that describe themselves as "validating" something often, in practice, *verify*,
+*check*, or *confirm* that something matches a defined
 expectation or specification. There are many websites and articles
-comparing the difference between validate and verify, and we won't get
-into a detailed explanation here. For a good overview, see the Wikipedia
+comparing the difference between validate and verify. For a good overview, see the Wikipedia
 on this topic in
 [general](https://en.wikipedia.org/wiki/Verification_and_validation) and
 on
@@ -63,7 +62,7 @@ building the right product". To "verify" something is asking the
 question "are we building the product right". The key difference is
 where the word "right" is placed.
 
-"Validate" is in the overlapy between human need and a product that
+"Validate" is in the overlap between human need and a product that
 solves that need. Are we actually solving the right problem? To answer
 that question depends heavily on human judgement and context. Meanwhile,
 "verifying" is to ensure that the product is being built well, based on
