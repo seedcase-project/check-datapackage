@@ -1,5 +1,6 @@
 ---
 title: "Checking a Data Package's metadata"
+description: "A brief walkthrough on how you can use the `check()` function to confirm that the metadata in your `datapackage.json` file complies with the Data Package standard."
 jupyter: python3
 order: 1
 ---
