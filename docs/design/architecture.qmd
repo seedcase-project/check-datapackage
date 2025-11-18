@@ -39,39 +39,35 @@ things consistent. However, we also introduce some new terms and
 concepts specific to `check-datapackage`. The main objects and actions
 used throughout the package can be found in the tables below.
 
-### Why "check" and not "validate"?
+### "Check" (vs "validate")
 
 If you have ever searched for tools that check something against a
 specification, you'll often see the word "validate". And you might
 notice that we don't use the word "validate" in our package and
 documentation. This is intentional.
 
-Although the word is ubiquitous in programming, it's often used loosely and in ways that deviate
-from its actual meaning. Tools that describe themselves as "validating" something often, in practice, *verify*,
-*check*, or *confirm* that something matches a defined
-expectation or specification. There are many websites and articles
-comparing the difference between validate and verify. For a good overview, see the Wikipedia
-on this topic in
+Although the word is ubiquitous in programming, it's often used loosely
+and in ways that deviate from its actual meaning. Tools that describe
+themselves as "validating" something often, in practice, *verify* that
+something matches a defined expectation or specification. There are many
+websites and articles comparing the difference between validate and
+verify. These two verbs often are done during quality control or
+assurance stages of building products and after are simplified to "V&V".
+For a good overview, see the Wikipedia on this topic in
 [general](https://en.wikipedia.org/wiki/Verification_and_validation) and
 on
 [software](https://en.wikipedia.org/wiki/Software_verification_and_validation)
 specifically.
 
-Briefly, to "validate" something means to ask the question of "are we
-building the right product". To "verify" something is asking the
-question "are we building the product right". The key difference is
-where the word "right" is placed.
-
-"Validate" is in the overlap between human need and a product that
-solves that need. Are we actually solving the right problem? To answer
-that question depends heavily on human judgement and context. Meanwhile,
-"verifying" is to ensure that the product is being built well, based on
-best practices, regulations, and specifications. It is about the quality
-of the product, not whether it fulfills the human need. Usually,
-verification can be automated as long as there is a formal and clear
-specification to compare against. Validate on the other hand requires
-regular human review and input to confirm, "does this still solve the
-right need?"
+To "validate" is to assess the overlap between a human need and a
+product that solves that need. It answers the question "are we correctly
+solving the actual problem"? To "verify" is to ensure that the product
+is being built correctly and with high quality, based on best practices,
+regulations, and specifications. It answers the question "are we
+developing the solution correctly"? An easy way to tell them apart is
+that you can often make the verification process automatic, while you
+often need to have extensive manual evaluation, judgment, and review for
+the validation process.
 
 Sometimes, these two overlap, but often they don't. For example, if you
 are involved in creating a specification that accurately describes
@@ -96,8 +92,14 @@ they are truly "validating" something since only human judgement and
 review can answer that. We can, however, be sure that we're verifying or
 checking something.
 
-So, this is the reason we called the package `check-datapackage` and not
-`validate-datapackage`.
+Unfortunately, "verify" and "validate" are often used interchangeably
+and are difficult to distinguish between their two meanings. This may be
+due to the similarity in their spelling and pronunciation. For that
+reason, we decided to use neither word. Instead we wanted to use a more
+common word, that accurately reflects what we want this package to do
+while also being generic enough to encompass different uses. So we went
+with "check", since we "check" that the metadata is correct (based on
+the specification).
 
 ### Objects
 
