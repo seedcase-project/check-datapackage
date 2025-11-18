@@ -1,6 +1,6 @@
 ---
 title: "Installing"
-description: "Steps to install `check-datapackage` in a Python project."
+description: "A succinct instruction on installing `check-datapackage` in a Python project."
 order: 0
 ---
 
