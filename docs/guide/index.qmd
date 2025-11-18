@@ -4,7 +4,9 @@ description: "A guide on using `check-datapackage` to check the compliance of yo
 listing:
     contents: .
     type: grid
+    grid-columns: 1
     sort: "order"
     fields:
         - title
+        - description
 ---
