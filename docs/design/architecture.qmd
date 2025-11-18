@@ -60,14 +60,14 @@ on
 specifically.
 
 To "validate" is to assess the overlap between a human need and a
-product that solves that need. It answers the question "are we correctly
-solving the actual problem"? To "verify" is to ensure that the product
-is being built correctly and with high quality, based on best practices,
-regulations, and specifications. It answers the question "are we
-developing the solution correctly"? An easy way to tell them apart is
-that you can often make the verification process automatic, while you
-often need to have extensive manual evaluation, judgment, and review for
-the validation process.
+product that solves that need. It answers the question "have we selected
+the correct solution to solving the actual problem"? To "verify" is to
+ensure that the solution is being built correctly and with high quality,
+based on best practices, regulations, and specifications. It answers the
+question "are we developing the solution correctly"? An easy way to tell
+them apart is that you can often make the verification process
+automatic, while you often need to have extensive manual evaluation,
+judgment, and review for the validation process.
 
 Sometimes, these two overlap, but often they don't. For example, if you
 are involved in creating a specification that accurately describes
