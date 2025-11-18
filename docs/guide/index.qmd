@@ -5,7 +5,6 @@ listing:
     contents: .
     type: grid
     grid-columns: 1
-    grid-item-border: false
     sort: "order"
     fields:
         - title
