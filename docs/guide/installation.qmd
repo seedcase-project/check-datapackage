@@ -20,7 +20,7 @@ If Python and uv are installed, these commands will show you the
 versions installed on your system. If you get an error, you need to
 install them before continuing.
 
-## Install it in a Python project
+## Install `check-datapackage` in a Python project
 
 It's generally recommended to install Python packages in a project's
 virtual environment to keep the project's dependencies isolated from the
@@ -29,8 +29,10 @@ system-wide Python setup and avoid conflicts. We use (and recommend)
 
 We assume you've already created a Python project that has a
 `pyproject.toml` file. If not, review uv's guide on making
-[projects](https://docs.astral.sh/uv/guides/projects/). While in the
-Terminal and in the project's directoyr, add `check-datapackage` to your
+[projects](https://docs.astral.sh/uv/guides/projects/). 
+
+While in the
+Terminal and in the project's directory, add `check-datapackage` to your
 project's virtual environment by running:
 
 ``` {.bash filename="Terminal"}
