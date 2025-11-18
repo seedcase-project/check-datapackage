@@ -29,7 +29,7 @@ system-wide Python setup and avoid conflicts. We use (and recommend)
 
 We assume you've already created a Python project that has a
 `pyproject.toml` file. If not, review uv's guide on making
-[projects](https://docs.astral.sh/uv/guides/projects/). 
+[projects](https://docs.astral.sh/uv/guides/projects/).
 
 While in the
 Terminal and in the project's directory, add `check-datapackage` to your
