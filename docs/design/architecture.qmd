@@ -67,7 +67,7 @@ documentation. This is intentional.
 Although the word "validate" is ubiquitous in programming, it's often
 used loosely and in ways that don't align from its actual meaning. Tools
 that "validate" something often, in practice, *verify* that something
-matches a defined expectation or specification. 
+matches a defined expectation or specification.
 There are many websites and articles comparing the difference
 between validate and verify. For a good overview, see the Wikipedia on
 this topic in
