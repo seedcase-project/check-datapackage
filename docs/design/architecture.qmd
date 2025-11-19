@@ -51,8 +51,8 @@ and in ways that deviate from its actual meaning. Tools that describe
 themselves as "validating" something often, in practice, *verify* that
 something matches a defined expectation or specification. There are many
 websites and articles comparing the difference between validate and
-verify. These two verbs often are done during quality control or
-assurance stages of building products and after are simplified to "V&V".
+verify. These two verbs are often used during the quality control or
+assurance stages of building products.
 For a good overview, see the Wikipedia on this topic in
 [general](https://en.wikipedia.org/wiki/Verification_and_validation) and
 on
@@ -65,8 +65,8 @@ the correct solution to solving the actual problem"? To "verify" is to
 ensure that the solution is being built correctly and with high quality,
 based on best practices, regulations, and specifications. It answers the
 question "are we developing the solution correctly"? An easy way to tell
-them apart is that you can often make the verification process
-automatic, while you often need to have extensive manual evaluation,
+them apart is that you can often automate the verification process,
+while you often need to have extensive manual evaluation,
 judgment, and review for the validation process.
 
 Sometimes, these two overlap, but often they don't. For example, if you
@@ -93,12 +93,12 @@ review can answer that. We can, however, be sure that we're verifying or
 checking something.
 
 Unfortunately, "verify" and "validate" are often used interchangeably
-and are difficult to distinguish between their two meanings. This may be
+and because of that it can be difficult to distinguish between their meanings. This may be
 due to the similarity in their spelling and pronunciation. For that
-reason, we decided to use neither word. Instead we wanted to use a more
-common word, that accurately reflects what we want this package to do
+reason, we've decided to use neither of those words. Instead, we wanted to use a more
+common word that reflects what we want this package to do
 while also being generic enough to encompass different uses. So we went
-with "check", since we "check" that the metadata is correct (based on
+with "check", since this package *checks* that the metadata is correct (based on
 the specification).
 
 ### Objects
