@@ -39,6 +39,24 @@ things consistent. However, we also introduce some new terms and
 concepts specific to `check-datapackage`. The main objects and actions
 used throughout the package can be found in the tables below.
 
+| Object | Description |
+|----------------------------|--------------------------------------------|
+| package | A Data Package that contains a collection of related data resources and descriptor(s). |
+| descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
+| properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
+| schema | The JSON schema defining the Data Package standard. |
+| config | An object containing settings for modifying the behaviour and output of the check mechanism. |
+
+: Objects used throughout `check-datapackage`.
+
+| Action | Description |
+|----------------------------|--------------------------------------------|
+| check | Check that properties comply with the Data Package standard. |
+| explain | Explain issues flagged by the check action in more detail using non-technical language. |
+| read | Read various files, such as a Data Package descriptor or a configuration file. |
+
+: Actions that `check-datapackage` can perform.
+
 ### "Why "check" (and not "validate" or "verify")?
 
 If you have ever searched for tools that check something against a
@@ -52,8 +70,8 @@ themselves as "validating" something often, in practice, *verify* that
 something matches a defined expectation or specification. There are many
 websites and articles comparing the difference between validate and
 verify. These two verbs are often used during the quality control or
-assurance stages of building products.
-For a good overview, see the Wikipedia on this topic in
+assurance stages of building products. For a good overview, see the
+Wikipedia on this topic in
 [general](https://en.wikipedia.org/wiki/Verification_and_validation) and
 on
 [software](https://en.wikipedia.org/wiki/Software_verification_and_validation)
@@ -66,8 +84,8 @@ ensure that the solution is being built correctly and with high quality,
 based on best practices, regulations, and specifications. It answers the
 question "are we developing the solution correctly"? An easy way to tell
 them apart is that you can often automate the verification process,
-while you often need to have extensive manual evaluation,
-judgment, and review for the validation process.
+while you often need to have extensive manual evaluation, judgment, and
+review for the validation process.
 
 Sometimes, these two overlap, but often they don't. For example, if you
 are involved in creating a specification that accurately describes
@@ -93,35 +111,13 @@ review can answer that. We can, however, be sure that we're verifying or
 checking something.
 
 Unfortunately, "verify" and "validate" are often used interchangeably
-and because of that it can be difficult to distinguish between their meanings. This may be
-due to the similarity in their spelling and pronunciation. For that
-reason, we've decided to use neither of those words. Instead, we wanted to use a more
-common word that reflects what we want this package to do
-while also being generic enough to encompass different uses. So we went
-with "check", since this package *checks* that the metadata is correct (based on
-the specification).
-
-### Objects
-
-| Object | Description |
-|----------------------------|--------------------------------------------|
-| package | A Data Package that contains a collection of related data resources and descriptor(s). |
-| descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`. |
-| properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
-| schema | The JSON schema defining the Data Package standard. |
-| config | An object containing settings for modifying the behaviour and output of the check mechanism. |
-
-: Objects used throughout `check-datapackage`.
-
-### Actions
-
-| Action | Description |
-|----------------------------|--------------------------------------------|
-| check | Check that properties comply with the Data Package standard. |
-| explain | Explain issues flagged by the check action in more detail using non-technical language. |
-| read | Read various files, such as a Data Package descriptor or a configuration file. |
-
-: Actions that `check-datapackage` can perform.
+and because of that it can be difficult to distinguish between their
+meanings. This may be due to the similarity in their spelling and
+pronunciation. For that reason, we've decided to use neither of those
+words. Instead, we wanted to use a more common word that reflects what
+we want this package to do while also being generic enough to encompass
+different uses. So we went with "check", since this package *checks*
+that the metadata is correct (based on the specification).
 
 ## C4 Models
 
