@@ -60,39 +60,40 @@ used throughout the package can be found in the tables below.
 ### "Why "check" (and not "validate" or "verify")?
 
 If you have ever searched for tools that check something against a
-specification, you'll often see the word "validate". And you might
+specification, you'll often see the word "validate". You might also
 notice that we don't use the word "validate" in our package and
 documentation. This is intentional.
 
-Although the word is ubiquitous in programming, it's often used loosely
-and in ways that deviate from its actual meaning. Tools that describe
-themselves as "validating" something often, in practice, *verify* that
-something matches a defined expectation or specification. There are many
-websites and articles comparing the difference between validate and
-verify. These two verbs are often used during the quality control or
-assurance stages of building products. For a good overview, see the
-Wikipedia on this topic in
+Although the word "validate" is ubiquitous in programming, it's often
+used loosely and in ways that don't align from its actual meaning. Tools
+that "validate" something often, in practice, *verify* that something
+matches a defined expectation or specification. These two verbs are
+often used during the quality control or assurance stages of building
+products. There are many websites and articles comparing the difference
+between validate and verify. For a good overview, see the Wikipedia on
+this topic in
 [general](https://en.wikipedia.org/wiki/Verification_and_validation) and
 on
 [software](https://en.wikipedia.org/wiki/Software_verification_and_validation)
 specifically.
 
 To "validate" is to assess the overlap between a human need and a
-product that solves that need. It answers the question "have we selected
-the correct solution to solving the actual problem"? To "verify" is to
-ensure that the solution is being built correctly and with high quality,
-based on best practices, regulations, and specifications. It answers the
-question "are we developing the solution correctly"? An easy way to tell
-them apart is that you can often automate the verification process,
-while you often need to have extensive manual evaluation, judgment, and
-review for the validation process.
+solution that solves that need. It answers the question "have we
+selected the correct solution to solving the actual problem"? To
+"verify" is to ensure that the solution is being built correctly and
+with high quality, based on best practices, regulations, and
+specifications. It answers the question "are we developing the solution
+correctly"? An easy way to tell them apart is that you can often
+automate the verification process, while you often need to have
+extensive manual evaluation, judgment, and review for the validation
+process.
 
 Sometimes, these two overlap, but often they don't. For example, if you
-are involved in creating a specification that accurately describes
-something that will solve a need you have, then you are both validating
-and verifying the product that you will build. However, if someone else
+are creating a specification that accurately describes something that
+will solve a need you have, then you are likely both validating and
+verifying the product that you will build. However, if someone else
 takes your specification to help them build their own product and they
-don't seek our extensive validation from the humans who will use that
+don't seek out extensive validation from the humans who will use that
 product, they are now likely verifying their product, rather than
 validating it.
 
@@ -105,10 +106,10 @@ Even widely used tools like
 [Pydantic](https://docs.pydantic.dev/latest/) use the word "validate".
 However, without knowing the human context, what they are most likely
 doing is verifying that something matches some other specification or
-expectation. Most of these software tool that "validate" can't know if
-they are truly "validating" something since only human judgement and
-review can answer that. We can, however, be sure that we're verifying or
-checking something.
+expectation. Most of these software tools that "validate" can't know if
+the user is using it to "validate" something since only human judgement
+and review can answer that. We can, however, be sure that the tool is
+verifying something.
 
 Unfortunately, "verify" and "validate" are often used interchangeably
 and because of that it can be difficult to distinguish between their
