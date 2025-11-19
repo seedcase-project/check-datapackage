@@ -39,7 +39,7 @@ things consistent. However, we also introduce some new terms and
 concepts specific to `check-datapackage`. The main objects and actions
 used throughout the package can be found in the tables below.
 
-### "Check" (vs "validate")
+### "Why "check" (and not "validate" or "verify")?
 
 If you have ever searched for tools that check something against a
 specification, you'll often see the word "validate". And you might
