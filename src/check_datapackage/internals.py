@@ -72,12 +72,13 @@ def _is_jsonpath(value: str) -> str:
             "https://jg-rp.github.io/python-jsonpath/syntax/ for the expected syntax."
         )
 
+    intersection_token = jsonpath.env.intersection_token
     if isinstance(jsonpath, CompoundJSONPath) and _filter(
-        jsonpath.paths, lambda path: path[0] == "&"
+        jsonpath.paths, lambda path: path[0] == intersection_token
     ):
         raise ValueError(
-            f"The intersection operator (`&`) in the JSON path '{value}' is not "
-            "supported."
+            f"The intersection operator (`{intersection_token}`) in the JSON path "
+            f"'{value}' is not supported."
         )
     return value
 
