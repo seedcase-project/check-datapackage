@@ -168,6 +168,8 @@ def test_required_check_array_wildcard():
         "..resources",
         "$.resources[0].*",
         "$.resources[*]",
+        "$.no & $.intersection",
+        "$.no & $.intersection | $.operator",
     ],
 )
 def test_required_check_cannot_apply_to_bad_or_ambiguous_path(jsonpath):
@@ -178,10 +180,18 @@ def test_required_check_cannot_apply_to_bad_or_ambiguous_path(jsonpath):
         )
 
 
-def test_custom_check_cannot_apply_to_bad_path():
+@mark.parametrize(
+    "jsonpath",
+    [
+        "<><>bad.path",
+        "$.no & $.intersection",
+        "$.no & $.intersection | $.operator",
+    ],
+)
+def test_custom_check_cannot_apply_to_bad_path(jsonpath):
     with raises(ValueError):
         CustomCheck(
-            jsonpath="<><>bad.path",
+            jsonpath=jsonpath,
             message="A message.",
             check=lambda _: True,
         )
