@@ -89,11 +89,12 @@ def check(
     issues = _check_object_against_json_schema(properties, schema)
     issues += apply_extensions(properties, config.extensions)
     issues = exclude(issues, config.exclusions, properties)
+    issues = sorted(set(issues))
 
     if error and issues:
         raise DataPackageError(issues)
 
-    return sorted(set(issues))
+    return issues
 
 
 def _set_should_fields_to_required(schema: dict[str, Any]) -> dict[str, Any]:

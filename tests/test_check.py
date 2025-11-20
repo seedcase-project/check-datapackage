@@ -10,7 +10,7 @@ from check_datapackage.examples import (
     example_resource_properties,
 )
 from check_datapackage.exclusion import Exclusion
-from check_datapackage.extensions import Extensions
+from check_datapackage.extensions import Extensions, RequiredCheck
 from check_datapackage.internals import _map
 from tests.test_extensions import lowercase_check
 
@@ -630,9 +630,16 @@ def test_fail_primary_key_with_bad_array_item():
 
 
 def test_error_as_true():
-    properties = {
-        "name": 123,
-    }
+    resources_required = RequiredCheck(
+        jsonpath="$.resources",
+        message="'resources' is a required property",
+    )
 
-    with raises(DataPackageError):
-        check(properties, error=True)
+    with raises(DataPackageError) as error:
+        check(
+            {},
+            error=True,
+            config=Config(extensions=Extensions(required_checks=[resources_required])),
+        )
+
+    assert str(error).count(resources_required.message) == 1
