@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.22.0 (2025-11-20)
+
+### Feat
+
+- :sparkles: support union operator in `RequiredCheck` (#201)
+
 ## 0.21.0 (2025-11-20)
 
 ### Feat
