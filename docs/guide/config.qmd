@@ -185,7 +185,7 @@ cdp.check(properties=package_properties, config=config)
 
 The Data Package standard includes properties that "MUST" and "SHOULD"
 be included and/or have a specific format in a compliant Data Package.
-By default, `check()` only the `check()` function only includes "MUST"
+By default, `check()` only includes "MUST"
 checks. To include "SHOULD" checks, set the `strict` argument to `True`
 in the `Config` object.
 
