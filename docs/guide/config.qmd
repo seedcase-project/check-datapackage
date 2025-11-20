@@ -67,9 +67,9 @@ exclusion_path
 ```
 
 The `type` and `jsonpath` arguments can also be combined, so we can
-ignore [`Issue`](/docs/reference/Issue.qmd) from a specific type on a
-specific field. For example, to exclude checks that the `created` field
-be in a date format (`type="format"`), we can use:
+ignore an [`Issue`](/docs/reference/Issue.qmd) of a specific type on a
+specific field. For example, to exclude checks of whether the `created` field
+is in a specific format (`type="format"`), we can use:
 
 ```{python}
 exclusion_created_format = cdp.Exclusion(type="format", jsonpath="$.created")
@@ -93,13 +93,13 @@ package_properties["resources"][0]["path"] = "\\not/a/path"
 pprint.pp(package_properties)
 ```
 
-When we run `check()` on these properties, we get the four issues:
+When we run `check()` on these properties, we get the three expected issues:
 
 ```{python}
 cdp.check(properties=package_properties)
 ```
 
-Now let's exclude these Issues so that `check()` finds no issues by
+Now let's exclude these `Issue`s so that `check()` finds no issues by
 adding our exclusions to a `Config` object and giving it to `check()`:
 
 ```{python}
@@ -191,7 +191,7 @@ in the `Config` object.
 
 For example, the `name` field of a Data Package "SHOULD" not contain
 special characters. So running `check()` in strict mode (`strict=True`)
-on the following properties would output an Issue:
+on the following properties would output an `Issue`:
 
 ```{python}
 package_properties = cdp.example_package_properties()
