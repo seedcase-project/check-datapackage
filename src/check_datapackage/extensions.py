@@ -109,6 +109,7 @@ class TargetJsonPath:
 
 def _jsonpath_to_targets(jsonpath: JSONPath) -> list[TargetJsonPath]:
     """Create a list of `TargetJsonPath`s from a `JSONPath`."""
+    # Segments are path parts, e.g., `resources`, `*`, `name` for `$.resources[*].name`
     if not jsonpath.segments:
         return []
 
@@ -116,10 +117,11 @@ def _jsonpath_to_targets(jsonpath: JSONPath) -> list[TargetJsonPath]:
     last_segment = jsonpath.segments[-1]
     if isinstance(last_segment, JSONPathRecursiveDescentSegment):
         raise ValueError(
-            f"Cannot use `RequiredCheck` for the JSON path `{full_path}`"
+            f"Cannot use the JSON path `{full_path}` in `RequiredCheck`"
             " because it ends in the recursive descent (`..`) operator."
         )
-
+    
+    # Things like field names, array indices, and/or wildcards.
     selectors = last_segment.selectors
     if _filter(selectors, lambda selector: not isinstance(selector, NameSelector)):
         raise ValueError(
@@ -127,7 +129,7 @@ def _jsonpath_to_targets(jsonpath: JSONPath) -> list[TargetJsonPath]:
             " because it doesn't end in a name selector."
         )
 
-    parent = "".join(_map(jsonpath.segments[:-1], lambda segment: str(segment)))
+    parent = "".join(_map(jsonpath.segments[:-1], str))
     name_selectors = cast(tuple[NameSelector], selectors)
     return _map(
         name_selectors,
@@ -170,7 +172,7 @@ class RequiredCheck(BaseModel, frozen=True):
             paths = [first_path] + _map(jsonpath.paths, lambda path: path[1])
 
         object.__setattr__(
-            self, "_targets", _flat_map(paths, lambda path: _jsonpath_to_targets(path))
+            self, "_targets", _flat_map(paths, _jsonpath_to_targets)
         )
         return self
 
