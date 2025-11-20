@@ -120,7 +120,7 @@ def _jsonpath_to_targets(jsonpath: JSONPath) -> list[TargetJsonPath]:
             f"Cannot use the JSON path `{full_path}` in `RequiredCheck`"
             " because it ends in the recursive descent (`..`) operator."
         )
-    
+
     # Things like field names, array indices, and/or wildcards.
     selectors = last_segment.selectors
     if _filter(selectors, lambda selector: not isinstance(selector, NameSelector)):
