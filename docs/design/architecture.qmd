@@ -76,7 +76,6 @@ on
 [software](https://en.wikipedia.org/wiki/Software_verification_and_validation)
 specifically.
 
-
 Unfortunately, "verify" and "validate" are often used interchangeably
 and because of that it can be difficult to distinguish between their
 meanings. This may be due to the similarity in their spelling and
