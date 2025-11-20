@@ -1,7 +1,11 @@
-import re
 from collections.abc import Callable
-from typing import Any, Self
+from dataclasses import dataclass
+from operator import itemgetter
+from typing import Any, Self, cast
 
+from jsonpath import JSONPath, compile
+from jsonpath.segments import JSONPathRecursiveDescentSegment
+from jsonpath.selectors import NameSelector
 from pydantic import BaseModel, PrivateAttr, field_validator, model_validator
 
 from check_datapackage.internals import (
@@ -91,6 +95,51 @@ class CustomCheck(BaseModel, frozen=True):
         )
 
 
+@dataclass(frozen=True)
+class TargetJsonPath:
+    """A JSON path targeted by a `RequiredCheck`.
+
+    Attributes:
+        parent (str): The JSON path to the parent of the targeted field.
+        field (str): The name of the targeted field.
+    """
+
+    parent: str
+    field: str
+
+
+def _jsonpath_to_targets(jsonpath: JSONPath) -> list[TargetJsonPath]:
+    """Create a list of `TargetJsonPath`s from a `JSONPath`."""
+    # Segments are path parts, e.g., `resources`, `*`, `name` for `$.resources[*].name`
+    if not jsonpath.segments:
+        return []
+
+    full_path = jsonpath.segments[0].token.path
+    last_segment = jsonpath.segments[-1]
+    if isinstance(last_segment, JSONPathRecursiveDescentSegment):
+        raise ValueError(
+            f"Cannot use the JSON path `{full_path}` in `RequiredCheck`"
+            " because it ends in the recursive descent (`..`) operator."
+        )
+
+    # Things like field names, array indices, and/or wildcards.
+    selectors = last_segment.selectors
+    if _filter(selectors, lambda selector: not isinstance(selector, NameSelector)):
+        raise ValueError(
+            f"Cannot use `RequiredCheck` for the JSON path `{full_path}`"
+            " because it doesn't end in a name selector."
+        )
+
+    parent = "".join(_map(jsonpath.segments[:-1], str))
+    name_selectors = cast(tuple[NameSelector], selectors)
+    return _map(
+        name_selectors,
+        lambda selector: TargetJsonPath(
+            parent=str(compile(parent)), field=selector.name
+        ),
+    )
+
+
 class RequiredCheck(BaseModel, frozen=True):
     """Set a specific property as required.
 
@@ -112,22 +161,18 @@ class RequiredCheck(BaseModel, frozen=True):
 
     jsonpath: JsonPath
     message: str
-    _field_name: str = PrivateAttr()
+    _targets: list[TargetJsonPath] = PrivateAttr()
 
     @model_validator(mode="after")
     def _check_field_name_in_jsonpath(self) -> Self:
-        field_name_match = re.search(r"(?<!\.)(\.\w+)$", self.jsonpath)
-        if not field_name_match:
-            raise ValueError(
-                f"Cannot use `RequiredCheck` for this JSON path `{self.jsonpath}`."
-                " A `RequiredCheck` must use a JSON path that targets a specific and"
-                " real property (e.g., `$.title`) or set of properties (e.g.,"
-                " `$.resources[*].title`). Unspecific JSON paths (e.g., `$..title`)"
-                " or JSON paths pointing to array items (e.g., `$.resources[0]`) are"
-                " not allowed."
-            )
+        jsonpath = compile(self.jsonpath)
+        if isinstance(jsonpath, JSONPath):
+            paths = [jsonpath]
+        else:
+            first_path = cast(JSONPath, jsonpath.path)
+            paths = [first_path] + _map(jsonpath.paths, itemgetter(1))
 
-        object.__setattr__(self, "_field_name", field_name_match.group(1))
+        object.__setattr__(self, "_targets", _flat_map(paths, _jsonpath_to_targets))
         return self
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
@@ -140,16 +185,27 @@ class RequiredCheck(BaseModel, frozen=True):
             A list of `Issue`s.
         """
         matching_paths = _get_direct_jsonpaths(self.jsonpath, properties)
-        indirect_parent_path = self.jsonpath.removesuffix(self._field_name)
-        direct_parent_paths = _get_direct_jsonpaths(indirect_parent_path, properties)
+        return _flat_map(
+            self._targets,
+            lambda target: self._target_to_issues(target, matching_paths, properties),
+        )
+
+    def _target_to_issues(
+        self,
+        target: TargetJsonPath,
+        matching_paths: list[str],
+        properties: dict[str, Any],
+    ) -> list[Issue]:
+        """Create a list of `Issue`s from a `TargetJsonPath`."""
+        direct_parent_paths = _get_direct_jsonpaths(target.parent, properties)
         missing_paths = _filter(
             direct_parent_paths,
-            lambda path: f"{path}{self._field_name}" not in matching_paths,
+            lambda path: f"{path}.{target.field}" not in matching_paths,
         )
         return _map(
             missing_paths,
             lambda path: Issue(
-                jsonpath=path + self._field_name,
+                jsonpath=f"{path}.{target.field}",
                 type="required",
                 message=self.message,
             ),
