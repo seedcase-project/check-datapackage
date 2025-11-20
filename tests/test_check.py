@@ -630,6 +630,15 @@ def test_fail_primary_key_with_bad_array_item():
 
 
 def test_error_as_true():
+    properties = {
+        "name": 123,
+    }
+
+    with raises(DataPackageError):
+        check(properties, error=True)
+
+
+def test_error_true_no_duplicate_issues():
     resources_required = RequiredCheck(
         jsonpath="$.resources",
         message="'resources' is a required property",
