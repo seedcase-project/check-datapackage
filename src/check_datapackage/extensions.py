@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass
+from operator import itemgetter
 from typing import Any, Self, cast
 
 from jsonpath import JSONPath, compile
@@ -120,7 +121,7 @@ def _jsonpath_to_targets(jsonpath: JSONPath) -> list[TargetJsonPath]:
             f"Cannot use the JSON path `{full_path}` in `RequiredCheck`"
             " because it ends in the recursive descent (`..`) operator."
         )
-    
+
     # Things like field names, array indices, and/or wildcards.
     selectors = last_segment.selectors
     if _filter(selectors, lambda selector: not isinstance(selector, NameSelector)):
@@ -169,11 +170,9 @@ class RequiredCheck(BaseModel, frozen=True):
             paths = [jsonpath]
         else:
             first_path = cast(JSONPath, jsonpath.path)
-            paths = [first_path] + _map(jsonpath.paths, lambda path: path[1])
+            paths = [first_path] + _map(jsonpath.paths, itemgetter(1))
 
-        object.__setattr__(
-            self, "_targets", _flat_map(paths, _jsonpath_to_targets)
-        )
+        object.__setattr__(self, "_targets", _flat_map(paths, _jsonpath_to_targets))
         return self
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
