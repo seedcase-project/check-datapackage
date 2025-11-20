@@ -72,6 +72,7 @@ def _is_jsonpath(value: str) -> str:
             "https://jg-rp.github.io/python-jsonpath/syntax/ for the expected syntax."
         )
 
+    # Doesn't allow intersection paths (e.g. `$.resources & $.name`).
     intersection_token = jsonpath.env.intersection_token
     if isinstance(jsonpath, CompoundJSONPath) and _filter(
         jsonpath.paths, lambda path: path[0] == intersection_token
