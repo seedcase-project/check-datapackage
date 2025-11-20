@@ -70,8 +70,8 @@ package_properties["name"] = 123
 cdp.check(properties=package_properties)
 ```
 
-The output now lists two issues: one for the missing `description` field
-and one for the `name` field of the wrong type.
+The output now lists one `Issue` for the `name` field being of the
+wrong type.
 
 ## Default checks and configuration (`config`)
 
