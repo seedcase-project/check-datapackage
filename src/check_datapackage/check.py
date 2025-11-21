@@ -52,13 +52,32 @@ class DataPackageError(Exception):
         # TODO: Switch to using `explain()` once implemented
         errors: list[str] = _map(
             issues,
-            lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
+            explain,
         )
         message: str = (
             "There were some issues found in your `datapackage.json`:\n\n"
             + "\n".join(errors)
         )
         super().__init__(message)
+
+
+def explain(issue: Issue) -> str:
+    """Explain the issue in a human-readable format.
+
+    Args:
+        issue: The `Issue` object to explain.
+
+    Returns:
+        A human-readable explanation of the issue.
+    """
+    property_name = issue.jsonpath.split(".")[-1]
+    return (  # noqa: F401
+        f"At package.{issue.jsonpath[2:]}:\n"  # indexing to remove '$.'
+        "|\n"
+        f"| {property_name}: {issue.instance!r}\n"
+        f"| {' ' * len(property_name)}  {'^' * len(str(issue.instance))}\n"
+        f"{issue.message}\n"
+    )
 
 
 def check(
@@ -578,6 +597,7 @@ def _create_issue(error: SchemaError) -> Issue:
         message=error.message,
         jsonpath=error.jsonpath,
         type=error.type,
+        instance=error.instance,
     )
 
 

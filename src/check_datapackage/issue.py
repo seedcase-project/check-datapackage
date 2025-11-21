@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(order=True, frozen=True)
@@ -31,3 +32,4 @@ class Issue:
     jsonpath: str
     type: str
     message: str
+    instance: Any
