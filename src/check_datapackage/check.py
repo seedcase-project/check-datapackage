@@ -55,7 +55,7 @@ class DataPackageError(Exception):
             explain,
         )
         message: str = (
-            "There were some issues found in your `datapackage.json`:\n\n"
+            f"There were {len(errors)} issues found in your `datapackage.json`:\n\n"
             + "\n".join(errors)
         )
         super().__init__(message)
