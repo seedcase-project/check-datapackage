@@ -2,7 +2,13 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import Annotated, Any, Callable, Iterable, TypeVar
 
-from jsonpath import JSONPathMatch, JSONPathSyntaxError, compile, finditer
+from jsonpath import (
+    CompoundJSONPath,
+    JSONPathMatch,
+    JSONPathSyntaxError,
+    compile,
+    finditer,
+)
 from pydantic import AfterValidator
 
 
@@ -59,11 +65,21 @@ def _flat_map(items: Iterable[In], fn: Callable[[In], Iterable[Out]]) -> list[Ou
 
 def _is_jsonpath(value: str) -> str:
     try:
-        compile(value)
+        jsonpath = compile(value)
     except JSONPathSyntaxError:
         raise ValueError(
             f"'{value}' is not a correct JSON path. See "
             "https://jg-rp.github.io/python-jsonpath/syntax/ for the expected syntax."
+        )
+
+    # Doesn't allow intersection paths (e.g. `$.resources & $.name`).
+    intersection_token = jsonpath.env.intersection_token
+    if isinstance(jsonpath, CompoundJSONPath) and _filter(
+        jsonpath.paths, lambda path: path[0] == intersection_token
+    ):
+        raise ValueError(
+            f"The intersection operator (`{intersection_token}`) in the JSON path "
+            f"'{value}' is not supported."
         )
     return value
 

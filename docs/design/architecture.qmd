@@ -39,8 +39,6 @@ things consistent. However, we also introduce some new terms and
 concepts specific to `check-datapackage`. The main objects and actions
 used throughout the package can be found in the tables below.
 
-### Objects
-
 | Object | Description |
 |----------------------------|--------------------------------------------|
 | package | A Data Package that contains a collection of related data resources and descriptor(s). |
@@ -51,8 +49,6 @@ used throughout the package can be found in the tables below.
 
 : Objects used throughout `check-datapackage`.
 
-### Actions
-
 | Action | Description |
 |----------------------------|--------------------------------------------|
 | check | Check that properties comply with the Data Package standard. |
@@ -60,6 +56,34 @@ used throughout the package can be found in the tables below.
 | read | Read various files, such as a Data Package descriptor or a configuration file. |
 
 : Actions that `check-datapackage` can perform.
+
+### "Why "check" (and not "validate" or "verify")?
+
+If you have ever searched for tools that check something against a
+specification, you'll often see the word "validate". You might also
+notice that we don't use the word "validate" in our package and
+documentation. This is intentional.
+
+Although the word "validate" is ubiquitous in programming, it's often
+used loosely and in ways that don't align from its actual meaning. Tools
+that "validate" something often, in practice, *verify* that something
+matches a defined expectation or specification.
+There are many websites and articles comparing the difference
+between validate and verify. For a good overview, see the Wikipedia on
+this topic in
+[general](https://en.wikipedia.org/wiki/Verification_and_validation) and
+on
+[software](https://en.wikipedia.org/wiki/Software_verification_and_validation)
+specifically.
+
+Unfortunately, "verify" and "validate" are often used interchangeably
+and because of that it can be difficult to distinguish between their
+meanings. This may be due to the similarity in their spelling and
+pronunciation. For that reason, we've decided to use neither of those
+words. Instead, we wanted to use a more common word that reflects what
+we want this package to do while also being generic enough to encompass
+different uses. So we went with "check", since this package *checks*
+that the metadata is correct (based on the specification).
 
 ## C4 Models
 
@@ -78,8 +102,8 @@ Data Package standard.
 `check-datapackage` receives the definitions of the Data Package
 descriptor's structure---including properties that [must or
 should](https://datapackage.org/standard/data-package/#language) be
-included and their formats---from the Data Package standard (version 2). The
-standard provides this information through versioned JSON Schema
+included and their formats---from the Data Package standard (version 2).
+The standard provides this information through versioned JSON Schema
 profiles that define required properties and textual descriptions that
 outline compliance.
 
