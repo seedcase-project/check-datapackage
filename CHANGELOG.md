@@ -9,6 +9,24 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.22.1 (2025-11-20)
+
+### Fix
+
+- :bug: correct euro symbol representation (#207)
+
+## 0.22.0 (2025-11-20)
+
+### Feat
+
+- :sparkles: support union operator in `RequiredCheck` (#201)
+
+## 0.21.0 (2025-11-20)
+
+### Feat
+
+- :sparkles: disallow intersection JSON path operator (#203)
+
 ## 0.20.2 (2025-11-17)
 
 ### Refactor
