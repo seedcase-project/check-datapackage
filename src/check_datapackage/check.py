@@ -48,28 +48,32 @@ class DataPackageError(Exception):
         self,
         issues: list[Issue],
     ) -> None:
-        """Create the DataPackageError attributes from issues."""
-        # TODO: Switch to using `explain()` once implemented
-        errors: list[str] = _map(
-            issues,
-            explain,
-        )
-        message: str = (
-            f"There were {len(errors)} issues found in your `datapackage.json`:\n\n"
-            + "\n".join(errors)
-        )
-        super().__init__(message)
+        """Create the DataPackageError from issues."""
+        super().__init__(explain(issues))
 
 
-def explain(issue: Issue) -> str:
+def explain(issues: list[Issue]) -> str:
     """Explain the issue in a human-readable format.
 
     Args:
-        issue: The `Issue` object to explain.
+        issues: A list of `Issue` objects to explain.
 
     Returns:
         A human-readable explanation of the issue.
     """
+    issue_messages: list[str] = _map(
+        issues,
+        _create_issue_message,
+    )
+    error_message: str = (
+        f"There were {len(issue_messages)} issues found in your `datapackage.json`:\n\n"
+        + "\n".join(issue_messages)
+    )
+    return error_message
+
+
+def _create_issue_message(issue: Issue) -> str:
+    """Create an informative message of what went wrong in each issue."""
     property_name = issue.jsonpath.split(".")[-1]
     return (  # noqa: F401
         f"At package.{issue.jsonpath[2:]}:\n"  # indexing to remove '$.'
