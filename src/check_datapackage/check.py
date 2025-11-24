@@ -66,7 +66,7 @@ def explain(issues: list[Issue]) -> str:
         _create_explanation,
     )
     error_message: str = (
-        f"There were {len(issue_explanations)} issues found in your `datapackage.json`:\n\n"
+        f"{len(issue_explanations)} issues were found in your `datapackage.json`:\n\n"
         + "\n".join(issue_explanations)
     )
     return error_message
