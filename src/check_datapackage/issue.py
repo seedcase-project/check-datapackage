@@ -32,4 +32,4 @@ class Issue:
     jsonpath: str
     type: str
     message: str
-    instance: Any
+    instance: Any = None

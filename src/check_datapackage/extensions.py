@@ -59,6 +59,7 @@ class CustomCheck(BaseModel, frozen=True):
     message: str
     check: Callable[[Any], bool]
     type: str = "custom"
+    instance: Any = None
 
     @field_validator("type", mode="after")
     @classmethod
@@ -162,6 +163,7 @@ class RequiredCheck(BaseModel, frozen=True):
     jsonpath: JsonPath
     message: str
     _targets: list[TargetJsonPath] = PrivateAttr()
+    instance: Any = None
 
     @model_validator(mode="after")
     def _check_field_name_in_jsonpath(self) -> Self:
