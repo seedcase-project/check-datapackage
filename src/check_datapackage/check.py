@@ -61,19 +61,19 @@ def explain(issues: list[Issue]) -> str:
     Returns:
         A human-readable explanation of the issue.
     """
-    issue_messages: list[str] = _map(
+    issue_explanations: list[str] = _map(
         issues,
-        _create_issue_message,
+        _create_explanation,
     )
     error_message: str = (
-        f"There were {len(issue_messages)} issues found in your `datapackage.json`:\n\n"
-        + "\n".join(issue_messages)
+        f"There were {len(issue_explanations)} issues found in your `datapackage.json`:\n\n"
+        + "\n".join(issue_explanations)
     )
     return error_message
 
 
-def _create_issue_message(issue: Issue) -> str:
-    """Create an informative message of what went wrong in each issue."""
+def _create_explanation(issue: Issue) -> str:
+    """Create an informative explanation of what went wrong in each issue."""
     property_name = issue.jsonpath.split(".")[-1]
     return (  # noqa: F401
         f"At package.{issue.jsonpath[2:]}:\n"  # indexing to remove '$.'
