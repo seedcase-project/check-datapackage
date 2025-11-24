@@ -602,7 +602,11 @@ def _create_issue(error: SchemaError) -> Issue:
         message=error.message,
         jsonpath=error.jsonpath,
         type=error.type,
-        instance=error.instance,
+        instance=(
+            None
+            if error.type in ("required", "minItems", "oneOf", "enum", "uniqueItems")
+            else error.instance,
+        ),
     )
 
 
