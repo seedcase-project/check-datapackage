@@ -88,11 +88,13 @@ def explain(issues: list[Issue]) -> str:
 def _create_explanation(issue: Issue) -> str:
     """Create an informative explanation of what went wrong in each issue."""
     property_name = issue.jsonpath.split(".")[-1]
+    # Two extra carets are added for string instances to account for quotes
+    number_of_carets = len(str(issue.instance)) + 2 * isinstance(issue.instance, str)
     return (  # noqa: F401
         f"At package.{issue.jsonpath[2:]}:\n"  # indexing to remove '$.'
         "|\n"
         f"| {property_name}: {issue.instance!r}\n"
-        f"| {' ' * len(property_name)}  {'^' * len(str(issue.instance))}\n"
+        f"| {' ' * len(property_name)}  {'^' * number_of_carets}\n"
         f"{issue.message}\n"
     )
 
