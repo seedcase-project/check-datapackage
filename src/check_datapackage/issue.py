@@ -16,6 +16,7 @@ class Issue:
             as "required", "type", "pattern", or "format", or a custom type). Used to
             exclude specific types of issues.
         message (string): A description of what exactly the issue is.
+        instance (Any): The part of the object that failed the check.
 
     Examples:
         ```{python}
