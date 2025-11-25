@@ -60,6 +60,19 @@ def explain(issues: list[Issue]) -> str:
 
     Returns:
         A human-readable explanation of the issue.
+
+    Examples:
+        ```{python}
+        import check_datapackage as cdp
+
+        issue = cdp.Issue(
+            jsonpath="$.resources[2].title",
+            type="required",
+            message="The `title` field is required but missing at the given JSON path.",
+        )
+
+        cdp.explain([issue])
+        ```
     """
     issue_explanations: list[str] = _map(
         issues,
