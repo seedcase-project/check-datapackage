@@ -3,7 +3,7 @@ import sys
 from dataclasses import dataclass, field
 from functools import reduce
 from types import TracebackType
-from typing import Any, Callable, Iterator, Optional
+from typing import Any, Callable, Hashable, Iterator, Optional
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 
@@ -602,11 +602,8 @@ def _create_issue(error: SchemaError) -> Issue:
         message=error.message,
         jsonpath=error.jsonpath,
         type=error.type,
-        instance=(
-            None
-            if error.type in ("required", "minItems", "oneOf", "enum", "uniqueItems")
-            else error.instance,
-        ),
+        # Since we want to deduplicate issues, only include instance if it's hashable
+        instance=error.instance if isinstance(error.instance, Hashable) else None,
     )
 
 
