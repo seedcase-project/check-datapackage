@@ -134,11 +134,11 @@ license_check = cdp.CustomCheck(
 )
 ```
 
-For more details on what each parameter means, see the `CustomCheck`
-documentation. Specific to this example, the `type` is setting the
-identifier of the check to `only-mit` and the `jsonpath` is indicating
-to only check the `name` property of each license in the `licenses`
-property of the Data Package.
+For more details on what each parameter means, see the
+[`CustomCheck`](/docs/reference/CustomCheck.qmd) documentation. Specific
+to this example, the `type` is setting the identifier of the check to
+`only-mit` and the `jsonpath` is indicating to only check the `name`
+property of each license in the `licenses` property of the Data Package.
 
 To register your custom checks with the `check()` function, you add them
 to the `Config` object passed to the function:
@@ -166,7 +166,7 @@ description_required = cdp.RequiredCheck(
 )
 ```
 
-See the [`RequiredCheck`](/docs/reference/required_check.qmd)
+See the [`RequiredCheck`](/docs/reference/RequiredCheck.qmd)
 documentation for more details on its parameters.
 
 To apply this `RequiredCheck`, it should be added to the `Config` object
