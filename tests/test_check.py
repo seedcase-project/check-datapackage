@@ -91,6 +91,59 @@ def test_fails_properties_with_pattern_mismatch():
     assert issues[0].jsonpath == "$.contributors[0].path"
 
 
+@mark.parametrize("primary_key", ["id", ["id", "name"]])
+def test_pass_good_primary_key(primary_key):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = primary_key
+    properties["resources"][0]["schema"]["fields"].extend(
+        [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    )
+
+    issues = check(properties)
+
+    assert issues == []
+
+
+@mark.parametrize("primary_key", ["", "last_name", ["first_name", "last_name"]])
+def test_fail_primary_key_with_unknown_fields(primary_key):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = primary_key
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].schema.primaryKey"
+    assert issues[0].type == "primary-key"
+
+
+@mark.parametrize("primary_key", [None, 123, [], [123, "a_field"]])
+def test_do_not_check_bad_primary_key_against_fields(primary_key):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = primary_key
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type != "primary-key"
+
+
+def test_do_not_check_primary_key_against_bad_field():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = "eye-colour"
+    properties["resources"][0]["schema"]["fields"].append(
+        # Bad name
+        {"name": 123, "type": "integer"},
+    )
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type != "primary-key"
+
+
 # "SHOULD" checks
 
 
@@ -584,16 +637,6 @@ def test_fail_foreign_keys_with_bad_array_item():
     assert issues[1].jsonpath == (
         "$.resources[0].schema.foreignKeys[0].reference.fields[1]"
     )
-
-
-@mark.parametrize("primary_key", ["id", ["name", "address"]])
-def test_pass_good_primary_key(primary_key):
-    properties = example_package_properties()
-    properties["resources"][0]["schema"]["primaryKey"] = primary_key
-
-    issues = check(properties)
-
-    assert issues == []
 
 
 def test_fail_primary_key_of_bad_type():
