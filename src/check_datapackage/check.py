@@ -274,11 +274,14 @@ def _handle_S_resources_x_schema_fields_x(
 
     E.g., if the field type is `string`, flag errors for the string-based schema only.
     """
-    edits = SchemaErrorEdits()
+    edits = SchemaErrorEdits(remove=[parent_error])
     errors_in_group = _get_errors_in_group(schema_errors, parent_error)
-    edits.remove.append(parent_error)
 
-    field_type: str = parent_error.instance.get("type", "string")
+    parent_instance = parent_error.instance
+    if not isinstance(parent_instance, dict):
+        return edits
+
+    field_type: str = parent_instance.get("type", "string")
 
     # The field's type is unknown
     if field_type not in FIELD_TYPES:
@@ -290,7 +293,7 @@ def _handle_S_resources_x_schema_fields_x(
             type="enum",
             jsonpath=f"{parent_error.jsonpath}.type",
             schema_path=parent_error.schema_path,
-            instance=parent_error.instance,
+            instance=parent_instance,
         )
         # Replace all errors with an unknown field error
         edits.add.append(unknown_field_error)
@@ -413,11 +416,14 @@ def _handle_S_resources_x_schema_foreign_keys(
     edits = SchemaErrorEdits(remove=[parent_error])
     errors_in_group = _get_errors_in_group(schema_errors, parent_error)
 
-    key = parent_error.instance.get("fields", None)
-    key_type = type(key)
+    parent_instance = parent_error.instance
+    key_exists = isinstance(parent_instance, dict) and "fields" in parent_instance
 
     # If the key type is correct, use that schema
-    if key_type in FOREIGN_KEY_TYPES:
+    if (
+        key_exists
+        and (key_type := type(parent_instance["fields"])) in FOREIGN_KEY_TYPES
+    ):
         schema_part = f"foreignKeys/items/oneOf/{FOREIGN_KEY_TYPES.index(key_type)}/"
         edits.remove.extend(
             _filter(
@@ -436,7 +442,7 @@ def _handle_S_resources_x_schema_foreign_keys(
     edits.remove.extend(key_type_errors)
 
     # If the key exists, flag incorrect type
-    if key is not None:
+    if key_exists:
         edits.add.append(
             SchemaError(
                 message=(
