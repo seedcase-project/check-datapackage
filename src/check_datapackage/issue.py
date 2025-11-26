@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 
@@ -16,7 +16,8 @@ class Issue:
             as "required", "type", "pattern", or "format", or a custom type). Used to
             exclude specific types of issues.
         message (string): A description of what exactly the issue is.
-        instance (Any): The part of the object that failed the check.
+        instance (Any): The part of the object that failed the check. This field is not
+            considered when comparing or hashing `Issue` objects.
 
     Examples:
         ```{python}
@@ -33,4 +34,4 @@ class Issue:
     jsonpath: str
     type: str
     message: str
-    instance: Any = None
+    instance: Any = field(default=None, compare=False, hash=False)
