@@ -2,7 +2,13 @@
 
 <!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
 
-# `check-datapackage`: Ensure the compliance of your Data Package metadata
+<p align="center">
+    <a href="https://check-datapackage.seedcase-project.org/">
+        <img src="https://raw.githubusercontent.com/seedcase-project/check-datapackage/main/_extensions/seedcase-project/seedcase-theme/logos/navbar-logo-check-datapackage.svg" alt="Link to Sprout website" height="150"/>
+    </a>
+</p>
+
+# check-datapackage: Ensure the compliance of your Data Package metadata
 
 <!-- TODO: Include DOI after uploading -->
 
