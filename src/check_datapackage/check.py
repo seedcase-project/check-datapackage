@@ -53,13 +53,13 @@ class DataPackageError(Exception):
 
 
 def explain(issues: list[Issue]) -> str:
-    """Explain the issue in a human-readable format.
+    """Explain the issues in a human-readable format.
 
     Args:
         issues: A list of `Issue` objects to explain.
 
     Returns:
-        A human-readable explanation of the issue.
+        A human-readable explanation of the issues.
 
     Examples:
         ```{python}
