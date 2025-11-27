@@ -33,7 +33,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 <!-- [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) -->
 
 `check-datapackage` is a Python package that checks your Data Package’s
-metadata against the [Data Package standard](https://datapackage.org/),
+metadata against the [Data Package standard](https://datapackage.org/)
 to ensure that it’s compliant with the standard. Specifically, it:
 
 - Checks your metadata in `datapackage.json` against the Data Package
@@ -49,9 +49,9 @@ to ensure that it’s compliant with the standard. Specifically, it:
 
 > [!WARNING]
 >
-> `check-datapackage` only checks the metadata in your datapackage.json
-> file against the Data Package standard—it does not check the data
-> itself against the metadata.
+> `check-datapackage` only checks the metadata in your
+> `datapackage.json` file against the Data Package standard—it does not
+> check the data itself against the metadata.
 
 > [!TIP]
 >
