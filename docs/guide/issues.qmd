@@ -12,9 +12,6 @@ properties. An `Issue` has attributes that provide information about the
 failed check, which are described in more detail in the
 [`Issue`](/docs/reference/Issue.qmd) documentation.
 
-<!-- TODO: Unhide this after it has been implemented. -->
-
-::: content-hidden
 ## The `explain()` function
 
 The `explain()` function provides a more verbose and user-friendly
@@ -40,4 +37,3 @@ cdp.explain(issues)
 
 When setting `error=True` in `check()`, error messages will be generated
 by the `explain()` function.
-:::

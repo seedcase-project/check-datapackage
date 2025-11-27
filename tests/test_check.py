@@ -340,6 +340,17 @@ def test_fail_empty_field():
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].name"
 
 
+def test_fail_field_of_bad_type():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"][0] = 123
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type == "type"
+    assert issues[0].jsonpath == "$.resources[0].schema.fields[0]"
+
+
 def test_fail_unknown_field():
     properties = example_package_properties()
     properties["resources"][0]["schema"]["fields"][0]["type"] = "unknown"
@@ -537,14 +548,14 @@ def test_fail_foreign_keys_with_missing_fields(ref_fields):
     assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys[0].fields"
 
 
-@mark.parametrize("ref_fields", ["purchase_id", ["purchase_id"], 123, []])
-def test_fail_foreign_keys_with_bad_fields(ref_fields):
+@mark.parametrize("fields", [None, 123])
+def test_fail_foreign_keys_with_bad_fields(fields):
     properties = example_package_properties()
     properties["resources"][0]["schema"]["foreignKeys"] = [
         {
-            "fields": 123,
+            "fields": fields,
             "reference": {
-                "fields": ref_fields,
+                "fields": ["purchase_id"],
             },
         },
     ]
