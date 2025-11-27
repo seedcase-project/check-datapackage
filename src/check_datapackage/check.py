@@ -48,17 +48,56 @@ class DataPackageError(Exception):
         self,
         issues: list[Issue],
     ) -> None:
-        """Create the DataPackageError attributes from issues."""
-        # TODO: Switch to using `explain()` once implemented
-        errors: list[str] = _map(
-            issues,
-            lambda issue: f"- Property `{issue.jsonpath}`: {issue.message}\n",
+        """Create the DataPackageError from issues."""
+        super().__init__(explain(issues))
+
+
+def explain(issues: list[Issue]) -> str:
+    """Explain the issues in a human-readable format.
+
+    Args:
+        issues: A list of `Issue` objects to explain.
+
+    Returns:
+        A human-readable explanation of the issues.
+
+    Examples:
+        ```{python}
+        import check_datapackage as cdp
+
+        issue = cdp.Issue(
+            jsonpath="$.resources[2].title",
+            type="required",
+            message="The `title` field is required but missing at the given JSON path.",
         )
-        message: str = (
-            "There were some issues found in your `datapackage.json`:\n\n"
-            + "\n".join(errors)
-        )
-        super().__init__(message)
+
+        cdp.explain([issue])
+        ```
+    """
+    issue_explanations: list[str] = _map(
+        issues,
+        _create_explanation,
+    )
+    num_issues = len(issue_explanations)
+    singular_or_plural = " was" if num_issues == 1 else "s were"
+    return (
+        f"{num_issues} issue{singular_or_plural} found in your `datapackage.json`:\n\n"
+        + "\n".join(issue_explanations)
+    )
+
+
+def _create_explanation(issue: Issue) -> str:
+    """Create an informative explanation of what went wrong in each issue."""
+    # Remove suffix '$' to account for root path when `[]` is passed to `check()`
+    property_name = issue.jsonpath.removesuffix("$").split(".")[-1]
+    number_of_carets = len(str(issue.instance))
+    return (  # noqa: F401
+        f"At package{issue.jsonpath.removeprefix('$')}:\n"
+        "|\n"
+        f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
+        f"| {' ' * len(property_name)}  {'^' * number_of_carets}\n"
+        f"{issue.message}\n"
+    )
 
 
 def check(
@@ -579,6 +618,7 @@ def _create_issue(error: SchemaError) -> Issue:
         message=error.message,
         jsonpath=error.jsonpath,
         type=error.type,
+        instance=error.instance,
     )
 
 
