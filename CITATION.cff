@@ -1,6 +1,8 @@
 title: "Check Data Package: Ensure the correctness and compliance of your Data Package"
-# TODO: Add abstract of Python package.
-abstract: ""
+abstract: |
+  Check your Data Package's metadata against the Data Package standard to ensure that
+  it's compliant with the standard. See https://check-datapackage.seedcase-project.org
+  for more information.
 authors:
   - family-names: Johnston
     given-names: Luke William
@@ -18,9 +20,11 @@ authors:
     given-names: Marton
     affiliation: "Steno Diabetes Center Aarhus"
     orcid: "https://orcid.org/0009-0007-4628-655X"
+  - family-names: Ostblom
+    given-names: Joel
 cff-version: 1.2.0
-# doi: ""
-# date-released: ""
+doi: "10.5281/zenodo.17733655"
+date-released: "2025-11-27"
 keywords:
   - "data package"
   - "data package checks"
@@ -31,9 +35,7 @@ keywords:
   - "metadata"
   - "metadata checks"
   - "metadata verification"
-  - "verification"
   - "data engineering"
-  - "metadata checks"
 license: MIT
 message: "If you use this Python package, please cite it using these metadata."
 repository-code: "https://github.com/seedcase-project/check-datapackage"

@@ -2,6 +2,9 @@
 format: gfm
 metadata-files:
   - _metadata.yml
+execute:
+  echo: false
+jupyter: python3
 ---
 
 <!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
@@ -119,3 +122,21 @@ This project is licensed under the [MIT License](LICENSE.md).
 ## Changelog
 
 For a list of changes, see our [changelog](CHANGELOG.md) page.
+
+## Citing
+
+This project is part of the [Seedcase
+Project](https://seedcase-project.org), which is a collaborative effort
+to create a framework for data management and analysis in research. If
+you use this project in your work, please cite it as follows:
+
+```{python}
+#| output: asis
+!uvx --quiet cffconvert --format apalike
+```
+
+Or as a BibTeX entry:
+
+```{python}
+!uvx --quiet cffconvert --format bibtex
+```

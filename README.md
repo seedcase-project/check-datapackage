@@ -140,3 +140,26 @@ This project is licensed under the [MIT License](LICENSE.md).
 ## Changelog
 
 For a list of changes, see our [changelog](CHANGELOG.md) page.
+
+## Citing
+
+This project is part of the [Seedcase
+Project](https://seedcase-project.org), which is a collaborative effort
+to create a framework for data management and analysis in research. If
+you use this project in your work, please cite it as follows:
+
+Johnston L.W., Brødbæk S.K., Beicher K., Vago M., Ostblom J. (2025).
+Check Data Package: Ensure the correctness and compliance of your Data
+Package DOI: 10.5281/zenodo.17733655 URL:
+https://check-datapackage.seedcase-project.org
+
+Or as a BibTeX entry:
+
+    @misc{YourReferenceHere,
+    author = {Johnston, Luke William and Brødbæk, Signe Kirk and Beicher, Kristiane and Vago, Marton and Ostblom, Joel},
+    doi = {10.5281/zenodo.17733655},
+    month = {11},
+    title = {Check Data Package: Ensure the correctness and compliance of your Data Package},
+    url = {https://check-datapackage.seedcase-project.org},
+    year = {2025}
+    }
