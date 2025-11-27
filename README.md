@@ -2,7 +2,13 @@
 
 <!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
 
-# `check-datapackage`: Ensure the compliance of your Data Package metadata
+<p align="center">
+    <a href="https://check-datapackage.seedcase-project.org/">
+        <img src="https://raw.githubusercontent.com/seedcase-project/check-datapackage/main/_extensions/seedcase-project/seedcase-theme/logos/navbar-logo-check-datapackage.svg" alt="Link to Sprout website" height="150"/>
+    </a>
+</p>
+
+# check-datapackage: Ensure the compliance of your Data Package metadata
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17733655.svg)](https://doi.org/10.5281/zenodo.17733655)
 [![PyPI
@@ -31,7 +37,7 @@ state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 `check-datapackage` is a Python package that checks your Data Package’s
-metadata against the [Data Package standard](https://datapackage.org/),
+metadata against the [Data Package standard](https://datapackage.org/)
 to ensure that it’s compliant with the standard. Specifically, it:
 
 - Checks your metadata in `datapackage.json` against the Data Package
@@ -47,9 +53,9 @@ to ensure that it’s compliant with the standard. Specifically, it:
 
 > [!WARNING]
 >
-> `check-datapackage` only checks the metadata in your datapackage.json
-> file against the Data Package standard—it does not check the data
-> itself against the metadata.
+> `check-datapackage` only checks the metadata in your
+> `datapackage.json` file against the Data Package standard—it does not
+> check the data itself against the metadata.
 
 > [!TIP]
 >
