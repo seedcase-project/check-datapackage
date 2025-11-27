@@ -221,7 +221,7 @@ def _get_unknown_key_fields(
     """Return the key fields that don't exist on the specified resource."""
     known_fields = findall(f"{resource_path}schema.fields[*].name", properties)
     unknown_fields = _filter(key_fields, lambda field: field not in known_fields)
-    unknown_fields = _map(unknown_fields, lambda field: f"'{field}'")
+    unknown_fields = _map(unknown_fields, lambda field: f"{field!r}")
     return ", ".join(unknown_fields)
 
 
