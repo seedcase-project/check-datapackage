@@ -296,7 +296,7 @@ def _check_fk_dest_fields_diff_resource(
                 jsonpath=f"{resource.jsonpath}.schema.foreignKeys.reference.resource",
                 type="foreign-key-destination-resource",
                 message=(
-                    f"The destination resource '{dest_resource_name}' of this foreign "
+                    f"The destination resource {dest_resource_name!r} of this foreign "
                     "key doesn't exist in the package."
                 ),
             )
@@ -313,7 +313,7 @@ def _check_fk_dest_fields_diff_resource(
             jsonpath=f"{resource.jsonpath}.schema.foreignKeys.reference.fields",
             type="foreign-key-destination-fields",
             message=(
-                f"No fields found in destination resource '{dest_resource_name}' "
+                f"No fields found in destination resource {dest_resource_name!r} "
                 f"for foreign key destination fields: {unknown_fields}."
             ),
         )
