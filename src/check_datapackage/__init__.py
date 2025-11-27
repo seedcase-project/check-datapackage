@@ -1,6 +1,6 @@
 """Check functions and constants for the Frictionless Data Package standard."""
 
-from .check import DataPackageError, check
+from .check import DataPackageError, check, explain
 from .config import Config
 from .examples import (
     example_field_properties,
@@ -24,5 +24,6 @@ __all__ = [
     "example_resource_properties",
     "example_field_properties",
     "check",
+    "explain",
     "read_json",
 ]

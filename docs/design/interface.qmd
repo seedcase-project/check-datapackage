@@ -76,7 +76,7 @@ decide when and how failed checks should be enforced or handled. The
 output of this function is a list of `Issue` objects, which are
 described below.
 
-### {{< var planned >}} `explain()`
+### {{< var done >}} `explain()`
 
 The output of `check()` is a list of `Issue` objects, which are
 structured and machine-readable, but not very human-readable and
