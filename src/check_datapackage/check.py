@@ -172,8 +172,9 @@ def _only_resources_with_correct_property_at(
 
 def _check_primary_key(resource: PropertyField) -> list[Issue]:
     """Check that primary key fields exist in the resource."""
-    pk_fields = _key_fields_as_str_list(resolve("/schema/primaryKey", resource.value))
-    unknown_fields = _get_unknown_key_fields(pk_fields, resource.value)
+    pk_fields = resolve("/schema/primaryKey", resource.value)
+    pk_fields_list = _key_fields_as_str_list(pk_fields)
+    unknown_fields = _get_unknown_key_fields(pk_fields_list, resource.value)
 
     if not unknown_fields:
         return []
@@ -185,6 +186,7 @@ def _check_primary_key(resource: PropertyField) -> list[Issue]:
             message=(
                 f"No fields found in resource for primary key fields: {unknown_fields}."
             ),
+            instance=pk_fields,
         )
     ]
 

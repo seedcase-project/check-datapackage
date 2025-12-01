@@ -117,6 +117,7 @@ def test_fail_primary_key_with_unknown_fields(primary_key):
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].schema.primaryKey"
     assert issues[0].type == "primary-key"
+    assert issues[0].instance == primary_key
 
 
 @mark.parametrize("primary_key", [None, 123, [], [123, "a_field"]])
