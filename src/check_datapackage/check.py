@@ -230,8 +230,9 @@ def _check_fk_source_fields(
 ) -> list[Issue]:
     """Check that foreign key source fields exist and have the correct number."""
     issues = []
-    source_fields = _key_fields_as_str_list(resolve("/fields", foreign_key))
-    unknown_fields = _get_unknown_key_fields(source_fields, resource.value)
+    source_fields = resolve("/fields", foreign_key)
+    source_field_list = _key_fields_as_str_list(source_fields)
+    unknown_fields = _get_unknown_key_fields(source_field_list, resource.value)
     if unknown_fields:
         issues.append(
             Issue(
@@ -241,11 +242,12 @@ def _check_fk_source_fields(
                     "No fields found in resource for foreign key source fields: "
                     f"{unknown_fields}."
                 ),
+                instance=source_fields,
             )
         )
 
     dest_fields = _key_fields_as_str_list(resolve("/reference/fields", foreign_key))
-    if len(source_fields) != len(dest_fields):
+    if len(source_field_list) != len(dest_fields):
         issues.append(
             Issue(
                 jsonpath=f"{resource.jsonpath}.schema.foreignKeys.fields",
@@ -254,6 +256,7 @@ def _check_fk_source_fields(
                     "The number of foreign key source fields must be the same as "
                     "the number of foreign key destination fields."
                 ),
+                instance=source_fields,
             )
         )
     return issues
@@ -264,8 +267,9 @@ def _check_fk_dest_fields_same_resource(
     resource: PropertyField,
 ) -> list[Issue]:
     """Check that foreign key destination fields exist on the same resource."""
-    dest_fields = _key_fields_as_str_list(resolve("/reference/fields", foreign_key))
-    unknown_fields = _get_unknown_key_fields(dest_fields, resource.value)
+    dest_fields = resolve("/reference/fields", foreign_key)
+    dest_field_list = _key_fields_as_str_list(dest_fields)
+    unknown_fields = _get_unknown_key_fields(dest_field_list, resource.value)
     if not unknown_fields:
         return []
 
@@ -277,6 +281,7 @@ def _check_fk_dest_fields_same_resource(
                 "No fields found in resource for foreign key "
                 f"destination fields: {unknown_fields}."
             ),
+            instance=dest_fields,
         )
     ]
 
@@ -285,7 +290,8 @@ def _check_fk_dest_fields_diff_resource(
     foreign_key: dict[str, Any], resource: PropertyField, properties: dict[str, Any]
 ) -> list[Issue]:
     """Check that foreign key destination fields exist on the destination resource."""
-    dest_fields = _key_fields_as_str_list(resolve("/reference/fields", foreign_key))
+    dest_fields = resolve("/reference/fields", foreign_key)
+    dest_field_list = _key_fields_as_str_list(dest_fields)
     # Safe, as only keys of the correct type here
     dest_resource_name = cast(str, resolve("/reference/resource", foreign_key))
 
@@ -299,11 +305,12 @@ def _check_fk_dest_fields_diff_resource(
                     f"The destination resource {dest_resource_name!r} of this foreign "
                     "key doesn't exist in the package."
                 ),
+                instance=dest_resource_name,
             )
         ]
 
     unknown_fields = _get_unknown_key_fields(
-        dest_fields, properties, f"{dest_resource_path}."
+        dest_field_list, properties, f"{dest_resource_path}."
     )
     if not unknown_fields:
         return []
@@ -316,6 +323,7 @@ def _check_fk_dest_fields_diff_resource(
                 f"No fields found in destination resource {dest_resource_name!r} "
                 f"for foreign key destination fields: {unknown_fields}."
             ),
+            instance=dest_fields,
         )
     ]
 

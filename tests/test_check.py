@@ -178,6 +178,7 @@ def test_fail_mismatched_foreign_key_fields():
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.fields"
     assert issues[0].type == "foreign-key-source-fields"
+    assert issues[0].instance == ["known_field"]
 
 
 @mark.parametrize(
@@ -205,6 +206,7 @@ def test_fail_bad_foreign_key_source_fields(source_fields, dest_fields):
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.fields"
     assert issues[0].type == "foreign-key-source-fields"
+    assert issues[0].instance == source_fields
 
 
 @mark.parametrize(
@@ -234,6 +236,7 @@ def test_fail_bad_foreign_key_destination_fields_same_resource(
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.reference.fields"
     assert issues[0].type == "foreign-key-destination-fields"
+    assert issues[0].instance == dest_fields
 
 
 def test_do_not_check_bad_foreign_keys_against_fields_same_resource():
@@ -288,6 +291,7 @@ def test_fail_foreign_key_with_unknown_destination_resource(properties_fk):
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.reference.resource"
     assert issues[0].type == "foreign-key-destination-resource"
+    assert issues[0].instance == "unknown"
 
 
 @mark.parametrize(
@@ -313,6 +317,7 @@ def test_fail_bad_foreign_key_destination_fields_different_resource(
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.reference.fields"
     assert issues[0].type == "foreign-key-destination-fields"
+    assert issues[0].instance == dest_fields
 
 
 def test_do_not_check_bad_foreign_keys_against_fields_different_resource(properties_fk):
