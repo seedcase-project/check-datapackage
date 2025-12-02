@@ -641,7 +641,7 @@ wheels = [
 
 [[package]]
 name = "genbadge"
-version = "1.1.2"
+version = "1.1.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -649,9 +649,9 @@ dependencies = [
     { name = "requests" },
     { name = "setuptools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e8/2b/75c50383f951f36334635715819f89d1b4dae1de0ff7d510970bbf137994/genbadge-1.1.2.tar.gz", hash = "sha256:987ed2feaf6e9cc2850fc3883320d8706b3849eb6c9f436156254dcac438515c", size = 137188, upload-time = "2025-03-27T09:59:04.956Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/88/08/686a720bd9f407a2b689c50a94e53b2d26f6ddc6f921ae45ec15c401ee67/genbadge-1.1.3.tar.gz", hash = "sha256:2292ea9cc20af4463dfde952c6b15544fdab9d6e50945f63a42cc400c521fa74", size = 138264, upload-time = "2025-11-24T14:55:01.342Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/43/5e/91f2340d7a51ce0b7a59e5caa1cccd61131d8d5163cc02f3563c819cb49c/genbadge-1.1.2-py2.py3-none-any.whl", hash = "sha256:4e3073cb56c2745fbef4b7da97eb85b28a18a22af519b66acb6706b6546279f1", size = 100945, upload-time = "2025-03-27T09:59:03.965Z" },
+    { url = "https://files.pythonhosted.org/packages/40/cc/e67b1fe7a9d76a316e9149855a953c37c463caf1e351b1a0abf7f2fb9e38/genbadge-1.1.3-py2.py3-none-any.whl", hash = "sha256:6e4316c171c6f0f84becae4eb116258340bdc054458632abc622d36b8040655e", size = 101262, upload-time = "2025-11-24T14:54:59.925Z" },
 ]
 
 [[package]]
