@@ -129,7 +129,7 @@ def check(
         _set_should_fields_to_required(schema)
 
     issues = _check_object_against_json_schema(properties, schema)
-    issues += _check_keys(properties, _map(issues, lambda issue: issue.jsonpath))
+    issues += _check_keys(properties, issues)
     issues += apply_extensions(properties, config.extensions)
     issues = exclude(issues, config.exclusions, properties)
     issues = sorted(set(issues))
@@ -140,36 +140,42 @@ def check(
     return issues
 
 
-def _check_keys(properties: dict[str, Any], issue_jsonpaths: list[str]) -> list[Issue]:
+def _check_keys(properties: dict[str, Any], issues: list[Issue]) -> list[Issue]:
     """Check that primary and foreign keys exist."""
     # Primary keys
-    issues = []
+    key_issues = []
 
     # Foreign keys
     resources_with_fk = _get_fields_at_jsonpath(
         "$.resources[?(length(@.schema.foreignKeys) > 0)]",
         properties,
     )
-    resources_with_fk = _only_resources_with_correct_property_at(
-        "schema.foreignKeys", resources_with_fk, issue_jsonpaths
+    resources_with_fk = _keep_resources_with_no_issue_at_property(
+        resources_with_fk, issues, "schema.foreignKeys"
     )
-    issues += _flat_map(
+    key_issues += _flat_map(
         resources_with_fk,
         lambda resource: _check_foreign_keys(resource, properties),
     )
-    return issues
+    return key_issues
 
 
-def _only_resources_with_correct_property_at(
-    jsonpath: str, resources: list[PropertyField], issue_jsonpaths: list[str]
+def _issues_at_property(
+    resource: PropertyField, issues: list[Issue], jsonpath: str
+) -> list[Issue]:
+    return _filter(
+        issues,
+        lambda issue: f"{resource.jsonpath}.{jsonpath}" in issue.jsonpath,
+    )
+
+
+def _keep_resources_with_no_issue_at_property(
+    resources: list[PropertyField], issues: list[Issue], jsonpath: str
 ) -> list[PropertyField]:
-    """Filter out resources that have an error at or under the given `jsonpath`."""
+    """Filter out resources that have an issue at or under the given `jsonpath`."""
     return _filter(
         resources,
-        lambda resource: not _filter(
-            issue_jsonpaths,
-            lambda path: f"{resource.jsonpath}.{jsonpath}" in path,
-        ),
+        lambda resource: not _issues_at_property(resource, issues, jsonpath),
     )
 
 
