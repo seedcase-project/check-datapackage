@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 from dataclasses import dataclass, field
@@ -6,6 +7,7 @@ from types import TracebackType
 from typing import Any, Callable, Iterator, Optional
 
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
+from rich import print as rprint
 
 from check_datapackage.config import Config
 from check_datapackage.constants import (
@@ -129,6 +131,11 @@ def check(
     issues += apply_extensions(properties, config.extensions)
     issues = exclude(issues, config.exclusions, properties)
     issues = sorted(set(issues))
+
+    if os.getenv("CDP_DEBUG"):
+        rprint("", properties)
+        rprint(*issues)
+        rprint(explain(issues))
 
     if error and issues:
         raise DataPackageError(issues)
