@@ -150,11 +150,11 @@ def _check_keys(properties: dict[str, Any], issues: list[Issue]) -> list[Issue]:
     resources_with_pk = _keep_resources_with_no_issue_at_property(
         resources_with_pk, issues, "schema.primaryKey"
     )
-    issues = _flat_map(resources_with_pk, _check_primary_key)
+    key_issues = _flat_map(resources_with_pk, _check_primary_key)
 
     # Foreign keys
 
-    return issues
+    return key_issues
 
 
 def _issues_at_property(
