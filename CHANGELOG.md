@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.24.0 (2025-12-08)
+
+### Feat
+
+- :sparkles: check primary key exists (#218)
+
 ## 0.23.1 (2025-11-27)
 
 ### Fix

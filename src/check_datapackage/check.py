@@ -143,7 +143,14 @@ def check(
 def _check_keys(properties: dict[str, Any], issues: list[Issue]) -> list[Issue]:
     """Check that primary and foreign keys exist."""
     # Primary keys
-    key_issues = []
+    resources_with_pk = _get_fields_at_jsonpath(
+        "$.resources[?(length(@.schema.primaryKey) > 0 || @.schema.primaryKey == '')]",
+        properties,
+    )
+    resources_with_pk = _keep_resources_with_no_issue_at_property(
+        resources_with_pk, issues, "schema.primaryKey"
+    )
+    key_issues = _flat_map(resources_with_pk, _check_primary_key)
 
     # Foreign keys
     resources_with_fk = _get_fields_at_jsonpath(
@@ -177,6 +184,27 @@ def _keep_resources_with_no_issue_at_property(
         resources,
         lambda resource: not _issues_at_property(resource, issues, jsonpath),
     )
+
+
+def _check_primary_key(resource: PropertyField) -> list[Issue]:
+    """Check that primary key fields exist in the resource."""
+    pk_fields = resolve("/schema/primaryKey", resource.value)
+    pk_fields_list = _key_fields_as_str_list(pk_fields)
+    unknown_fields = _get_unknown_key_fields(pk_fields_list, resource.value)
+
+    if not unknown_fields:
+        return []
+
+    return [
+        Issue(
+            jsonpath=f"{resource.jsonpath}.schema.primaryKey",
+            type="primary-key",
+            message=(
+                f"No fields found in resource for primary key fields: {unknown_fields}."
+            ),
+            instance=pk_fields,
+        )
+    ]
 
 
 def _check_foreign_keys(
