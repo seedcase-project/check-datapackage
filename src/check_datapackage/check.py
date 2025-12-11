@@ -85,7 +85,7 @@ def explain(issues: list[Issue]) -> str:
     num_issues = len(issue_explanations)
     singular_or_plural = " was" if num_issues == 1 else "s were"
     return (
-        f"{num_issues} issue{singular_or_plural} found in your [u]datapackage.json[/u]:\n\n"
+        f"{num_issues} issue{singular_or_plural} found in your [u]datapackage.json[/u]:\n\n"  # noqa: E501
         + "\n".join(issue_explanations)
     )
 
