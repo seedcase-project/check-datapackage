@@ -95,7 +95,7 @@ def _create_explanation(issue: Issue) -> str:
     property_name = issue.jsonpath.removesuffix("$").split(".")[-1]
     number_of_carets = len(str(issue.instance))
     return (  # noqa: F401
-        f"At package{issue.jsonpath.removeprefix('$')}:\n"
+        f"At {issue.jsonpath.removeprefix('$').removeprefix('.')}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
         f"| {' ' * len(property_name)}  {'^' * number_of_carets}\n"
