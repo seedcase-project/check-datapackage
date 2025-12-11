@@ -7,6 +7,7 @@ from typing import Any, Callable, Iterator, Optional, cast
 
 from jsonpath import findall, resolve
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
+from rich import print as rprint
 
 from check_datapackage.config import Config
 from check_datapackage.constants import (
@@ -35,7 +36,7 @@ def no_traceback_hook(
     """Exception hook to hide tracebacks for DataPackageError."""
     if issubclass(exc_type, DataPackageError):
         # Only print the message, without traceback
-        print("{0}".format(exc_value))
+        rprint(f"{exc_value}")
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
@@ -84,7 +85,7 @@ def explain(issues: list[Issue]) -> str:
     num_issues = len(issue_explanations)
     singular_or_plural = " was" if num_issues == 1 else "s were"
     return (
-        f"{num_issues} issue{singular_or_plural} found in your `datapackage.json`:\n\n"
+        f"{num_issues} issue{singular_or_plural} found in your [u]datapackage.json[/u]:\n\n"
         + "\n".join(issue_explanations)
     )
 
