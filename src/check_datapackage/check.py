@@ -36,7 +36,7 @@ def no_traceback_hook(
     """Exception hook to hide tracebacks for DataPackageError."""
     if issubclass(exc_type, DataPackageError):
         # Only print the message, without traceback
-        rprint(f"{exc_type.__name__}: {exc_value}")
+        rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
@@ -99,7 +99,7 @@ def _create_explanation(issue: Issue) -> str:
         f"At package{issue.jsonpath.removeprefix('$')}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
-        f"| {' ' * len(property_name)}  {'^' * number_of_carets}\n"
+        f"| {' ' * len(property_name)}  [red]{'^' * number_of_carets}[/red]\n"
         f"{issue.message}\n"
     )
 
