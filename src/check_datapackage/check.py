@@ -104,7 +104,8 @@ def _create_explanation(issue: Issue) -> str:
         )
     else:
         return (
-            "`check()` requires a dictionary with metadata, but received an empty list."
+            "check() requires a dictionary with metadata,"
+            f" but received {issue.instance}."
         )
 
 
