@@ -497,17 +497,7 @@ def test_exclusion_does_exclude_custom_check():
 
 @mark.parametrize(
     "properties",
-    [
-        (""),
-        ("abc"),
-        (123),
-        ([]),
-        ([123]),
-        (()),
-        (("abc",)),
-        (True),
-        (None),
-    ],
+    ["", "abc", 123, [], [123], (), ("abc",), True, None],
 )
 def test_correct_explain_output_for_invalid_objects(properties):
     issues = check(properties)
