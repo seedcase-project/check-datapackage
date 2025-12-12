@@ -28,6 +28,14 @@ from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
 
 
+def _pretty_print_exception(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+) -> None:
+    # Print the error type and message, without traceback
+    return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
+
+
 def no_traceback_hook(
     exc_type: type[BaseException],
     exc_value: BaseException,
@@ -35,8 +43,7 @@ def no_traceback_hook(
 ) -> None:
     """Exception hook to hide tracebacks for DataPackageError."""
     if issubclass(exc_type, DataPackageError):
-        # Only print the message, without traceback
-        rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
+        _pretty_print_exception(exc_type, exc_value)
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
@@ -57,7 +64,13 @@ try:
         tb_offset: None = None,
     ) -> None:
         """Hide tracebacks and correctly display rich markup in IPython."""
-        no_traceback_hook(exc_type, exc_value, exc_traceback)
+        if issubclass(exc_type, DataPackageError):
+            _pretty_print_exception(exc_type, exc_value)
+        else:
+            # Regular IPython traceback
+            self.showtraceback(
+                (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
+            )
 
     IPython.get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore
 except ImportError:
