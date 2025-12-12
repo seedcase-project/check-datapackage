@@ -51,10 +51,20 @@ def no_traceback_hook(
 # Need to use a custom exception hook to hide tracebacks for our custom exceptions
 sys.excepthook = no_traceback_hook
 
+
 # Unfortunately, IPython uses its own exception handling mechanism,
 # so we need to set a separate custom exception handler there.
-try:
-    import IPython
+def _is_running_from_ipython() -> bool:
+    """Checks whether running in IPython interactive console or not."""
+    try:
+        from IPython import get_ipython  # type: ignore[attr-defined]
+    except ImportError:
+        return False
+    else:
+        return get_ipython() is not None  # type: ignore[no-untyped-call]
+
+
+if _is_running_from_ipython():
 
     def no_traceback_in_ipython(
         self: Any,
@@ -72,9 +82,7 @@ try:
                 (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
             )
 
-    IPython.get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore
-except ImportError:
-    pass
+    get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore  # noqa: F821
 
 
 class DataPackageError(Exception):
