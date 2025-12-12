@@ -44,6 +44,25 @@ def no_traceback_hook(
 # Need to use a custom exception hook to hide tracebacks for our custom exceptions
 sys.excepthook = no_traceback_hook
 
+# Unfortunately, IPython uses its own exception handling mechanism,
+# so we need to set a separate custom exception handler there.
+try:
+    import IPython
+
+    def no_traceback_in_ipython(
+        self: Any,
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: TracebackType | None,
+        tb_offset: None = None,
+    ) -> None:
+        """Hide tracebacks and correctly display rich markup in IPython."""
+        no_traceback_hook(exc_type, exc_value, exc_traceback)
+
+    IPython.get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore
+except ImportError:
+    pass
+
 
 class DataPackageError(Exception):
     """Convert Data Package issues to an error and hide the traceback."""
