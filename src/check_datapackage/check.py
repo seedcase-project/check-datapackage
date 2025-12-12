@@ -36,7 +36,7 @@ def no_traceback_hook(
     """Exception hook to hide tracebacks for DataPackageError."""
     if issubclass(exc_type, DataPackageError):
         # Only print the message, without traceback
-        rprint(f"{exc_value}")
+        rprint(f"{exc_type.__name__}: {exc_value}")
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
