@@ -2,7 +2,7 @@ from typing import Any
 
 from pytest import fixture, mark, raises
 
-from check_datapackage.check import DataPackageError, check
+from check_datapackage.check import DataPackageError, check, explain
 from check_datapackage.config import Config
 from check_datapackage.constants import FIELD_TYPES
 from check_datapackage.examples import (
@@ -490,6 +490,21 @@ def test_exclusion_does_exclude_custom_check():
     issues = check(properties, config=config)
 
     assert issues == []
+
+
+# Issues at $.
+
+
+@mark.parametrize(
+    "properties",
+    ["", "abc", 123, [], [123], (), ("abc",), True, None],
+)
+def test_correct_explain_output_for_invalid_objects(properties):
+    issues = check(properties)
+    error_msg = (
+        f"check() requires a dictionary with metadata, but received {properties}."
+    )
+    assert explain(issues).split("\n")[-1] == error_msg
 
 
 # Issues at $.resources[x]
