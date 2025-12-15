@@ -134,6 +134,12 @@ def _create_explanation(issue: Issue) -> str:
     """Create an informative explanation of what went wrong in each issue."""
     # Remove suffix '$' to account for root path when `[]` is passed to `check()`
     property_name = issue.jsonpath.removesuffix("$").split(".")[-1]
+    if not property_name:
+        return (
+            "check() requires a dictionary with metadata,"
+            f" but received {issue.instance}."
+        )
+
     number_of_carets = len(str(issue.instance))
     return (  # noqa: F401
         f"At package{issue.jsonpath.removeprefix('$')}:\n"
