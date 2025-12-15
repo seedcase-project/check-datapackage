@@ -36,6 +36,7 @@ dependencies = [
     "jsonschema>=4.25.1",
     "pydantic>=2.12.3",
     "python-jsonpath>=2.0.1",
+    "rich>=14.2.0",
     "types-jsonschema>=4.25.1.20250822",
 ]
 
