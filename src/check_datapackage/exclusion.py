@@ -51,28 +51,22 @@ class Exclusion(BaseModel, frozen=True):
     type: Optional[str] = None
 
 
-def exclude(
-    issues: list[Issue], exclusions: list[Exclusion], descriptor: dict[str, Any]
-) -> list[Issue]:
+def exclude(issues: list[Issue], exclusions: list[Exclusion]) -> list[Issue]:
     """Exclude issues defined by Exclusion objects."""
     return _filter(
         issues,
-        lambda issue: not _get_any_matches(issue, exclusions, descriptor),
+        lambda issue: not _get_any_matches(issue, exclusions),
     )
 
 
-def _get_any_matches(
-    issue: Issue, exclusions: list[Exclusion], descriptor: dict[str, Any]
-) -> bool:
+def _get_any_matches(issue: Issue, exclusions: list[Exclusion]) -> bool:
     matches: list[bool] = _map(
-        exclusions, lambda exclusion: _get_matches(issue, exclusion, descriptor)
+        exclusions, lambda exclusion: _get_matches(issue, exclusion)
     )
     return any(matches)
 
 
-def _get_matches(
-    issue: Issue, exclusion: Exclusion, descriptor: dict[str, Any]
-) -> bool:
+def _get_matches(issue: Issue, exclusion: Exclusion) -> bool:
     matches: list[bool] = []
 
     both_none = exclusion.jsonpath is None and exclusion.type is None

@@ -1,6 +1,6 @@
 [project]
 name = "check-datapackage"
-version = "0.25.0"
+version = "0.26.4"
 description = "Check your Data Package's metadata against the Data Package standard to ensure that it's compliant with the standard"
 authors = [
   {name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
@@ -36,6 +36,7 @@ dependencies = [
     "jsonschema>=4.25.1",
     "pydantic>=2.12.3",
     "python-jsonpath>=2.0.1",
+    "rich>=14.2.0",
     "types-jsonschema>=4.25.1.20250822",
 ]
 
