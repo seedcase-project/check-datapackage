@@ -28,6 +28,14 @@ from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
 
 
+def _pretty_print_exception(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+) -> None:
+    # Print the error type and message, without traceback
+    return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
+
+
 def no_traceback_hook(
     exc_type: type[BaseException],
     exc_value: BaseException,
@@ -35,14 +43,46 @@ def no_traceback_hook(
 ) -> None:
     """Exception hook to hide tracebacks for DataPackageError."""
     if issubclass(exc_type, DataPackageError):
-        # Only print the message, without traceback
-        rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
+        _pretty_print_exception(exc_type, exc_value)
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 
 # Need to use a custom exception hook to hide tracebacks for our custom exceptions
 sys.excepthook = no_traceback_hook
+
+
+# Unfortunately, IPython uses its own exception handling mechanism,
+# so we need to set a separate custom exception handler there.
+def _is_running_from_ipython() -> bool:
+    """Checks whether running in IPython interactive console or not."""
+    try:
+        from IPython import get_ipython  # type: ignore[attr-defined]
+    except ImportError:
+        return False
+    else:
+        return get_ipython() is not None  # type: ignore[no-untyped-call]
+
+
+if _is_running_from_ipython():
+
+    def no_traceback_in_ipython(
+        self: Any,
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: TracebackType | None,
+        tb_offset: None = None,
+    ) -> None:
+        """Hide tracebacks and correctly display rich markup in IPython."""
+        if issubclass(exc_type, DataPackageError):
+            _pretty_print_exception(exc_type, exc_value)
+        else:
+            # Regular IPython traceback
+            self.showtraceback(
+                (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
+            )
+
+    get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore  # noqa: F821
 
 
 class DataPackageError(Exception):
@@ -94,9 +134,15 @@ def _create_explanation(issue: Issue) -> str:
     """Create an informative explanation of what went wrong in each issue."""
     # Remove suffix '$' to account for root path when `[]` is passed to `check()`
     property_name = issue.jsonpath.removesuffix("$").split(".")[-1]
+    if not property_name:
+        return (
+            "check() requires a dictionary with metadata,"
+            f" but received {issue.instance}."
+        )
+
     number_of_carets = len(str(issue.instance))
     return (  # noqa: F401
-        f"At package{issue.jsonpath.removeprefix('$')}:\n"
+        f"At {issue.jsonpath.removeprefix('$.')}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
         f"| {' ' * len(property_name)}  [red]{'^' * number_of_carets}[/red]\n"
@@ -132,7 +178,7 @@ def check(
     issues = _check_object_against_json_schema(properties, schema)
     issues += _check_keys(properties, issues)
     issues += apply_extensions(properties, config.extensions)
-    issues = exclude(issues, config.exclusions, properties)
+    issues = exclude(issues, config.exclusions)
     issues = sorted(set(issues))
 
     if error and issues:
