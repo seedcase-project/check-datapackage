@@ -213,7 +213,7 @@ properties flow through `check-datapackage` functions and classes.
 
 ```{mermaid}
 %%| label: fig-interface-flow
-%%| fig-cap: "Flow of the input and output into functions and classes when using `check-datapackage`."
+%%| fig-cap: "Flow of inputs and outputs through the functions and classes of `check-datapackage`."
 %%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the properties with the config, and finally explaining any issues found."
 flowchart TD
     descriptor_file[(datapackage.json)]
