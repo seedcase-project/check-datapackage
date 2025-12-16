@@ -9,6 +9,18 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.26.4 (2025-12-16)
+
+### Fix
+
+- :bug: `properties` argument wasn't actually used, so removed (#253)
+
+## 0.26.3 (2025-12-16)
+
+### Fix
+
+- :bug: remove package prefix in error message (#241)
+
 ## 0.26.2 (2025-12-15)
 
 ### Fix

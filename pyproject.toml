@@ -1,6 +1,6 @@
 [project]
 name = "check-datapackage"
-version = "0.26.2"
+version = "0.26.4"
 description = "Check your Data Package's metadata against the Data Package standard to ensure that it's compliant with the standard"
 authors = [
   {name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
