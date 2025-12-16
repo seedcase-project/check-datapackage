@@ -9,6 +9,12 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.27.0 (2025-12-16)
+
+### Feat
+
+- :sparkles: include error type and add red color via `rich` (#246)
+
 ## 0.26.4 (2025-12-16)
 
 ### Fix
