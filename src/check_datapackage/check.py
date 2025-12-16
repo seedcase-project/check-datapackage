@@ -142,7 +142,7 @@ def _create_explanation(issue: Issue) -> str:
 
     number_of_carets = len(str(issue.instance))
     return (  # noqa: F401
-        f"At package{issue.jsonpath.removeprefix('$')}:\n"
+        f"At {issue.jsonpath.removeprefix('$.')}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
         f"| {' ' * len(property_name)}  [red]{'^' * number_of_carets}[/red]\n"
