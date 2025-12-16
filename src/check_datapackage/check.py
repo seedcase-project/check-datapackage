@@ -178,7 +178,7 @@ def check(
     issues = _check_object_against_json_schema(properties, schema)
     issues += _check_keys(properties, issues)
     issues += apply_extensions(properties, config.extensions)
-    issues = exclude(issues, config.exclusions, properties)
+    issues = exclude(issues, config.exclusions)
     issues = sorted(set(issues))
 
     if error and issues:
