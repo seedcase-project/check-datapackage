@@ -142,7 +142,7 @@ def _create_explanation(issue: Issue) -> str:
 
     number_of_carets = len(str(issue.instance))
     return (  # noqa: F401
-        f"At package{issue.jsonpath.removeprefix('$')}:\n"
+        f"At {issue.jsonpath.removeprefix('$.')}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
         f"| {' ' * len(property_name)}  [red]{'^' * number_of_carets}[/red]\n"
@@ -178,7 +178,7 @@ def check(
     issues = _check_object_against_json_schema(properties, schema)
     issues += _check_keys(properties, issues)
     issues += apply_extensions(properties, config.extensions)
-    issues = exclude(issues, config.exclusions, properties)
+    issues = exclude(issues, config.exclusions)
     issues = sorted(set(issues))
 
     if error and issues:
