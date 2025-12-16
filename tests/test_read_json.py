@@ -10,8 +10,8 @@ def test_reads(tmp_path: Path) -> None:
     """Correctly reads a JSON file into a dictionary."""
     json_path = tmp_path / "datapackage.json"
     json_path.write_text('{"name": "example", "resources": []}')
-    descriptor = read_json(json_path)
-    assert descriptor == {"name": "example", "resources": []}
+    properties = read_json(json_path)
+    assert properties == {"name": "example", "resources": []}
 
 
 def test_not_a_dict(tmp_path: Path) -> None:

@@ -4,9 +4,9 @@ from typing import Any
 
 @dataclass(order=True, frozen=True)
 class Issue:
-    """An issue found while checking a Data Package descriptor.
+    """An issue found while checking a Data Package's properties.
 
-    One `Issue` object represents one failed check on one field within the descriptor.
+    One `Issue` object represents one failed check on one field within the properties.
 
     Attributes:
         jsonpath (string): A [JSON path](https://jg-rp.github.io/python-jsonpath/syntax/)

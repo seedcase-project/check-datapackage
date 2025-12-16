@@ -53,7 +53,7 @@ used throughout the package can be found in the tables below.
 |----------------------------|--------------------------------------------|
 | check | Check that properties comply with the Data Package standard. |
 | explain | Explain issues flagged by the check action in more detail using non-technical language. |
-| read | Read various files, such as a Data Package descriptor or a configuration file. |
+| read | Read various files, such as a Data Package descriptor (the properties) or a configuration file. |
 
 : Actions that `check-datapackage` can perform.
 
@@ -115,7 +115,7 @@ the first edition to ensure backward compatibility.
 :::
 
 The users, described in the [User types](#user-types) section, provide
-`check-datapackage` with their Data Package's descriptor to check its
+`check-datapackage` with their Data Package's properties to check its
 compliance with the standard.
 
 ```{mermaid}
@@ -134,7 +134,7 @@ flowchart LR
 
 
     dp_standard --"Definition of the standard"--> check
-    Users --"Check Data Package<br>descriptor"--> check
+    Users --"Check Data Package<br>properties"--> check
     %% Styling
     style Users fill:#FFFFFF, color:#000000
 ```
@@ -169,8 +169,8 @@ flowchart LR
     end
 
     dp_standard --"Definition of the standard"--> python
-    users --"Check Data Package<br>descriptor programmatically"--> python
-    users -. "Check Data Package<br>descriptor via the CLI" .-> cli
+    users --"Check Data Package<br>properties programmatically"--> python
+    users -. "Check Data Package<br>properties via the CLI" .-> cli
 
     %% Styling
     style check-datapackage fill:#FFFFFF, color:#000000
