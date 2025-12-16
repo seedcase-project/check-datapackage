@@ -51,7 +51,7 @@ class CustomCheck(BaseModel, frozen=True):
                 custom_checks=[license_check]
             )
         )
-        # check(descriptor, config=config)
+        cdp.check(cdp.example_package_properties(), config=config)
         ```
     """
 
