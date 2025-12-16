@@ -6,7 +6,7 @@ The purpose of these design documents is to describe the design of
 `check-datapackage` in enough detail to guide a sustainable
 implementation (i.e., maintainable in the long term) and to ensure that
 the team has a shared understanding of the package's scope and
-architecture before starting the development.
+architecture.
 
 `check-datapackage`'s design builds off of our overall Seedcase [design
 principles and patterns](https://design.seedcase-project.org/), and
