@@ -5,6 +5,8 @@ jupyter: python3
 order: 2
 ---
 
+{{< include ../includes/_pretty_repr.qmd >}}
+
 ## The `Issue` class
 
 One `Issue` corresponds to one failed check on one field in the

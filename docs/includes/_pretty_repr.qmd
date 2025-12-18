@@ -1,0 +1,8 @@
+<!-- Make output representation of code objects easier to read-->
+
+```{python}
+#| include: false
+from rich import pretty
+
+pretty.install()
+```
