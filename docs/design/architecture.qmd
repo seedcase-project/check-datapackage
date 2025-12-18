@@ -8,7 +8,7 @@ whole, see the [Seedcase Design](https://design.seedcase-project.org)
 documentation.
 
 This document outlines the architecture of `check-datapackage` mostly to
-ensure the team shares a common understanding before implementation, but
+ensure the team shares a common understanding about the implementation, but
 also to communicate the design to anyone else interested in the internal
 workings of the package.
 
@@ -57,7 +57,7 @@ used throughout the package can be found in the tables below.
 
 : Actions that `check-datapackage` can perform.
 
-### "Why "check" (and not "validate" or "verify")?
+### Why "check" and not "validate" or "verify"?
 
 If you have ever searched for tools that check something against a
 specification, you'll often see the word "validate". You might also
@@ -197,6 +197,7 @@ do not include a component/code diagram for it at this time.
 ```{mermaid}
 %%| label: fig-c4-component
 %%| fig-cap: "C4 component diagram showing the parts of the Python package and their connections."
+%%| column: page-right
 flowchart LR
 
     subgraph python_package["Core Python Package"]
@@ -204,7 +205,7 @@ flowchart LR
         subgraph config_file["Configuration file"]
             config("Config<br>[class]")
             exclusion("Exclusion<br>[class]")
-            extension("Extension<br>[class]")
+            extension("Extensions<br>[class]")
         end
 
         read_config["read_config()<br>[function]"]
@@ -216,11 +217,11 @@ flowchart LR
         extension --"Defines additional checks"--> config
         config_file -. "Reads configuration<br>from file" .-> read_config
 
-        read_json --"Provides properties as dict"--> check
+        read_json --"Provides properties<br>as dict"--> check
         read_config -. "Adds check<br>configurations" .-> check
         config --"Adds check<br>configurations"--> check
 
-        check --"Passes found issues<br>to get non-technical<br>explanation"--> explain
+        check --"Passes issues to<br>give more helpful<br>explanation"--> explain
     end
 
     dp_standard("Data Package<br>[standard]")
