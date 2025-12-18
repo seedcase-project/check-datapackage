@@ -5,6 +5,8 @@ jupyter: python3
 order: 3
 ---
 
+{{< include ../includes/_pretty_repr.qmd >}}
+
 You can pass a [`Config`](/docs/reference/Config.qmd) object to
 [`check()`](/docs/reference/check.qmd) to customise the checks done on
 your Data Package's properties. The following configuration options are
@@ -40,7 +42,6 @@ the `required` check by defining an `Exclusion` object with this `type`:
 
 ```{python}
 from textwrap import dedent
-import pprint
 import check_datapackage as cdp
 
 exclusion_required = cdp.Exclusion(type="required")
@@ -90,7 +91,7 @@ package_properties = cdp.example_package_properties()
 package_properties["name"] = 123
 package_properties["created"] = "not-a-date"
 package_properties["resources"][0]["path"] = "\\not/a/path"
-pprint.pp(package_properties)
+package_properties
 ```
 
 When we run `check()` on these properties, we get the three expected issues:
