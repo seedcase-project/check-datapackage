@@ -7,7 +7,7 @@ from check_datapackage.extensions import Extensions
 
 
 class Config(BaseModel, frozen=True):
-    """Configuration for checking a Data Package descriptor.
+    """Configuration for checking a Data Package's properties.
 
     Attributes:
         exclusions (list[Exclusion]): Any issues matching any of Exclusion objects will

@@ -5,6 +5,8 @@ jupyter: python3
 order: 1
 ---
 
+{{< include ../includes/_pretty_repr.qmd >}}
+
 The purpose of `check-datapackage` is to make sure a Data Package's
 metadata---stored in its `datapackage.json` file---complies with the
 [Data Package standard](https://datapackage.org). This standard defines
@@ -48,11 +50,9 @@ format. The example looks like this (from the
 
 ```{python}
 import check_datapackage as cdp
-import pprint
-
 
 package_properties = cdp.example_package_properties()
-pprint.pp(package_properties)
+package_properties
 ```
 
 When we call `check()` on these properties, it returns an empty list:

@@ -2,12 +2,17 @@
 
 <!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
 
-# `check-datapackage`: Ensure the compliance of your Data Package metadata
+<p align="center">
+    <a href="https://check-datapackage.seedcase-project.org/">
+        <img src="https://raw.githubusercontent.com/seedcase-project/check-datapackage/main/_extensions/seedcase-project/seedcase-theme/logos/navbar-logo-check-datapackage.svg" alt="Link to Sprout website" height="150"/>
+    </a>
+</p>
 
-<!-- TODO: Include DOI after uploading -->
+# check-datapackage: Ensure the compliance of your Data Package metadata
 
-<!-- [![PyPI Version](https://img.shields.io/pypi/v/check-datapackage.svg)](https://pypi.org/project/check-datapackage/) -->
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17733655.svg)](https://doi.org/10.5281/zenodo.17733655)
+[![PyPI
+Version](https://img.shields.io/pypi/v/check-datapackage.svg)](https://pypi.org/project/check-datapackage/)
 [![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-teal.json?raw=true.svg)](https://github.com/copier-org/copier)
 [![Python Version from PEP 621
 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/seedcase-project/check-datapackage/refs/heads/main/pyproject.toml)](https://github.com/seedcase-project/check-datapackage/blob/main/pyproject.toml)
@@ -27,13 +32,12 @@ coverage](https://raw.githubusercontent.com/seedcase-project/check-datapackage/c
 [![pre-commit.ci
 status](https://results.pre-commit.ci/badge/github/seedcase-project/check-datapackage/main.svg)](https://results.pre-commit.ci/latest/github/seedcase-project/check-datapackage/main)
 [![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-<!-- [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) -->
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 `check-datapackage` is a Python package that checks your Data Package’s
-metadata against the [Data Package standard](https://datapackage.org/),
+metadata against the [Data Package standard](https://datapackage.org/)
 to ensure that it’s compliant with the standard. Specifically, it:
 
 - Checks your metadata in `datapackage.json` against the Data Package
@@ -49,9 +53,9 @@ to ensure that it’s compliant with the standard. Specifically, it:
 
 > [!WARNING]
 >
-> `check-datapackage` only checks the metadata in your datapackage.json
-> file against the Data Package standard—it does not check the data
-> itself against the metadata.
+> `check-datapackage` only checks the metadata in your
+> `datapackage.json` file against the Data Package standard—it does not
+> check the data itself against the metadata.
 
 > [!TIP]
 >
@@ -126,8 +130,9 @@ The following people have contributed to this project by submitting pull
 requests :tada:
 
 [@lwjohnst86](https://github.com/lwjohnst86),
+[@martonvago](https://github.com/martonvago),
 [@signekb](https://github.com/signekb),
-[@martonvago](https://github.com/martonvago)
+[@joelostblom](https://github.com/joelostblom)
 
 ## Licensing
 
@@ -136,3 +141,26 @@ This project is licensed under the [MIT License](LICENSE.md).
 ## Changelog
 
 For a list of changes, see our [changelog](CHANGELOG.md) page.
+
+## Citing
+
+This project is part of the [Seedcase
+Project](https://seedcase-project.org), which is a collaborative effort
+to create a framework for data management and analysis in research. If
+you use this project in your work, please cite it as follows:
+
+Johnston L.W., Brødbæk S.K., Beicher K., Vago M., Ostblom J. (2025).
+Check Data Package: Ensure the correctness and compliance of your Data
+Package DOI: 10.5281/zenodo.17733655 URL:
+https://check-datapackage.seedcase-project.org
+
+Or as a BibTeX entry:
+
+    @misc{YourReferenceHere,
+    author = {Johnston, Luke William and Brødbæk, Signe Kirk and Beicher, Kristiane and Vago, Marton and Ostblom, Joel},
+    doi = {10.5281/zenodo.17733655},
+    month = {11},
+    title = {Check Data Package: Ensure the correctness and compliance of your Data Package},
+    url = {https://check-datapackage.seedcase-project.org},
+    year = {2025}
+    }

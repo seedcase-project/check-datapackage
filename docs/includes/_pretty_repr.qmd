@@ -1,0 +1,29 @@
+<!-- Make output representation of code objects easier to read-->
+
+```{python}
+#| include: false
+from rich import pretty
+from rich.console import Console
+from rich.theme import Theme
+
+# Trying color output similar to quarto's default code style
+# https://github.com/quarto-dev/quarto-cli/blob/main/src/resources/pandoc/highlight-styles/arrow-light.theme
+arrow_theme = Theme({
+    # Structure
+    "repr.brace": "bold #003B4F",
+    "repr.comma": "#003B4F",
+    "repr.attrib_name": "#003B4F",
+    "repr.call": "bold #003B4F",
+    "repr.parameter": "#003B4F",
+
+    # Keys & values
+    "repr.key": "#003B4F",
+    "repr.string": "#20794D",
+    "repr.number": "#AD0000",
+    "repr.bool": "#111111",
+    "repr.none": "#111111",
+})
+
+console = Console(theme=arrow_theme, force_jupyter=False)
+pretty.install(console=console)
+```

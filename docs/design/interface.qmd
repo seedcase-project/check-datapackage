@@ -5,7 +5,6 @@ title: "Interface"
 This section of the documentation focuses on the design of the interface
 and how it is implemented as Python code.
 
-::: callout-note
 We use symbols to indicate parts of the design that are actively being
 worked on, done, or planned (see table below). For work that is planned
 or is in progress, we include the function signatures and docstrings to
@@ -22,7 +21,6 @@ below.
 
 : A table showing the symbols used to indicate the status of interface
 components, along with their descriptions.
-:::
 
 ## Inputs
 
@@ -60,13 +58,14 @@ CLI or if it could be used some way as Python code. I didn't include it
 for now though.
 :::
 
-### {{< var wip >}} `check()`
+### {{< var done >}} `check()`
 
 This is the main function of this package, which will check a Data
 Package properties against the Data Package standard, as well as include
 any custom exclusions or custom checks listed in the configuration.
 
-See the help documentation with `help(check)` for more details.
+See the help documentation with
+[`help(check)`](/docs/reference/check.qmd) for more details.
 
 The `Config` class is described below. By default, `check()` does not
 result in an error when issues are found, but errors can be triggered by
@@ -84,19 +83,8 @@ user-friendly. It's important to have this output to provide structured
 information about the issues, but we also want to provide a way to
 explain these issues in a more pleasant and ergonomic way.
 
-``` python
-def explain(issues: list[Issue]) -> list[str]:
-    """Explain a list of issues in a user-friendly way.
-
-    Args:
-        issues: A list of `Issue` objects representing issues found while
-            checking a Data Package properties.
-
-    Returns:
-        A list of user-friendly, human-readable messages
-            explaining each issue.
-    """
-```
+See the help documentation with
+[`help(explain)`](/docs/reference/explain.qmd) for more details.
 
 ### {{< var done >}} `read_json()`
 
@@ -134,7 +122,8 @@ be useful for a CLI interface.
 `Config` is a class that holds all the configurations for the `check()`
 function.
 
-See the help documentation with `help(Config)` for more details.
+See the help documentation with
+[`help(Config)`](/docs/reference/Config.qmd) for more details.
 
 ### {{< var done >}} `Exclusion`
 
@@ -142,7 +131,8 @@ A sub-item of `Config` that expresses checks to exclude. This can be
 useful if you want to exclude (or skip) certain checks from the Data
 Package standard that are not relevant to your use case.
 
-See the help documentation with `help(Exclusion)` for more details.
+See the help documentation with
+[`help(Exclusion)`](/docs/reference/Exclusion.qmd) for more details.
 
 #### {{< var done >}} `Extensions`
 
@@ -156,14 +146,16 @@ See the help documentation with
 
 A sub-item of `Extensions` that allows users to set specific properties
 as required that are not required by the Data Package standard. See the
-help documentation with `help(RequiredCheck)` for more details.
+help documentation with
+[`help(RequiredCheck)`](/docs/reference/RequiredCheck.qmd) for more
+details.
 
 #### {{< var done >}} `CustomCheck`
 
 A sub-item of `Extensions` that allows users to add an additional,
 custom check that `check-datapackage` will run alongside the standard
-checks. See the help documentation with `help(CustomCheck)` for more
-details.
+checks. See the help documentation with
+[`help(CustomCheck)`](/docs/reference/CustomCheck.qmd) for more details.
 
 ### {{< var done >}} `Issue`
 
@@ -216,11 +208,12 @@ check = "lambda name: name.islower()"
 
 ## Flow
 
-This is the potential flow of using `check-datapackage`:
+This is the flow of how `check-datapackage` is used, or at least how
+properties flow through `check-datapackage` functions and classes.
 
 ```{mermaid}
 %%| label: fig-interface-flow
-%%| fig-cap: "Flow of functions and classes when using `check-datapackage`."
+%%| fig-cap: "Flow of inputs and outputs through the functions and classes of `check-datapackage`."
 %%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the properties with the config, and finally explaining any issues found."
 flowchart TD
     descriptor_file[(datapackage.json)]
@@ -231,7 +224,7 @@ flowchart TD
     read_config["read_config()"]
 
     config[/Config/]
-    custom_check[/CustomCheck/]
+    extensions[/Extensions/]
     exclusion[/Exclusion/]
     check["check()"]
     issues[/"list[Issue]"/]
@@ -240,9 +233,9 @@ flowchart TD
     messages[/messages/]
 
     descriptor_file --> read_json --> properties
-    config_file --> read_config --> config
-    custom_check & exclusion --> config
-    custom_check & exclusion -.-> config_file
+    config_file -.-> read_config -.-> config
+    extensions & exclusion --> config
+    extensions & exclusion -.-> config_file
 
     properties & config --> check --> issues --> explain --> messages
 ```

@@ -1,8 +1,8 @@
 from typing import Any
 
-from pytest import mark, raises
+from pytest import fixture, mark, raises
 
-from check_datapackage.check import DataPackageError, check
+from check_datapackage.check import DataPackageError, check, explain
 from check_datapackage.config import Config
 from check_datapackage.constants import FIELD_TYPES
 from check_datapackage.examples import (
@@ -11,7 +11,7 @@ from check_datapackage.examples import (
 )
 from check_datapackage.exclusion import Exclusion
 from check_datapackage.extensions import Extensions, RequiredCheck
-from check_datapackage.internals import _map
+from check_datapackage.internals import _filter, _map
 from tests.test_extensions import lowercase_check
 
 # "MUST" checks
@@ -89,6 +89,319 @@ def test_fails_properties_with_pattern_mismatch():
     assert len(issues) == 1
     assert issues[0].type == "pattern"
     assert issues[0].jsonpath == "$.contributors[0].path"
+
+
+@mark.parametrize("primary_key", ["id", ["id", "name"]])
+def test_pass_good_primary_key(primary_key):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = primary_key
+    properties["resources"][0]["schema"]["fields"].extend(
+        [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    )
+
+    issues = check(properties)
+
+    assert issues == []
+
+
+@mark.parametrize("primary_key", ["", "last_name", ["first_name", "last_name"]])
+def test_fail_primary_key_with_unknown_fields(primary_key):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = primary_key
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].schema.primaryKey"
+    assert issues[0].type == "primary-key"
+    assert issues[0].instance == primary_key
+
+
+@mark.parametrize("primary_key", [None, 123, [], [123, "a_field"]])
+def test_do_not_check_bad_primary_key_against_fields(primary_key):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = primary_key
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type != "primary-key"
+
+
+def test_do_not_check_primary_key_against_bad_field():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = "eye-colour"
+    properties["resources"][0]["schema"]["fields"].append(
+        # Bad name
+        {"name": 123, "type": "integer"},
+    )
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type != "primary-key"
+
+
+def test_pass_good_foreign_keys_same_resource():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"].extend(
+        [
+            {"name": "id", "type": "integer"},
+            {"name": "best_friend_id", "type": "integer"},
+        ]
+    )
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {"fields": ["best_friend_id"], "reference": {"fields": ["id"]}},
+        {"fields": "best_friend_id", "reference": {"fields": "id"}},
+        {
+            "fields": "best_friend_id",
+            "reference": {"resource": "", "fields": "id"},
+        },
+    ]
+
+    issues = check(properties)
+
+    assert issues == []
+
+
+@fixture
+def properties_fk() -> dict[str, Any]:
+    return {
+        "resources": [
+            {
+                "name": "animals",
+                "path": "resources/animals/data.parquet",
+                "schema": {
+                    "fields": [
+                        {"name": "id", "type": "integer"},
+                        {"name": "toy_id", "type": "integer"},
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": "toy_id",
+                            "reference": {"resource": "toys", "fields": "id"},
+                        },
+                        {
+                            "fields": ["toy_id"],
+                            "reference": {"resource": "toys", "fields": ["id"]},
+                        },
+                    ],
+                },
+            },
+            {
+                "name": "toys",
+                "path": "resources/toys/data.parquet",
+                "schema": {
+                    "fields": [
+                        {"name": "id", "type": "integer"},
+                        {"name": "material", "type": "string"},
+                    ]
+                },
+            },
+        ]
+    }
+
+
+def test_pass_good_foreign_keys_different_resource(properties_fk):
+    issues = check(properties_fk)
+
+    assert issues == []
+
+
+def test_fail_mismatched_foreign_key_fields():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"].extend(
+        [
+            {"name": "known_field", "type": "integer"},
+            {"name": "known_field2", "type": "integer"},
+        ]
+    )
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            # Outer and inner `fields` not same length
+            "fields": ["known_field"],
+            "reference": {"fields": ["known_field", "known_field2"]},
+        },
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.fields"
+    assert issues[0].type == "foreign-key-source-fields"
+    assert issues[0].instance == ["known_field"]
+
+
+@mark.parametrize(
+    "source_fields, dest_fields",
+    [
+        ("", "known_field"),
+        ("unknown_field", "known_field"),
+        (["unknown", "field"], ["known_field", "known_field2"]),
+    ],
+)
+def test_fail_bad_foreign_key_source_fields(source_fields, dest_fields):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"].extend(
+        [
+            {"name": "known_field", "type": "integer"},
+            {"name": "known_field2", "type": "integer"},
+        ]
+    )
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {"fields": source_fields, "reference": {"fields": dest_fields}},
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.fields"
+    assert issues[0].type == "foreign-key-source-fields"
+    assert issues[0].instance == source_fields
+
+
+@mark.parametrize(
+    "source_fields, dest_fields",
+    [
+        ("known_field", ""),
+        ("known_field", "unknown_field"),
+        (["known_field", "known_field2"], ["unknown", "field"]),
+    ],
+)
+def test_fail_bad_foreign_key_destination_fields_same_resource(
+    source_fields, dest_fields
+):
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"].extend(
+        [
+            {"name": "known_field", "type": "integer"},
+            {"name": "known_field2", "type": "integer"},
+        ]
+    )
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {"fields": source_fields, "reference": {"fields": dest_fields}},
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.reference.fields"
+    assert issues[0].type == "foreign-key-destination-fields"
+    assert issues[0].instance == dest_fields
+
+
+def test_do_not_check_bad_foreign_keys_against_fields_same_resource():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        123,
+        {},
+        {"fields": None, "reference": {"fields": "unknown_field"}},
+        {"fields": 123, "reference": {"fields": "unknown_field"}},
+        {"fields": "unknown_field", "reference": {"fields": []}},
+        {
+            "fields": [123, "unknown_field"],
+            "reference": {"fields": [123, "unknown_field"]},
+        },
+        {
+            "fields": "unknown_field",
+            "reference": {"resource": 123, "fields": "unknown_field"},
+        },
+    ]
+
+    issues = check(properties)
+
+    assert not _filter(issues, lambda issue: "foreign-key" in issue.type)
+
+
+def test_do_not_check_foreign_keys_against_bad_field_same_resource():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["fields"].append(
+        # Bad name
+        {"name": 123, "type": "integer"},
+    )
+    properties["resources"][0]["schema"]["foreignKeys"] = [
+        {"fields": "eye-colour", "reference": {"fields": "eye-colour"}},
+    ]
+
+    issues = check(properties)
+
+    assert len(issues) == 1
+    assert issues[0].type != "foreign-key"
+
+
+def test_fail_foreign_key_with_unknown_destination_resource(properties_fk):
+    properties_fk["resources"][0]["schema"]["foreignKeys"].append(
+        {
+            "fields": ["toy_id"],
+            "reference": {"resource": "unknown", "fields": ["id"]},
+        }
+    )
+
+    issues = check(properties_fk)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.reference.resource"
+    assert issues[0].type == "foreign-key-destination-resource"
+    assert issues[0].instance == "unknown"
+
+
+@mark.parametrize(
+    "source_fields, dest_fields",
+    [
+        ("toy_id", ""),
+        ("toy_id", "unknown_field"),
+        (["toy_id", "id"], ["unknown", "field"]),
+    ],
+)
+def test_fail_bad_foreign_key_destination_fields_different_resource(
+    source_fields, dest_fields, properties_fk
+):
+    properties_fk["resources"][0]["schema"]["foreignKeys"] = [
+        {
+            "fields": source_fields,
+            "reference": {"resource": "toys", "fields": dest_fields},
+        },
+    ]
+
+    issues = check(properties_fk)
+
+    assert len(issues) == 1
+    assert issues[0].jsonpath == "$.resources[0].schema.foreignKeys.reference.fields"
+    assert issues[0].type == "foreign-key-destination-fields"
+    assert issues[0].instance == dest_fields
+
+
+def test_do_not_check_bad_foreign_keys_against_fields_different_resource(properties_fk):
+    properties_fk["resources"][0]["schema"]["foreignKeys"] = [
+        123,
+        {},
+        {"fields": None, "reference": {"resource": "toys", "fields": "unknown_field"}},
+        {"fields": 123, "reference": {"resource": "toys", "fields": "unknown_field"}},
+        {"fields": "unknown_field", "reference": {"resource": "toys", "fields": []}},
+        {
+            "fields": [123, "unknown_field"],
+            "reference": {"resource": "toys", "fields": [123, "unknown_field"]},
+        },
+    ]
+
+    issues = check(properties_fk)
+
+    assert not _filter(issues, lambda issue: "foreign-key" in issue.type)
+
+
+def test_do_not_check_foreign_keys_against_bad_field_different_resource(properties_fk):
+    properties_fk["resources"][0]["schema"]["fields"].append(
+        # Bad name
+        {"name": 123, "type": "integer"},
+    )
+
+    issues = check(properties_fk)
+
+    assert len(issues) == 1
+    assert issues[0].type != "foreign-key"
 
 
 # "SHOULD" checks
@@ -177,6 +490,21 @@ def test_exclusion_does_exclude_custom_check():
     issues = check(properties, config=config)
 
     assert issues == []
+
+
+# Issues at $.
+
+
+@mark.parametrize(
+    "properties",
+    ["", "abc", 123, [], [123], (), ("abc",), True, None],
+)
+def test_correct_explain_output_for_invalid_objects(properties):
+    issues = check(properties)
+    error_msg = (
+        f"check() requires a dictionary with metadata, but received {properties}."
+    )
+    assert explain(issues).split("\n")[-1] == error_msg
 
 
 # Issues at $.resources[x]
@@ -440,30 +768,6 @@ def test_fail_field_with_mixed_type_enum_constraint():
     assert issues[0].jsonpath == "$.resources[0].schema.fields[0].constraints.enum"
 
 
-def test_pass_good_foreign_keys():
-    properties = example_package_properties()
-    properties["resources"][0]["schema"]["foreignKeys"] = [
-        {
-            "fields": "purchase",
-            "reference": {
-                "resource": "purchases",
-                "fields": "purchase_id",
-            },
-        },
-        {
-            "fields": ["first_name", "last_name"],
-            "reference": {
-                "resource": "customers",
-                "fields": ["first_name", "last_name"],
-            },
-        },
-    ]
-
-    issues = check(properties)
-
-    assert issues == []
-
-
 def test_fail_foreign_keys_of_bad_type():
     properties = example_package_properties()
     properties["resources"][0]["schema"]["foreignKeys"] = 123
@@ -595,16 +899,6 @@ def test_fail_foreign_keys_with_bad_array_item():
     assert issues[1].jsonpath == (
         "$.resources[0].schema.foreignKeys[0].reference.fields[1]"
     )
-
-
-@mark.parametrize("primary_key", ["id", ["name", "address"]])
-def test_pass_good_primary_key(primary_key):
-    properties = example_package_properties()
-    properties["resources"][0]["schema"]["primaryKey"] = primary_key
-
-    issues = check(properties)
-
-    assert issues == []
 
 
 def test_fail_primary_key_of_bad_type():

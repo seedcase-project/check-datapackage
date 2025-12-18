@@ -1,19 +1,20 @@
 [project]
 name = "check-datapackage"
-version = "0.23.1"
-# TODO: Add a description of the package.
-description = ""
+version = "0.28.0"
+description = "Check your Data Package's metadata against the Data Package standard to ensure that it's compliant with the standard"
 authors = [
   {name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
   {name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
   {name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
   {name = "Marton Vago", email = "marton.vago95@gmail.com" },
+  {name = "Joel Ostblom", email = "joel@joelostblom.com" },
 ]
 maintainers = [
   {name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
   {name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
   {name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
   {name = "Marton Vago", email = "marton.vago95@gmail.com" },
+  {name = "Joel Ostblom", email = "joel@joelostblom.com" },
 ]
 readme = "README.md"
 license = "MIT"
@@ -35,6 +36,7 @@ dependencies = [
     "jsonschema>=4.25.1",
     "pydantic>=2.12.3",
     "python-jsonpath>=2.0.1",
+    "rich>=14.2.0",
     "types-jsonschema>=4.25.1.20250822",
 ]
 
@@ -64,3 +66,6 @@ dev = [
     "typos>=1.35.6",
     "vulture>=2.14",
 ]
+
+[tool.uv.sources]
+rich = { git = "https://github.com/joelostblom/rich", rev = "ipython-console-param" }

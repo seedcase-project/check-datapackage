@@ -9,6 +9,60 @@ often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
 with what was changed within it.
 
+## 0.28.0 (2025-12-16)
+
+### Feat
+
+- :sparkles: colorize output of `explain()` via `rich` (#244)
+
+## 0.27.0 (2025-12-16)
+
+### Feat
+
+- :sparkles: include error type and add red color via `rich` (#246)
+
+## 0.26.4 (2025-12-16)
+
+### Fix
+
+- :bug: `properties` argument wasn't actually used, so removed (#253)
+
+## 0.26.3 (2025-12-16)
+
+### Fix
+
+- :bug: remove package prefix in error message (#241)
+
+## 0.26.2 (2025-12-15)
+
+### Fix
+
+- :bug: add rich as dependency (#251)
+
+## 0.26.1 (2025-12-15)
+
+### Fix
+
+- :bug: no traceback and correct rich formatting in IPython (#249)
+
+## 0.26.0 (2025-12-15)
+
+### Feat
+
+- :sparkles: display helpful error message for empty input (#243)
+
+## 0.25.0 (2025-12-08)
+
+### Feat
+
+- :sparkles: check foreign keys fields exist (#227)
+
+## 0.24.0 (2025-12-08)
+
+### Feat
+
+- :sparkles: check primary key exists (#218)
+
 ## 0.23.1 (2025-11-27)
 
 ### Fix

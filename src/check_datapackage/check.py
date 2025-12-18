@@ -4,8 +4,9 @@ import sys
 from dataclasses import dataclass, field
 from functools import reduce
 from types import TracebackType
-from typing import Any, Callable, Iterator, Optional
+from typing import Any, Callable, Iterator, Optional, cast
 
+from jsonpath import findall, resolve
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 from rich import print as rprint
 
@@ -18,12 +19,22 @@ from check_datapackage.constants import (
 from check_datapackage.exclusion import exclude
 from check_datapackage.extensions import apply_extensions
 from check_datapackage.internals import (
+    PropertyField,
     _filter,
     _flat_map,
+    _get_fields_at_jsonpath,
     _map,
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
+
+
+def _pretty_print_exception(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+) -> None:
+    # Print the error type and message, without traceback
+    return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
 
 
 def no_traceback_hook(
@@ -33,14 +44,46 @@ def no_traceback_hook(
 ) -> None:
     """Exception hook to hide tracebacks for DataPackageError."""
     if issubclass(exc_type, DataPackageError):
-        # Only print the message, without traceback
-        print("{0}".format(exc_value))
+        _pretty_print_exception(exc_type, exc_value)
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 
 # Need to use a custom exception hook to hide tracebacks for our custom exceptions
 sys.excepthook = no_traceback_hook
+
+
+# Unfortunately, IPython uses its own exception handling mechanism,
+# so we need to set a separate custom exception handler there.
+def _is_running_from_ipython() -> bool:
+    """Checks whether running in IPython interactive console or not."""
+    try:
+        from IPython import get_ipython  # type: ignore[attr-defined]
+    except ImportError:
+        return False
+    else:
+        return get_ipython() is not None  # type: ignore[no-untyped-call]
+
+
+if _is_running_from_ipython():
+
+    def no_traceback_in_ipython(
+        self: Any,
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: TracebackType | None,
+        tb_offset: None = None,
+    ) -> None:
+        """Hide tracebacks and correctly display rich markup in IPython."""
+        if issubclass(exc_type, DataPackageError):
+            _pretty_print_exception(exc_type, exc_value)
+        else:
+            # Regular IPython traceback
+            self.showtraceback(
+                (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
+            )
+
+    get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore  # noqa: F821
 
 
 class DataPackageError(Exception):
@@ -83,7 +126,7 @@ def explain(issues: list[Issue]) -> str:
     num_issues = len(issue_explanations)
     singular_or_plural = " was" if num_issues == 1 else "s were"
     return (
-        f"{num_issues} issue{singular_or_plural} found in your `datapackage.json`:\n\n"
+        f"{num_issues} issue{singular_or_plural} found in your [u]datapackage.json[/u]:\n\n"  # noqa: E501
         + "\n".join(issue_explanations)
     )
 
@@ -92,12 +135,18 @@ def _create_explanation(issue: Issue) -> str:
     """Create an informative explanation of what went wrong in each issue."""
     # Remove suffix '$' to account for root path when `[]` is passed to `check()`
     property_name = issue.jsonpath.removesuffix("$").split(".")[-1]
+    if not property_name:
+        return (
+            "check() requires a dictionary with metadata,"
+            f" but received {issue.instance}."
+        )
+
     number_of_carets = len(str(issue.instance))
     return (  # noqa: F401
-        f"At package{issue.jsonpath.removeprefix('$')}:\n"
+        f"At {issue.jsonpath.removeprefix('$.')}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
-        f"| {' ' * len(property_name)}  {'^' * number_of_carets}\n"
+        f"| {' ' * len(property_name)}  [red]{'^' * number_of_carets}[/red]\n"
         f"{issue.message}\n"
     )
 
@@ -128,8 +177,9 @@ def check(
         _set_should_fields_to_required(schema)
 
     issues = _check_object_against_json_schema(properties, schema)
+    issues += _check_keys(properties, issues)
     issues += apply_extensions(properties, config.extensions)
-    issues = exclude(issues, config.exclusions, properties)
+    issues = exclude(issues, config.exclusions)
     issues = sorted(set(issues))
 
     if os.getenv("CDP_DEBUG"):
@@ -141,6 +191,228 @@ def check(
         raise DataPackageError(issues)
 
     return issues
+
+
+def _check_keys(properties: dict[str, Any], issues: list[Issue]) -> list[Issue]:
+    """Check that primary and foreign keys exist."""
+    # Primary keys
+    resources_with_pk = _get_fields_at_jsonpath(
+        "$.resources[?(length(@.schema.primaryKey) > 0 || @.schema.primaryKey == '')]",
+        properties,
+    )
+    resources_with_pk = _keep_resources_with_no_issue_at_property(
+        resources_with_pk, issues, "schema.primaryKey"
+    )
+    key_issues = _flat_map(resources_with_pk, _check_primary_key)
+
+    # Foreign keys
+    resources_with_fk = _get_fields_at_jsonpath(
+        "$.resources[?(length(@.schema.foreignKeys) > 0)]",
+        properties,
+    )
+    resources_with_fk = _keep_resources_with_no_issue_at_property(
+        resources_with_fk, issues, "schema.foreignKeys"
+    )
+    key_issues += _flat_map(
+        resources_with_fk,
+        lambda resource: _check_foreign_keys(resource, properties),
+    )
+    return key_issues
+
+
+def _issues_at_property(
+    resource: PropertyField, issues: list[Issue], jsonpath: str
+) -> list[Issue]:
+    return _filter(
+        issues,
+        lambda issue: f"{resource.jsonpath}.{jsonpath}" in issue.jsonpath,
+    )
+
+
+def _keep_resources_with_no_issue_at_property(
+    resources: list[PropertyField], issues: list[Issue], jsonpath: str
+) -> list[PropertyField]:
+    """Filter out resources that have an issue at or under the given `jsonpath`."""
+    return _filter(
+        resources,
+        lambda resource: not _issues_at_property(resource, issues, jsonpath),
+    )
+
+
+def _check_primary_key(resource: PropertyField) -> list[Issue]:
+    """Check that primary key fields exist in the resource."""
+    pk_fields = resolve("/schema/primaryKey", resource.value)
+    pk_fields_list = _key_fields_as_str_list(pk_fields)
+    unknown_fields = _get_unknown_key_fields(pk_fields_list, resource.value)
+
+    if not unknown_fields:
+        return []
+
+    return [
+        Issue(
+            jsonpath=f"{resource.jsonpath}.schema.primaryKey",
+            type="primary-key",
+            message=(
+                f"No fields found in resource for primary key fields: {unknown_fields}."
+            ),
+            instance=pk_fields,
+        )
+    ]
+
+
+def _check_foreign_keys(
+    resource: PropertyField, properties: dict[str, Any]
+) -> list[Issue]:
+    """Check that foreign key source and destination fields exist."""
+    # Safe, as only FKs of the correct type here
+    foreign_keys = cast(
+        list[dict[str, Any]], resolve("/schema/foreignKeys", resource.value)
+    )
+    foreign_keys_diff_resource = _filter(
+        foreign_keys,
+        lambda fk: "resource" in fk["reference"] and fk["reference"]["resource"] != "",
+    )
+    foreign_keys_same_resource = _filter(
+        foreign_keys, lambda fk: fk not in foreign_keys_diff_resource
+    )
+
+    issues = _flat_map(foreign_keys, lambda fk: _check_fk_source_fields(fk, resource))
+    issues += _flat_map(
+        foreign_keys_same_resource,
+        lambda fk: _check_fk_dest_fields_same_resource(fk, resource),
+    )
+    issues += _flat_map(
+        foreign_keys_diff_resource,
+        lambda fk: _check_fk_dest_fields_diff_resource(fk, resource, properties),
+    )
+
+    return issues
+
+
+def _key_fields_as_str_list(key_fields: Any) -> list[str]:
+    """Returns the list representation of primary and foreign key fields.
+
+    Key fields can be represented either as a string (containing one field name)
+    or a list of strings.
+
+    The input should contain a correctly typed `key_fields` object.
+    """
+    if not isinstance(key_fields, list):
+        key_fields = [key_fields]
+    return cast(list[str], key_fields)
+
+
+def _get_unknown_key_fields(
+    key_fields: list[str], properties: dict[str, Any], resource_path: str = ""
+) -> str:
+    """Return the key fields that don't exist on the specified resource."""
+    known_fields = findall(f"{resource_path}schema.fields[*].name", properties)
+    unknown_fields = _filter(key_fields, lambda field: field not in known_fields)
+    unknown_fields = _map(unknown_fields, lambda field: f"{field!r}")
+    return ", ".join(unknown_fields)
+
+
+def _check_fk_source_fields(
+    foreign_key: dict[str, Any], resource: PropertyField
+) -> list[Issue]:
+    """Check that foreign key source fields exist and have the correct number."""
+    issues = []
+    source_fields = resolve("/fields", foreign_key)
+    source_field_list = _key_fields_as_str_list(source_fields)
+    unknown_fields = _get_unknown_key_fields(source_field_list, resource.value)
+    if unknown_fields:
+        issues.append(
+            Issue(
+                jsonpath=f"{resource.jsonpath}.schema.foreignKeys.fields",
+                type="foreign-key-source-fields",
+                message=(
+                    "No fields found in resource for foreign key source fields: "
+                    f"{unknown_fields}."
+                ),
+                instance=source_fields,
+            )
+        )
+
+    dest_fields = _key_fields_as_str_list(resolve("/reference/fields", foreign_key))
+    if len(source_field_list) != len(dest_fields):
+        issues.append(
+            Issue(
+                jsonpath=f"{resource.jsonpath}.schema.foreignKeys.fields",
+                type="foreign-key-source-fields",
+                message=(
+                    "The number of foreign key source fields must be the same as "
+                    "the number of foreign key destination fields."
+                ),
+                instance=source_fields,
+            )
+        )
+    return issues
+
+
+def _check_fk_dest_fields_same_resource(
+    foreign_key: dict[str, Any],
+    resource: PropertyField,
+) -> list[Issue]:
+    """Check that foreign key destination fields exist on the same resource."""
+    dest_fields = resolve("/reference/fields", foreign_key)
+    dest_field_list = _key_fields_as_str_list(dest_fields)
+    unknown_fields = _get_unknown_key_fields(dest_field_list, resource.value)
+    if not unknown_fields:
+        return []
+
+    return [
+        Issue(
+            jsonpath=f"{resource.jsonpath}.schema.foreignKeys.reference.fields",
+            type="foreign-key-destination-fields",
+            message=(
+                "No fields found in resource for foreign key "
+                f"destination fields: {unknown_fields}."
+            ),
+            instance=dest_fields,
+        )
+    ]
+
+
+def _check_fk_dest_fields_diff_resource(
+    foreign_key: dict[str, Any], resource: PropertyField, properties: dict[str, Any]
+) -> list[Issue]:
+    """Check that foreign key destination fields exist on the destination resource."""
+    dest_fields = resolve("/reference/fields", foreign_key)
+    dest_field_list = _key_fields_as_str_list(dest_fields)
+    # Safe, as only keys of the correct type here
+    dest_resource_name = cast(str, resolve("/reference/resource", foreign_key))
+
+    dest_resource_path = f"resources[?(@.name == '{dest_resource_name}')]"
+    if not findall(dest_resource_path, properties):
+        return [
+            Issue(
+                jsonpath=f"{resource.jsonpath}.schema.foreignKeys.reference.resource",
+                type="foreign-key-destination-resource",
+                message=(
+                    f"The destination resource {dest_resource_name!r} of this foreign "
+                    "key doesn't exist in the package."
+                ),
+                instance=dest_resource_name,
+            )
+        ]
+
+    unknown_fields = _get_unknown_key_fields(
+        dest_field_list, properties, f"{dest_resource_path}."
+    )
+    if not unknown_fields:
+        return []
+
+    return [
+        Issue(
+            jsonpath=f"{resource.jsonpath}.schema.foreignKeys.reference.fields",
+            type="foreign-key-destination-fields",
+            message=(
+                f"No fields found in destination resource {dest_resource_name!r} "
+                f"for foreign key destination fields: {unknown_fields}."
+            ),
+            instance=dest_fields,
+        )
+    ]
 
 
 def _set_should_fields_to_required(schema: dict[str, Any]) -> dict[str, Any]:
