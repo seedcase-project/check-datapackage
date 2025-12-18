@@ -66,3 +66,6 @@ dev = [
     "typos>=1.35.6",
     "vulture>=2.14",
 ]
+
+[tool.uv.sources]
+rich = { git = "https://github.com/joelostblom/rich", rev = "ipython-console-param" }
