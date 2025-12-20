@@ -1,7 +1,7 @@
 import os
 
 
-# Can get debug output by using `CDP_DEBUG=true uv run pytest -sv tests/test_check.py`
+# Can get debug output by using `CDP_DEBUG=true uv run pytest -sv`
 def pytest_report_teststatus(report, config):
     if os.getenv("CDP_DEBUG"):
         if report.when == "call":
