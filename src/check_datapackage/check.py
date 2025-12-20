@@ -185,8 +185,9 @@ def check(
     # Use by doing `CDP_DEBUG=true uv run ...`
     if os.getenv("CDP_DEBUG"):
         rprint("", properties)
-        rprint(*issues)
-        rprint(explain(issues))
+        for issue in issues:
+            rprint(issue)
+            rprint(explain([issue]))
 
     if error and issues:
         raise DataPackageError(issues)
