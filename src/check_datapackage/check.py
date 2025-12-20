@@ -182,6 +182,7 @@ def check(
     issues = exclude(issues, config.exclusions)
     issues = sorted(set(issues))
 
+    # Use by doing `CDP_DEBUG=true uv run ...`
     if os.getenv("CDP_DEBUG"):
         rprint("", properties)
         rprint(*issues)
