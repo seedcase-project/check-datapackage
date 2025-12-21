@@ -42,6 +42,12 @@ test-python:
     -i coverage.xml \
     -o htmlcov/coverage.svg
 
+# View debug information for all tests
+# Used to e.g. view output of explain() rather than seeing which tests failed
+test-python-debug:
+  CDP_DEBUG=true uv run pytest -sv
+
+
 # Check Python code for any errors that need manual attention
 check-python:
   # Check formatting
