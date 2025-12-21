@@ -100,6 +100,12 @@ class DataPackageError(Exception):
 def explain(issues: list[Issue]) -> str:
     """Explain the issues in a human-readable format.
 
+    The output is a string that can be manipulated further or used in
+    other ways as needed. As it is a string, on its own it isn't
+    nice to look through. However, we bundle `check-datapackage` with
+    `print()` from the `rich` package as `rich_print()`, which can be used
+    to pretty-print the explanation.
+
     Args:
         issues: A list of `Issue` objects to explain.
 
@@ -116,7 +122,14 @@ def explain(issues: list[Issue]) -> str:
             message="The `title` field is required but missing at the given JSON path.",
         )
 
-        cdp.explain([issue])
+        issues = cdp.explain([issue])
+
+        # On its own
+        issues
+        # Normal print
+        print(issues)
+        # Pretty print with rich
+        cdp.rich_print(issues)
         ```
     """
     issue_explanations: list[str] = _map(
