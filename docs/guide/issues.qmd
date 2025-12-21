@@ -23,18 +23,19 @@ here to demonstrate the `explain()` function):
 
 ```{python}
 import check_datapackage as cdp
+from rich import print as rprint
 package_properties = cdp.example_package_properties()
 del package_properties["resources"]
 package_properties
 ```
 
 You can give the issues found by `check()` to `explain()` to get a more
-human-friendly version of the problems:
+human-friendly version of the problems (using `rich` for
+pretty-printing):
 
 ```{python}
-#| eval: false
 issues = cdp.check(properties=package_properties)
-cdp.explain(issues)
+rprint(cdp.explain(issues))
 ```
 
 When setting `error=True` in `check()`, error messages will be generated
