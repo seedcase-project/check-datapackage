@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 from dataclasses import dataclass, field
@@ -180,6 +181,13 @@ def check(
     issues += apply_extensions(properties, config.extensions)
     issues = exclude(issues, config.exclusions)
     issues = sorted(set(issues))
+
+    # Use by doing `CDP_DEBUG=true uv run ...`
+    if os.getenv("CDP_DEBUG"):
+        rprint("", properties)
+        for issue in issues:
+            rprint(issue)
+            rprint(explain([issue]))
 
     if error and issues:
         raise DataPackageError(issues)
