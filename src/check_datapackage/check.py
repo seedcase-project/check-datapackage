@@ -103,7 +103,7 @@ def explain(issues: list[Issue]) -> str:
     The explanation of the issue is outputted as a string. To display the
     string in a easily readable format, the `pretty_print()` function from
     `check-datapackage` can be used.
-    
+
     Args:
         issues: A list of `Issue` objects to explain.
 
