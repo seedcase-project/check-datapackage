@@ -29,7 +29,7 @@ package_properties
 ```
 
 You can give the issues found by `check()` to `explain()` to get a more
-human-friendly version of the problems (using `rich` for
+human-friendly version of the problems (below we're using `rich` for
 pretty-printing, which is bundled with `check-datapackage` as
 `rich_print()`):
 

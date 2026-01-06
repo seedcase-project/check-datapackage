@@ -105,7 +105,9 @@ def explain(issues: list[Issue]) -> str:
     nice to look through. However, we bundle `check-datapackage` with
     `print()` from the `rich` package as `rich_print()`, which can be used
     to pretty-print the explanation.
-
+    The explanation of the issue is outputted as a string. To display the
+    string in a easily readable format, the `pretty_print()` function from
+    `check-datapackage` can be used.
     Args:
         issues: A list of `Issue` objects to explain.
 
