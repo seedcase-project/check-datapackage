@@ -100,14 +100,10 @@ class DataPackageError(Exception):
 def explain(issues: list[Issue]) -> str:
     """Explain the issues in a human-readable format.
 
-    The output is a string that can be manipulated further or used in
-    other ways as needed. As it is a string, on its own it isn't
-    nice to look through. However, we bundle `check-datapackage` with
-    `print()` from the `rich` package as `pretty_print()`, which can be used
-    to pretty-print the explanation.
     The explanation of the issue is outputted as a string. To display the
     string in a easily readable format, the `pretty_print()` function from
     `check-datapackage` can be used.
+    
     Args:
         issues: A list of `Issue` objects to explain.
 
