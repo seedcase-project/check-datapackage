@@ -103,7 +103,7 @@ def explain(issues: list[Issue]) -> str:
     The output is a string that can be manipulated further or used in
     other ways as needed. As it is a string, on its own it isn't
     nice to look through. However, we bundle `check-datapackage` with
-    `print()` from the `rich` package as `rich_print()`, which can be used
+    `print()` from the `rich` package as `pretty_print()`, which can be used
     to pretty-print the explanation.
     The explanation of the issue is outputted as a string. To display the
     string in a easily readable format, the `pretty_print()` function from
@@ -131,7 +131,7 @@ def explain(issues: list[Issue]) -> str:
         # Normal print
         print(issues)
         # Pretty print with rich
-        cdp.rich_print(issues)
+        cdp.pretty_print(issues)
         ```
     """
     issue_explanations: list[str] = _map(
