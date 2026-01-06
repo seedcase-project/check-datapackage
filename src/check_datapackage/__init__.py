@@ -1,5 +1,7 @@
 """Check functions and constants for the Frictionless Data Package standard."""
 
+from rich import print as pretty_print
+
 from .check import DataPackageError, check, explain
 from .config import Config
 from .examples import (
@@ -26,4 +28,5 @@ __all__ = [
     "check",
     "explain",
     "read_json",
+    "pretty_print",
 ]
