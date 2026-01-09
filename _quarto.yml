@@ -5,6 +5,7 @@ website:
   title: "Check Data Package"
   site-url: "https://check-datapackage.seedcase-project.org"
   repo-url: "https://github.com/seedcase-project/check-datapackage"
+  favicon: "_extensions/seedcase-project/seedcase-theme/logos/check-datapackage-logo.svg"
   page-navigation: true
   navbar:
     pinned: true
