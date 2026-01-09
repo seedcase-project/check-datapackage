@@ -67,6 +67,7 @@ quartodoc:
     desc: Core functions used to check Data Packages.
     contents:
     - name: check
+    - name: explain
     - name: read_json
 
   - title: Configuration
