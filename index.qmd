@@ -6,10 +6,10 @@ page-layout: custom
 ::::: landing-page-block
 :::: hero-text
 ::: text-center
-![](_extensions/seedcase-project/seedcase-theme/logos/check-datapackage-logo.svg){fig-alt="Check datapackage logo."
+![](_extensions/seedcase-project/seedcase-theme/logos/check-datapackage/icon.svg){fig-alt="Check datapackage logo."
 width="150px"}
 
-![](_extensions/seedcase-project/seedcase-theme/logos/check-datapackage-font.svg){fig-alt="Check datapackage font."
+![](_extensions/seedcase-project/seedcase-theme/logos/check-datapackage/font.svg){fig-alt="Check datapackage font."
 height="50px"}
 
 ## Ensure the compliance of your Data Package metadata

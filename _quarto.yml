@@ -5,12 +5,12 @@ website:
   title: "Check Data Package"
   site-url: "https://check-datapackage.seedcase-project.org"
   repo-url: "https://github.com/seedcase-project/check-datapackage"
-  favicon: "_extensions/seedcase-project/seedcase-theme/logos/check-datapackage-logo.svg"
+  favicon: "_extensions/seedcase-project/seedcase-theme/logos/check-datapackage/icon.svg"
   page-navigation: true
   navbar:
     pinned: true
     title: false
-    logo: "_extensions/seedcase-project/seedcase-theme/logos/navbar-logo-check-datapackage.svg"
+    logo: "_extensions/seedcase-project/seedcase-theme/logos/check-datapackage/navbar.svg"
     logo-alt: "check-datapackage: Main page"
     left:
       - text: "Overview"
