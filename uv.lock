@@ -390,7 +390,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.25.1" },
     { name = "pydantic", specifier = ">=2.12.3" },
     { name = "python-jsonpath", specifier = ">=2.0.1" },
-    { name = "rich", git = "https://github.com/joelostblom/rich?rev=ipython-console-param" },
+    { name = "rich", specifier = ">=14.3.0" },
     { name = "types-jsonschema", specifier = ">=4.25.1.20250822" },
 ]
 
@@ -2056,11 +2056,15 @@ wheels = [
 
 [[package]]
 name = "rich"
-version = "14.2.0"
-source = { git = "https://github.com/joelostblom/rich?rev=ipython-console-param#d350701f754db31995cf3d15194977bf30c3027f" }
+version = "14.3.2"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py" },
     { name = "pygments" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/74/99/a4cab2acbb884f80e558b0771e97e21e939c5dfb460f488d19df485e8298/rich-14.3.2.tar.gz", hash = "sha256:e712f11c1a562a11843306f5ed999475f09ac31ffb64281f73ab29ffdda8b3b8", size = 230143, upload-time = "2026-02-01T16:20:47.908Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/45/615f5babd880b4bd7d405cc0dc348234c5ffb6ed1ea33e152ede08b2072d/rich-14.3.2-py3-none-any.whl", hash = "sha256:08e67c3e90884651da3239ea668222d19bea7b589149d8014a21c633420dbb69", size = 309963, upload-time = "2026-02-01T16:20:46.078Z" },
 ]
 
 [[package]]
