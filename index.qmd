@@ -30,7 +30,7 @@ guide](/docs/guide/index.qmd){.btn .about-link}
 :::: landing-page-block
 ::: hero-text
 `check-datapackage` is a Python package that checks your Data Package's
-metadata against the [Data Package standard](https://datapackage.org/),
+metadata against the [Data Package standard](https://datapackage.org/)
 to ensure that your metadata is compliant with the standard.
 
 ## Key features :sparkles:
@@ -44,7 +44,8 @@ to ensure that your metadata is compliant with the standard.
 -   Provides clear and user-friendly messages that point directly to
     where issues occur in the metadata.
 -   Supports a strict mode that enforces full compliance with the
-    standard, including not only the checks defined by the Data Package specification as "MUST" but also those marked as "SHOULD".
+    standard, including not only the checks defined by the Data Package
+    specification as "MUST" but also those marked as "SHOULD".
 
 :warning: Note that `check-datapackage` only checks the metadata in your
 `datapackage.json` file against the Data Package standard---it does not
