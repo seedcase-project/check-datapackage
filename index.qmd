@@ -30,7 +30,7 @@ guide](/docs/guide/index.qmd){.btn .about-link}
 :::: landing-page-block
 ::: hero-text
 `check-datapackage` is a Python package that checks your Data Package's
-metadata against the [Data Package standard](https://datapackage.org/),
+metadata against the [Data Package standard](https://datapackage.org/)
 to ensure that your metadata is compliant with the standard.
 
 ## Key features :sparkles:
