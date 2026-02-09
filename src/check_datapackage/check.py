@@ -767,8 +767,10 @@ def _handle_S_resources_x_schema_foreign_keys(
     # If the key type is incorrect, remove all errors that depend on it
     key_type_errors = _filter(
         errors_in_group,
-        lambda error: error.schema_path.endswith("fields/type")
-        or "reference/properties/fields" in error.schema_path,
+        lambda error: (
+            error.schema_path.endswith("fields/type")
+            or "reference/properties/fields" in error.schema_path
+        ),
     )
     edits.remove.extend(key_type_errors)
 
