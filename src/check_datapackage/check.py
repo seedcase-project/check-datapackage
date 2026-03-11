@@ -82,37 +82,83 @@ def no_traceback_hook(
 sys.excepthook = no_traceback_hook
 
 
-# Unfortunately, IPython uses its own exception handling mechanism,
-# so we need to set a separate custom exception handler there.
-def _is_running_from_ipython() -> bool:
-    """Checks whether running in IPython interactive console or not."""
-    try:
-        from IPython import get_ipython  # type: ignore[attr-defined]
-    except ImportError:
-        return False
-    else:
-        return get_ipython() is not None  # type: ignore[no-untyped-call]
+def create_no_traceback_ipython_handler(
+    *exception_types: type[BaseException],
+) -> Callable[
+    [Any, type[BaseException], BaseException, TracebackType | None, None], None
+]:
+    """Create a custom IPython exception handler that hides tracebacks for specified exceptions.
 
+    Args:
+        *exception_types: Exception types to hide tracebacks for.
 
-if _is_running_from_ipython():
+    Returns:
+        A custom IPython exception handler function.
+    """
 
-    def no_traceback_in_ipython(
+    def handler(
         self: Any,
         exc_type: type[BaseException],
         exc_value: BaseException,
         exc_traceback: TracebackType | None,
         tb_offset: None = None,
     ) -> None:
-        """Hide tracebacks and correctly display rich markup in IPython."""
-        if issubclass(exc_type, DataPackageError):
+        if issubclass(exc_type, exception_types):
             _pretty_print_exception(exc_type, exc_value)
         else:
-            # Regular IPython traceback
             self.showtraceback(
                 (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
             )
 
-    get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore  # noqa: F821
+    return handler
+
+
+def setup_no_traceback_hooks(
+    *exception_types: type[BaseException],
+) -> None:
+    """Set up exception hooks to hide tracebacks for specified exceptions.
+
+    This sets up both the regular Python exception hook and the IPython
+    exception handler (if running in IPython). Can be called multiple times
+    to add more exception types to the list.
+
+    Args:
+        *exception_types: Exception types to hide tracebacks for.
+
+    Examples:
+        ```python
+        # Hide tracebacks for custom errors
+        setup_no_traceback_hooks(MyError, AnotherError)
+
+        # Add more exception types later
+        setup_no_traceback_hooks(ThirdError)
+        ```
+    """
+    global _no_traceback_exception_types
+
+    # Accumulate exception types rather than replacing them
+    _no_traceback_exception_types.update(exception_types)
+
+    sys.excepthook = create_no_traceback_hook(*_no_traceback_exception_types)
+
+    if _is_running_from_ipython():
+        get_ipython().set_custom_exc(  # type: ignore[misc]
+            (Exception,),
+            create_no_traceback_ipython_handler(*_no_traceback_exception_types),
+        )
+
+
+_no_traceback_exception_types: set[type[BaseException]] = set()
+
+
+def _is_running_from_ipython() -> bool:
+    """Checks whether running in IPython interactive console or not."""
+    try:
+        from IPython import get_ipython
+    except ImportError:
+        return False
+    else:
+        return get_ipython() is not None
 
 
 class DataPackageError(Exception):
@@ -959,3 +1005,7 @@ def _get_errors_in_group(
 
 def _strip_index(jsonpath: str) -> str:
     return re.sub(r"\[\d+\]$", "", jsonpath)
+
+
+# Set up exception hooks at module load time
+setup_no_traceback_hooks(DataPackageError)

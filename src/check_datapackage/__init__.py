@@ -8,6 +8,7 @@ from .check import (
     create_no_traceback_hook,
     create_no_traceback_ipython_handler,
     explain,
+    setup_no_traceback_hooks,
 )
 from .config import Config
 from .examples import (
@@ -37,4 +38,5 @@ __all__ = [
     "pretty_print",
     "create_no_traceback_hook",
     "create_no_traceback_ipython_handler",
+    "setup_no_traceback_hooks",
 ]
