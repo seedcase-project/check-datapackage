@@ -36,7 +36,7 @@ def _pretty_print_exception(
     return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
 
 
-def create_no_traceback_hook(
+def _create_no_traceback_hook(
     *exception_types: type[BaseException],
 ) -> Callable[[type[BaseException], BaseException, TracebackType | None], None]:
     """Create a custom exception hook that hides tracebacks for specified exceptions.
@@ -46,13 +46,6 @@ def create_no_traceback_hook(
 
     Returns:
         A custom exception hook function.
-
-    Examples:
-        ```python
-        # Hide tracebacks for custom errors
-        hook = create_no_traceback_hook(MyError, AnotherError)
-        sys.excepthook = hook
-        ```
     """
 
     def hook(
@@ -139,12 +132,12 @@ def setup_no_traceback_hooks(
     # Accumulate exception types rather than replacing them
     _no_traceback_exception_types.update(exception_types)
 
-    sys.excepthook = create_no_traceback_hook(*_no_traceback_exception_types)
+    sys.excepthook = _create_no_traceback_hook(*_no_traceback_exception_types)
 
     if _is_running_from_ipython():
         get_ipython().set_custom_exc(  # type: ignore[misc]
             (Exception,),
-            create_no_traceback_ipython_handler(*_no_traceback_exception_types),
+            _create_no_traceback_ipython_handler(*_no_traceback_exception_types),
         )
 
 

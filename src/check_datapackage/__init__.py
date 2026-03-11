@@ -5,8 +5,6 @@ from rich import print as pretty_print
 from .check import (
     DataPackageError,
     check,
-    create_no_traceback_hook,
-    create_no_traceback_ipython_handler,
     explain,
     setup_no_traceback_hooks,
 )
@@ -36,7 +34,5 @@ __all__ = [
     "explain",
     "read_json",
     "pretty_print",
-    "create_no_traceback_hook",
-    "create_no_traceback_ipython_handler",
     "setup_no_traceback_hooks",
 ]
