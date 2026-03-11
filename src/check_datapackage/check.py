@@ -36,7 +36,7 @@ def _pretty_print_exception(
     return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
 
 
-def _create_no_traceback_hook(
+def _suppress_tracebacks(
     *exception_types: type[BaseException],
 ) -> Callable[[type[BaseException], BaseException, TracebackType | None], None]:
     """Create a custom exception hook that hides tracebacks for specified exceptions.
@@ -61,21 +61,21 @@ def _create_no_traceback_hook(
     return hook
 
 
-def _create_no_traceback_ipython_handler(
+def _suppress_tracebacks_ipython(
     *exception_types: type[BaseException],
 ) -> Callable[
     [Any, type[BaseException], BaseException, TracebackType | None, None], None
 ]:
-    """Create a custom IPython exception handler that hides tracebacks for specified exceptions.
+    """Create a custom IPython exception hook that hides tracebacks for specified exceptions.
 
     Args:
         *exception_types: Exception types to hide tracebacks for.
 
     Returns:
-        A custom IPython exception handler function.
+        A custom IPython exception hook function.
     """
 
-    def handler(
+    def hook(
         self: Any,
         exc_type: type[BaseException],
         exc_value: BaseException,
@@ -89,45 +89,7 @@ def _create_no_traceback_ipython_handler(
                 (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
             )
 
-    return handler
-
-
-def setup_no_traceback_hooks(
-    *exception_types: type[BaseException],
-) -> None:
-    """Set up exception hooks to hide tracebacks for specified exceptions.
-
-    This sets up both the regular Python exception hook and the IPython
-    exception handler (if running in IPython). Can be called multiple times
-    to add more exception types to the list.
-
-    Args:
-        *exception_types: Exception types to hide tracebacks for.
-
-    Examples:
-        ```python
-        # Hide tracebacks for custom errors
-        setup_no_traceback_hooks(MyError, AnotherError)
-
-        # Add more exception types later
-        setup_no_traceback_hooks(ThirdError)
-        ```
-    """
-    global _no_traceback_exception_types
-
-    # Accumulate exception types rather than replacing them
-    _no_traceback_exception_types.update(exception_types)
-
-    sys.excepthook = _create_no_traceback_hook(*_no_traceback_exception_types)
-
-    if _is_running_from_ipython():
-        get_ipython().set_custom_exc(  # type: ignore[misc]
-            (Exception,),
-            _create_no_traceback_ipython_handler(*_no_traceback_exception_types),
-        )
-
-
-_no_traceback_exception_types: set[type[BaseException]] = set()
+    return hook
 
 
 def _is_running_from_ipython() -> bool:
@@ -138,6 +100,32 @@ def _is_running_from_ipython() -> bool:
         return False
     else:
         return get_ipython() is not None
+
+
+def setup_suppressed_tracebacks(
+    *exception_types: type[BaseException],
+) -> None:
+    """Set up exception hooks to hide tracebacks for specified exceptions.
+
+    This sets up both the regular Python exception hook and the IPython
+    exception hook (if running in IPython).
+
+    Args:
+        *exception_types: Exception types to hide tracebacks for.
+
+    Examples:
+        ```python
+        # Hide tracebacks for custom errors
+        setup_suppressed_tracebacks(MyError, AnotherError)
+        ```
+    """
+    sys.excepthook = _suppress_tracebacks(*exception_types)
+
+    if _is_running_from_ipython():
+        get_ipython().set_custom_exc(  # type: ignore[misc]
+            (Exception,),
+            _suppress_tracebacks_ipython(*exception_types),
+        )
 
 
 class DataPackageError(Exception):
@@ -987,4 +975,4 @@ def _strip_index(jsonpath: str) -> str:
 
 
 # Set up exception hooks at module load time
-setup_no_traceback_hooks(DataPackageError)
+setup_suppressed_tracebacks(DataPackageError)
