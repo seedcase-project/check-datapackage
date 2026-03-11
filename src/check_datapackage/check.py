@@ -61,21 +61,7 @@ def _create_no_traceback_hook(
     return hook
 
 
-def no_traceback_hook(
-    exc_type: type[BaseException],
-    exc_value: BaseException,
-    exc_traceback: TracebackType | None,
-) -> None:
-    if issubclass(exc_type, DataPackageError):
-        _pretty_print_exception(exc_type, exc_value)
-    else:
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-
-
-sys.excepthook = no_traceback_hook
-
-
-def create_no_traceback_ipython_handler(
+def _create_no_traceback_ipython_handler(
     *exception_types: type[BaseException],
 ) -> Callable[
     [Any, type[BaseException], BaseException, TracebackType | None, None], None
