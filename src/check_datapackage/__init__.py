@@ -2,7 +2,13 @@
 
 from rich import print as pretty_print
 
-from .check import DataPackageError, check, explain
+from .check import (
+    DataPackageError,
+    check,
+    create_no_traceback_hook,
+    create_no_traceback_ipython_handler,
+    explain,
+)
 from .config import Config
 from .examples import (
     example_field_properties,
@@ -29,4 +35,6 @@ __all__ = [
     "explain",
     "read_json",
     "pretty_print",
+    "create_no_traceback_hook",
+    "create_no_traceback_ipython_handler",
 ]

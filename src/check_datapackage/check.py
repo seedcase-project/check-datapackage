@@ -33,8 +33,39 @@ def _pretty_print_exception(
     exc_type: type[BaseException],
     exc_value: BaseException,
 ) -> None:
-    # Print the error type and message, without traceback
     return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
+
+
+def create_no_traceback_hook(
+    *exception_types: type[BaseException],
+) -> Callable[[type[BaseException], BaseException, TracebackType | None], None]:
+    """Create a custom exception hook that hides tracebacks for specified exceptions.
+
+    Args:
+        *exception_types: Exception types to hide tracebacks for.
+
+    Returns:
+        A custom exception hook function.
+
+    Examples:
+        ```python
+        # Hide tracebacks for custom errors
+        hook = create_no_traceback_hook(MyError, AnotherError)
+        sys.excepthook = hook
+        ```
+    """
+
+    def hook(
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: TracebackType | None,
+    ) -> None:
+        if issubclass(exc_type, exception_types):
+            _pretty_print_exception(exc_type, exc_value)
+        else:
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+    return hook
 
 
 def no_traceback_hook(
@@ -42,14 +73,12 @@ def no_traceback_hook(
     exc_value: BaseException,
     exc_traceback: TracebackType | None,
 ) -> None:
-    """Exception hook to hide tracebacks for DataPackageError."""
     if issubclass(exc_type, DataPackageError):
         _pretty_print_exception(exc_type, exc_value)
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 
-# Need to use a custom exception hook to hide tracebacks for our custom exceptions
 sys.excepthook = no_traceback_hook
 
 
