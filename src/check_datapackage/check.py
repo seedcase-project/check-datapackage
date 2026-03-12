@@ -39,7 +39,7 @@ def _pretty_print_exception(
 def _suppress_tracebacks(
     *exception_types: type[BaseException],
 ) -> Callable[[type[BaseException], BaseException, TracebackType | None], None]:
-    """Create a custom exception hook that hides tracebacks for specified exceptions.
+    """Create an exception hook that hides tracebacks for specified exceptions.
 
     Args:
         *exception_types: Exception types to hide tracebacks for.
@@ -66,7 +66,7 @@ def _suppress_tracebacks_ipython(
 ) -> Callable[
     [Any, type[BaseException], BaseException, TracebackType | None, None], None
 ]:
-    """Create a custom IPython exception hook that hides tracebacks for specified exceptions.
+    """Create an IPython exception hook that hides tracebacks for specified exceptions.
 
     Args:
         *exception_types: Exception types to hide tracebacks for.
@@ -146,10 +146,36 @@ def setup_suppressed_tracebacks(
 
     sys.excepthook = hook
 
+    # Set up IPython hook (also composable)
     if _is_running_from_ipython():
-        get_ipython().set_custom_exc(  # type: ignore[misc]
+        ip = get_ipython()  # noqa
+
+        # Get the old custom exception handler (if any exists and is callable)
+        old_custom_tb = getattr(ip, "CustomTB", None)
+        has_old_handler = old_custom_tb is not None and callable(old_custom_tb)
+
+        def ipython_hook(
+            self: Any,
+            exc_type: type[BaseException],
+            exc_value: BaseException,
+            exc_traceback: TracebackType | None,
+            tb_offset: None = None,
+        ) -> list[str] | None:
+            if issubclass(exc_type, exception_types):
+                _pretty_print_exception(exc_type, exc_value)
+                return []  # Return empty list to suppress traceback
+            elif has_old_handler:
+                # Call the previous IPython handler
+                return old_custom_tb(
+                    exc_type, exc_value, exc_traceback, tb_offset=tb_offset
+                )
+            else:
+                # No previous handler, return None to use default behavior
+                return None
+
+        ip.set_custom_exc(  # type: ignore[misc]
             (Exception,),
-            _suppress_tracebacks_ipython(*exception_types),
+            ipython_hook,
         )
 
 
