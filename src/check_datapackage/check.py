@@ -29,6 +29,13 @@ from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
 
 
+# Type alias for IPython custom exception handler (bound method, no self)
+IPythonExceptionHandler = Callable[
+    [type[BaseException], BaseException, TracebackType | None],
+    list[str] | None,
+]
+
+
 def _pretty_print_exception(
     exc_type: type[BaseException],
     exc_value: BaseException,
@@ -151,8 +158,8 @@ def setup_suppressed_tracebacks(
         ip = get_ipython()  # type: ignore  # noqa: F821
 
         # Get the old custom exception handler (if any exists and is callable)
-        old_custom_tb = getattr(ip, "CustomTB", None)
-        has_old_handler = old_custom_tb is not None and callable(old_custom_tb)
+        old_custom_tb: IPythonExceptionHandler | None = getattr(ip, "CustomTB", None)
+        has_old_handler = old_custom_tb is not None
 
         def ipython_hook(
             self: Any,
@@ -164,9 +171,9 @@ def setup_suppressed_tracebacks(
             if issubclass(exc_type, exception_types):
                 _pretty_print_exception(exc_type, exc_value)
                 return []  # Return empty list to suppress traceback
-            elif has_old_handler:
+            elif has_old_handler and old_custom_tb is not None:
                 # Call the previous IPython handler
-                return old_custom_tb(  # type: ignore[misc]
+                return old_custom_tb(  # type: ignore[call-arg]
                     exc_type, exc_value, exc_traceback, tb_offset=tb_offset
                 )
             else:
