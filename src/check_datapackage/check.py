@@ -95,11 +95,11 @@ def _suppress_tracebacks_ipython(
 def _is_running_from_ipython() -> bool:
     """Checks whether running in IPython interactive console or not."""
     try:
-        from IPython import get_ipython
+        from IPython import get_ipython  # type: ignore[attr-defined]
     except ImportError:
         return False
     else:
-        return get_ipython() is not None
+        return get_ipython() is not None  # type: ignore[no-untyped-call]
 
 
 def setup_suppressed_tracebacks(
@@ -148,7 +148,7 @@ def setup_suppressed_tracebacks(
 
     # Set up IPython hook (also composable)
     if _is_running_from_ipython():
-        ip = get_ipython()  # noqa
+        ip = get_ipython()  # type: ignore  # noqa: F821
 
         # Get the old custom exception handler (if any exists and is callable)
         old_custom_tb = getattr(ip, "CustomTB", None)
@@ -166,14 +166,14 @@ def setup_suppressed_tracebacks(
                 return []  # Return empty list to suppress traceback
             elif has_old_handler:
                 # Call the previous IPython handler
-                return old_custom_tb(
+                return old_custom_tb(  # type: ignore[misc]
                     exc_type, exc_value, exc_traceback, tb_offset=tb_offset
                 )
             else:
                 # No previous handler, return None to use default behavior
                 return None
 
-        ip.set_custom_exc(  # type: ignore[misc]
+        ip.set_custom_exc(
             (Exception,),
             ipython_hook,
         )
