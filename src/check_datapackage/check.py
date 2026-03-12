@@ -107,19 +107,44 @@ def setup_suppressed_tracebacks(
 ) -> None:
     """Set up exception hooks to hide tracebacks for specified exceptions.
 
-    This sets up both the regular Python exception hook and the IPython
-    exception hook (if running in IPython).
+    This function is composable - multiple calls add to the existing hook
+    rather than replacing it. Each package only needs to register its own
+    exceptions.
 
     Args:
         *exception_types: Exception types to hide tracebacks for.
 
+    Raises:
+        TypeError: If any exception_type is not an exception class.
+
     Examples:
         ```python
-        # Hide tracebacks for custom errors
-        setup_suppressed_tracebacks(MyError, AnotherError)
+        # In package A
+        setup_suppressed_tracebacks(ErrorA)
+
+        # In package B - adds to existing hook
+        setup_suppressed_tracebacks(ErrorB)
+        # Now both ErrorA and ErrorB have suppressed tracebacks
         ```
     """
-    sys.excepthook = _suppress_tracebacks(*exception_types)
+    # Validate that all types are exception classes
+    for exc_type in exception_types:
+        if not (isinstance(exc_type, type) and issubclass(exc_type, BaseException)):
+            raise TypeError(f"{exc_type!r} is not an exception class")
+
+    old_hook = sys.excepthook
+
+    def hook(
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: TracebackType | None,
+    ) -> None:
+        if issubclass(exc_type, exception_types):
+            _pretty_print_exception(exc_type, exc_value)
+        else:
+            old_hook(exc_type, exc_value, exc_traceback)
+
+    sys.excepthook = hook
 
     if _is_running_from_ipython():
         get_ipython().set_custom_exc(  # type: ignore[misc]
