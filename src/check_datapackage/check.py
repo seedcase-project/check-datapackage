@@ -28,11 +28,10 @@ from check_datapackage.internals import (
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
 
-
 # Type alias for IPython custom exception handler (bound method, no self)
 IPythonExceptionHandler = Callable[
-    [type[BaseException], BaseException, TracebackType | None],
-    list[str] | None,
+    [type[BaseException], BaseException, Optional[TracebackType]],
+    Optional[list[str]],
 ]
 
 
@@ -45,7 +44,7 @@ def _pretty_print_exception(
 
 def _suppress_tracebacks(
     *exception_types: type[BaseException],
-) -> Callable[[type[BaseException], BaseException, TracebackType | None], None]:
+) -> Callable[[type[BaseException], BaseException, Optional[TracebackType]], None]:
     """Create an exception hook that hides tracebacks for specified exceptions.
 
     Args:
@@ -58,7 +57,7 @@ def _suppress_tracebacks(
     def hook(
         exc_type: type[BaseException],
         exc_value: BaseException,
-        exc_traceback: TracebackType | None,
+        exc_traceback: Optional[TracebackType],
     ) -> None:
         if issubclass(exc_type, exception_types):
             _pretty_print_exception(exc_type, exc_value)
@@ -71,7 +70,7 @@ def _suppress_tracebacks(
 def _suppress_tracebacks_ipython(
     *exception_types: type[BaseException],
 ) -> Callable[
-    [Any, type[BaseException], BaseException, TracebackType | None, None], None
+    [Any, type[BaseException], BaseException, Optional[TracebackType], None], None
 ]:
     """Create an IPython exception hook that hides tracebacks for specified exceptions.
 
@@ -86,7 +85,7 @@ def _suppress_tracebacks_ipython(
         self: Any,
         exc_type: type[BaseException],
         exc_value: BaseException,
-        exc_traceback: TracebackType | None,
+        exc_traceback: Optional[TracebackType],
         tb_offset: None = None,
     ) -> None:
         if issubclass(exc_type, exception_types):
@@ -144,7 +143,7 @@ def setup_suppressed_tracebacks(
     def hook(
         exc_type: type[BaseException],
         exc_value: BaseException,
-        exc_traceback: TracebackType | None,
+        exc_traceback: Optional[TracebackType],
     ) -> None:
         if issubclass(exc_type, exception_types):
             _pretty_print_exception(exc_type, exc_value)
@@ -158,16 +157,16 @@ def setup_suppressed_tracebacks(
         ip = get_ipython()  # type: ignore  # noqa: F821
 
         # Get the old custom exception handler (if any exists and is callable)
-        old_custom_tb: IPythonExceptionHandler | None = getattr(ip, "CustomTB", None)
+        old_custom_tb: Optional[IPythonExceptionHandler] = getattr(ip, "CustomTB", None)
         has_old_handler = old_custom_tb is not None
 
         def ipython_hook(
             self: Any,
             exc_type: type[BaseException],
             exc_value: BaseException,
-            exc_traceback: TracebackType | None,
+            exc_traceback: Optional[TracebackType],
             tb_offset: None = None,
-        ) -> list[str] | None:
+        ) -> Optional[list[str]]:
             if issubclass(exc_type, exception_types):
                 _pretty_print_exception(exc_type, exc_value)
                 return []  # Return empty list to suppress traceback
