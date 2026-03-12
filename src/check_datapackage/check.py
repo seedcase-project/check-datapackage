@@ -28,6 +28,12 @@ from check_datapackage.internals import (
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
 
+# Type alias for Python exception hook
+PythonExceptionHook = Callable[
+    [type[BaseException], BaseException, Optional[TracebackType]],
+    None,
+]
+
 # Type alias for IPython custom exception handler (bound method, no self)
 IPythonExceptionHandler = Callable[
     [type[BaseException], BaseException, Optional[TracebackType]],
@@ -44,7 +50,7 @@ def _pretty_print_exception(
 
 def _suppress_tracebacks(
     *exception_types: type[BaseException],
-) -> Callable[[type[BaseException], BaseException, Optional[TracebackType]], None]:
+) -> PythonExceptionHook:
     """Create an exception hook that hides tracebacks for specified exceptions.
 
     Args:
