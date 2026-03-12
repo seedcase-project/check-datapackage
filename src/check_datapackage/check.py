@@ -33,7 +33,7 @@ def _pretty_print_exception(
     exc_type: type[BaseException],
     exc_value: BaseException,
 ) -> None:
-    return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
+    rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
 
 
 def _suppress_tracebacks(
