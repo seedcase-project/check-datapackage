@@ -225,9 +225,11 @@ def test_ipython_hook_composes_with_existing():
 
     third_hook = mock_shell.set_custom_exc.call_args[0][1]
 
+    # Check that the traceback is supressed for all registered errors...
     assert third_hook(mock_shell, ErrorA, ErrorA("a"), None) == []
     assert third_hook(mock_shell, ErrorB, ErrorB("b"), None) == []
     assert third_hook(mock_shell, ErrorC, ErrorC("c"), None) == []
+    # ... but not for an unregistered error
     assert third_hook(mock_shell, ValueError, ValueError("other"), None) == [
         "old output"
     ]
