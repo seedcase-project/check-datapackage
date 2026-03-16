@@ -34,9 +34,9 @@ PythonExceptionHook = Callable[
     None,
 ]
 
-# Type alias for IPython custom exception handler (bound method, no self)
+# Type alias for IPython custom exception handler (includes self and tb_offset)
 IPythonExceptionHandler = Callable[
-    [type[BaseException], BaseException, Optional[TracebackType]],
+    [Any, type[BaseException], BaseException, Optional[TracebackType], None],
     Optional[list[str]],
 ]
 
@@ -48,16 +48,18 @@ def _pretty_print_exception(
     rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
 
 
-def _suppress_tracebacks(
-    *exception_types: type[BaseException],
+def _create_suppressed_traceback_hook(
+    exception_types: tuple[type[BaseException], ...],
+    old_hook: PythonExceptionHook,
 ) -> PythonExceptionHook:
-    """Create an exception hook that hides tracebacks for specified exceptions.
+    """Create a Python exception hook that suppresses tracebacks.
 
     Args:
-        *exception_types: Exception types to hide tracebacks for.
+        exception_types: Exception types to suppress tracebacks for.
+        old_hook: The previous exception hook to delegate unregistered exceptions to.
 
     Returns:
-        A custom exception hook function.
+        A composable exception hook function.
     """
 
     def hook(
@@ -68,24 +70,28 @@ def _suppress_tracebacks(
         if issubclass(exc_type, exception_types):
             _pretty_print_exception(exc_type, exc_value)
         else:
-            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            old_hook(exc_type, exc_value, exc_traceback)
 
     return hook
 
 
-def _suppress_tracebacks_ipython(
-    *exception_types: type[BaseException],
+def _create_suppressed_traceback_ipython_hook(
+    exception_types: tuple[type[BaseException], ...],
+    old_custom_tb: Optional[IPythonExceptionHandler],
 ) -> Callable[
-    [Any, type[BaseException], BaseException, Optional[TracebackType], None], None
+    [Any, type[BaseException], BaseException, Optional[TracebackType], None],
+    Optional[list[str]],
 ]:
-    """Create an IPython exception hook that hides tracebacks for specified exceptions.
+    """Create an IPython exception hook that suppresses tracebacks.
 
     Args:
-        *exception_types: Exception types to hide tracebacks for.
+        exception_types: Exception types to suppress tracebacks for.
+        old_custom_tb: The previous IPython custom exception handler, if any.
 
     Returns:
-        A custom IPython exception hook function.
+        A composable IPython exception hook function.
     """
+    has_old_handler = old_custom_tb is not None
 
     def hook(
         self: Any,
@@ -93,13 +99,14 @@ def _suppress_tracebacks_ipython(
         exc_value: BaseException,
         exc_traceback: Optional[TracebackType],
         tb_offset: None = None,
-    ) -> None:
+    ) -> Optional[list[str]]:
         if issubclass(exc_type, exception_types):
             _pretty_print_exception(exc_type, exc_value)
+            return []
+        elif has_old_handler and old_custom_tb is not None:
+            return old_custom_tb(self, exc_type, exc_value, exc_traceback, tb_offset)
         else:
-            self.showtraceback(
-                (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
-            )
+            return None
 
     return hook
 
@@ -139,55 +146,18 @@ def setup_suppressed_tracebacks(
         # Now both ErrorA and ErrorB have suppressed tracebacks
         ```
     """
-    # Validate that all types are exception classes
     for exc_type in exception_types:
         if not (isinstance(exc_type, type) and issubclass(exc_type, BaseException)):
             raise TypeError(f"{exc_type!r} is not an exception class")
 
-    old_hook = sys.excepthook
+    sys.excepthook = _create_suppressed_traceback_hook(exception_types, sys.excepthook)
 
-    def hook(
-        exc_type: type[BaseException],
-        exc_value: BaseException,
-        exc_traceback: Optional[TracebackType],
-    ) -> None:
-        if issubclass(exc_type, exception_types):
-            _pretty_print_exception(exc_type, exc_value)
-        else:
-            old_hook(exc_type, exc_value, exc_traceback)
-
-    sys.excepthook = hook
-
-    # Set up IPython hook (also composable)
     if _is_running_from_ipython():
         ip = get_ipython()  # type: ignore  # noqa: F821
-
-        # Get the old custom exception handler (if any exists and is callable)
         old_custom_tb: Optional[IPythonExceptionHandler] = getattr(ip, "CustomTB", None)
-        has_old_handler = old_custom_tb is not None
-
-        def ipython_hook(
-            self: Any,
-            exc_type: type[BaseException],
-            exc_value: BaseException,
-            exc_traceback: Optional[TracebackType],
-            tb_offset: None = None,
-        ) -> Optional[list[str]]:
-            if issubclass(exc_type, exception_types):
-                _pretty_print_exception(exc_type, exc_value)
-                return []  # Return empty list to suppress traceback
-            elif has_old_handler and old_custom_tb is not None:
-                # Call the previous IPython handler
-                return old_custom_tb(  # type: ignore[call-arg]
-                    exc_type, exc_value, exc_traceback, tb_offset=tb_offset
-                )
-            else:
-                # No previous handler, return None to use default behavior
-                return None
-
         ip.set_custom_exc(
             (Exception,),
-            ipython_hook,
+            _create_suppressed_traceback_ipython_hook(exception_types, old_custom_tb),
         )
 
 
