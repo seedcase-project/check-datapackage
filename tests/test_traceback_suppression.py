@@ -184,7 +184,7 @@ def test_ipython_hook_only_suppresses_registered_exceptions():
     result = ipython_hook(mock_shell, CustomError, CustomError("test"), None)
     assert result == []
 
-    # An unregisterd error should return None, ie the hook did not modify anything
+    # An unregistered error should return None, ie the hook did not modify anything
     result = ipython_hook(mock_shell, ValueError, ValueError("unregistered"), None)
     assert result is None
 
@@ -225,7 +225,7 @@ def test_ipython_hook_composes_with_existing():
 
     third_hook = mock_shell.set_custom_exc.call_args[0][1]
 
-    # Check that the traceback is supressed for all registered errors...
+    # Check that the traceback is suppressed for all registered errors...
     assert third_hook(mock_shell, ErrorA, ErrorA("a"), None) == []
     assert third_hook(mock_shell, ErrorB, ErrorB("b"), None) == []
     assert third_hook(mock_shell, ErrorC, ErrorC("c"), None) == []
