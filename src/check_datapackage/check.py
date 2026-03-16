@@ -142,8 +142,8 @@ def setup_suppressed_tracebacks(
         setup_suppressed_tracebacks(ErrorA)
 
         # In package B - adds to existing hook
-        setup_suppressed_tracebacks(ErrorB)
-        # Now both ErrorA and ErrorB have suppressed tracebacks
+        setup_suppressed_tracebacks(ErrorB, ErrorC)
+        # Now ErrorA, ErrorB, and ErrorC will all have suppressed tracebacks
         ```
     """
     for exc_type in exception_types:
