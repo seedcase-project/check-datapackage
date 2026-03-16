@@ -11,11 +11,15 @@ from check_datapackage import setup_suppressed_tracebacks
 
 @pytest.fixture(autouse=True)
 def reset_excepthook():
-    """Reset sys.excepthook before and after each test."""
-    original = sys.excepthook
+    """Reset sys.excepthook to its default before each test.
+
+    Without this, hooks accumulate across tests because setup_suppressed_tracebacks
+    composes on top of whatever is currently in sys.excepthook. A test that relies on
+    asserting specific output or delegation counts would otherwise be affected by
+    registrations from prior tests.
+    """
     sys.excepthook = sys.__excepthook__
     yield
-    sys.excepthook = original
 
 
 class TestValidation:
