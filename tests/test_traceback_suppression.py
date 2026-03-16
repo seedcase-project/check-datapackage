@@ -164,7 +164,7 @@ def test_re_registering_same_exception(capsys):
 # IPython exception handling ====
 
 
-def test_ipython_hook_suppresses_registered():
+def test_ipython_hook_only_suppresses_registered_exceptions():
     """IPython hook should suppress registered exceptions."""
 
     class CustomError(Exception):
@@ -180,28 +180,12 @@ def test_ipython_hook_suppresses_registered():
     mock_shell.set_custom_exc.assert_called_once()
     ipython_hook = mock_shell.set_custom_exc.call_args[0][1]
 
+    # A registered error should return an empty list, ie an empty/removed traceback
     result = ipython_hook(mock_shell, CustomError, CustomError("test"), None)
-
     assert result == []
 
-
-def test_ipython_hook_delegates_unregistered():
-    """IPython hook should delegate unregistered exceptions."""
-
-    class RegisteredError(Exception):
-        pass
-
-    mock_shell = MagicMock()
-    mock_shell.CustomTB = None
-
-    with patch("check_datapackage.check._is_running_from_ipython", return_value=True):
-        with patch.dict(builtins.__dict__, {"get_ipython": lambda: mock_shell}):
-            setup_suppressed_tracebacks(RegisteredError)
-
-    ipython_hook = mock_shell.set_custom_exc.call_args[0][1]
-
+    # An unregisterd error should return None, ie the hook did not modify anything
     result = ipython_hook(mock_shell, ValueError, ValueError("unregistered"), None)
-
     assert result is None
 
 
