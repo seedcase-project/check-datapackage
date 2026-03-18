@@ -22,7 +22,7 @@ def reset_excepthook():
     yield
 
 
-# Input Validation ====
+# Input checks ====
 
 
 def test_rejects_non_exception_class():
@@ -38,13 +38,13 @@ def test_rejects_exception_instance():
 
 
 def test_rejects_mixed_types():
-    """Mixed valid and invalid types should raise TypeError."""
+    """Mixed correct and incorrect types should raise TypeError."""
     with pytest.raises(TypeError, match="is not an exception class"):
         setup_suppressed_tracebacks(ValueError, int)  # type: ignore[arg-type]
 
 
 def test_accepts_single_and_multiple_exceptions(capsys):
-    """Single and multiple valid exceptions should be accepted and suppressed."""
+    """Single and multiple exceptions should be accepted and suppressed."""
     setup_suppressed_tracebacks(ValueError)
     sys.excepthook(ValueError, ValueError("a"), None)
     assert "ValueError" in capsys.readouterr().out

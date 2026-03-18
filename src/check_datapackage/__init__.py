@@ -6,7 +6,6 @@ from .check import (
     DataPackageError,
     check,
     explain,
-    setup_suppressed_tracebacks,
 )
 from .config import Config
 from .examples import (
@@ -34,5 +33,4 @@ __all__ = [
     "explain",
     "read_json",
     "pretty_print",
-    "setup_suppressed_tracebacks",
 ]
