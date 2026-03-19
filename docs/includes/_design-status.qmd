@@ -1,0 +1,17 @@
+We use symbols to indicate the status of implementation for the
+different parts of the interface (see table below). For work that is
+planned or is in progress, we include in-depth descriptions of the
+planned implementation. This may include signatures, docstrings, and
+pseudocode to clarify the design. Once the interface is implemented
+(done), we will remove the signatures from the documentation and point
+to the reference documentation instead. The symbols we use are described
+in the table below.
+
+|       Status        | Description                                                     |
+|:-------------------:|:----------------------------------------------------------------|
+|  {{< var done >}}   | Interface that has been implemented.                            |
+|   {{< var wip >}}   | Interface that is currently being worked on.                    |
+| {{< var planned >}} | Interface that is planned, but isn't being worked on currently. |
+
+: A table showing the symbols used to indicate the status of interface
+components, along with their descriptions.

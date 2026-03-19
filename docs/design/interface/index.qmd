@@ -1,0 +1,15 @@
+---
+title: "Interface"
+---
+
+This section of the documentation focuses on how the interface is
+implemented. It is split into the following documents:
+
+- The [Inputs](inputs.qmd) accepted by `check-datapackage`.
+- The [Outputs](outputs.qmd), including the structure of the `Issue`
+  class and different output formats.
+- The [Command Line Interface](cli.qmd) that forms the main entry point.
+- The [Configuration settings](config.qmd) as a TOML file and Python
+  `Config` class.
+- The [Python functions](python.qmd) that contain the Python code that
+  powers the CLI commands.

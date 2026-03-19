@@ -1,0 +1,359 @@
+---
+title: Python functions
+---
+
+This document describes the Python functions that form the CLI and
+non-CLI functions. Non-CLI functions are those used by the CLI
+functions. We include function signatures, documentation, some
+pseudocode, and diagrams that represent the interface along with
+explanations for these design decisions. It primarily serves as a
+reference for us to develop from and track what has been finished and
+what remains to be done.
+
+{{< include /docs/includes/_design-status.qmd >}}
+
+## Overview
+
+The Python interface has two parts: the functions that represent the
+interface via the Terminal (CLI) and the functions that implement the
+behaviour of the CLI functions. We will call them "CLI" and "non-CLI"
+functions. We have this split for a few reasons:
+
+- To create a clear separation between code that is exposed through the
+  CLI and code that could be used on its own as a Python package
+  library.
+- To apply functional programming practices to the non-CLI functions,
+  and restrict the use of side effects and other non-functional
+  practices to CLI functions.
+- To write unit tests for the non-CLI functions and integration tests
+  for the CLI functions.
+- To keep the CLI functions small by building them from functional units
+  of non-CLI code.
+
+## Python CLI functions
+
+These functions are the direct Python equivalents of the CLI commands
+described on the [CLI design page](cli.qmd): `check_cli()` and
+`explain_cli()`. This page focuses on the Python design and decisions
+made to avoid too much overlap with the content of the CLI design page.
+
+### {{< var planned >}} `check_cli()`
+
+This function provides the Python interface to the CLI `check` command.
+It handles reading configuration files, reading the Data Package file,
+running checks, and formatting output.
+
+``` python
+def check_cli(
+    source: Path | str = ".",
+    config: Path | str | None = None,
+    error: bool = False,
+    output: Literal["human", "json"] = "human",
+    verbose: bool = False,
+) -> None:
+    """Check a Data Package against the Data Package standard.
+
+    Reads a Data Package file, checks its properties against the standard,
+    and outputs the results in the specified format.
+
+    Args:
+        source: Path or URL to the Data Package file or directory.
+            Defaults to the current directory (looks for datapackage.json).
+        config: Path to a configuration file. If None, searches for
+            .cdp.toml or pyproject.toml in the current directory.
+        error: If True, exit with error code 1 when issues are found.
+            If False, output issues and exit with code 0.
+        output: Output format for results. 'human' for human-readable
+            text, 'json' for JSON array of issues.
+        verbose: If True, output additional information about the
+            checking process.
+
+    Side effects:
+        - Outputs to stdout
+        - Exits with appropriate exit code
+
+    Raises:
+        SystemExit: With exit codes:
+            - 0: All checks passed (or issues found but error=False)
+            - 1: Issues found (when error=True)
+            - 2: Error reading datapackage.json
+            - 3: Error reading configuration file
+            - 4: Invalid arguments
+    """
+```
+
+The internal flow of this function is shown in the diagram below.
+
+```{mermaid}
+%%| label: fig-python-check-cli-flow
+%%| fig-cap: "Diagram of the internal flow of functions and objects in the `check_cli()` CLI function."
+flowchart TD
+    source:::input --> parse_source{{"parse_source()"}} --> path
+    config_opt[config]:::input --> load_config{{"load_config()"}} --> Config
+    path --> read_json{{"read_json()"}} --> properties
+    properties & Config --> check{{"check()"}} --> issues
+    issues --> format_output{{"format_output()"}}
+    output_opt[output]:::input --> format_output
+    format_output --> stdout
+    error_opt[error]:::input --> exit_code{{"determine_exit_code()"}}
+    issues --> exit_code
+
+    classDef input fill:#FFF
+```
+
+### {{< var planned >}} `explain_cli()`
+
+This function provides the Python interface to the CLI `explain` command.
+It runs checks and outputs human-readable explanations.
+
+``` python
+def explain_cli(
+    source: Path | str = ".",
+    output: Literal["human", "json"] = "human",
+    verbose: bool = False,
+) -> None:
+    """Explain issues found in a Data Package.
+
+    Reads a Data Package file, checks its properties against the standard,
+    and outputs a human-readable explanation of any issues found.
+
+    Args:
+        source: Path or URL to the Data Package file or directory.
+            Defaults to the current directory (looks for datapackage.json).
+        output: Output format for results. 'human' for human-readable
+            text, 'json' for JSON array of issues.
+        verbose: If True, output additional information about the
+            checking process.
+
+    Side effects:
+        - Outputs to stdout
+        - Exits with code 0 always (doesn't error on issues)
+
+    Raises:
+        SystemExit: With exit codes:
+            - 0: Success (even if issues found)
+            - 2: Error reading datapackage.json
+            - 4: Invalid arguments
+    """
+```
+
+The internal flow of this function is shown in the diagram below.
+
+```{mermaid}
+%%| label: fig-python-explain-cli-flow
+%%| fig-cap: "Diagram of the internal flow of functions and objects in the `explain_cli()` CLI function."
+flowchart TD
+    source:::input --> parse_source{{"parse_source()"}} --> path
+    path --> read_json{{"read_json()"}} --> properties
+    properties --> check{{"check()"}} --> issues
+    issues --> explain{{"explain()"}} --> messages
+    output_opt[output]:::input --> format_output{{"format_output()"}}
+    messages --> format_output --> stdout
+
+    classDef input fill:#FFF
+```
+
+## Helper functions
+
+These are internal functions that support the CLI functions.
+
+### {{< var planned >}} `parse_source()`
+
+Parse a source string into a file path.
+
+``` python
+def parse_source(source: Path | str) -> Path:
+    """Parse a source string into a file path.
+
+    Supports:
+    - File paths (relative or absolute)
+    - URLs (https://)
+    - GitHub shortlinks (gh:owner/repo, github:owner/repo)
+
+    Args:
+        source: The source path or URL.
+
+    Returns:
+        A Path object to the Data Package file.
+
+    Raises:
+        SourceError: If the source cannot be parsed or accessed.
+    """
+```
+
+### {{< var planned >}} `load_config()`
+
+Load configuration from a file.
+
+``` python
+def load_config(
+    config_path: Path | str | None = None,
+) -> Config:
+    """Load configuration from a file or use defaults.
+
+    Searches for configuration files in order:
+    1. Specified path (if provided)
+    2. .cdp.toml in current directory
+    3. pyproject.toml [tool.check-datapackage] in current directory
+    4. Parent directories (up to project root)
+
+    Args:
+        config_path: Path to configuration file. If None, searches for
+            default locations.
+
+    Returns:
+        A Config object populated with configuration settings.
+
+    Raises:
+        ConfigError: If the configuration file is invalid.
+    """
+```
+
+### {{< var planned >}} `format_output()`
+
+Format issues for output.
+
+``` python
+def format_output(
+    issues: list[Issue],
+    output_format: Literal["human", "json"],
+) -> str:
+    """Format issues for output to stdout.
+
+    Args:
+        issues: List of issues found during checking.
+        output_format: Output format - 'human' or 'json'.
+
+    Returns:
+        Formatted string ready for output.
+    """
+```
+
+### {{< var planned >}} `determine_exit_code()`
+
+Determine the appropriate exit code.
+
+``` python
+def determine_exit_code(
+    issues: list[Issue],
+    error: bool,
+    has_error: bool = False,
+) -> int:
+    """Determine the appropriate exit code.
+
+    Args:
+        issues: List of issues found during checking.
+        error: Whether the --error flag was set.
+        has_error: Whether an error occurred during processing.
+
+    Returns:
+        Exit code: 0 for success, 1 for issues (if error=True),
+            2+ for processing errors.
+    """
+```
+
+## Non-CLI functions
+
+These are the core functions that do the actual checking. They are
+documented in the [Interface](../interface.qmd) page.
+
+### Already implemented
+
+- {{< var done >}} `check()` - Main checking function
+- {{< var done >}} `explain()` - Convert issues to human-readable text
+- {{< var done >}} `read_json()` - Read JSON file into Python dict
+
+### Planned
+
+- {{< var planned >}} `read_config()` - Read configuration file into Config object
+
+## Data classes
+
+These are the data classes that represent configuration and results.
+
+### Already implemented
+
+- {{< var done >}} `Config` - Configuration for checking
+- {{< var done >}} `Issue` - Represents a single check failure
+- {{< var done >}} `Exclusion` - Represents a check to exclude
+- {{< var done >}} `Extensions` - Container for extension checks
+- {{< var done >}} `CustomCheck` - Custom validation rule
+- {{< var done >}} `RequiredCheck` - Required field check
+- {{< var done >}} `DataPackageError` - Exception for issues in error mode
+
+### Planned
+
+- {{< var planned >}} `SourceError` - Exception for source parsing errors
+- {{< var planned >}} `ConfigError` - Exception for configuration errors
+
+## Entry points
+
+The CLI is exposed through the standard Python entry point mechanism.
+
+### `pyproject.toml` configuration
+
+``` toml
+[project.scripts]
+check-datapackage = "check_datapackage.cli:main"
+```
+
+### `cli.py` module structure
+
+``` python
+# src/check_datapackage/cli.py
+
+def main() -> None:
+    """Main entry point for the CLI."""
+    parser = create_parser()
+    args = parser.parse_args()
+    args.func(args)
+
+def create_parser() -> argparse.ArgumentParser:
+    """Create the argument parser for the CLI."""
+    # Creates parser with subcommands for 'check' and 'explain'
+
+def check_command(args: argparse.Namespace) -> None:
+    """Handle the 'check' subcommand."""
+    check_cli(
+        source=args.source,
+        config=args.config,
+        error=args.error,
+        output=args.output,
+        verbose=args.verbose,
+    )
+
+def explain_command(args: argparse.Namespace) -> None:
+    """Handle the 'explain' subcommand."""
+    explain_cli(
+        source=args.source,
+        output=args.output,
+        verbose=args.verbose,
+    )
+```
+
+## Design decisions
+
+### Why separate CLI and non-CLI functions?
+
+Separating them allows:
+
+1. **Reusability**: Non-CLI functions can be used in other contexts.
+2. **Testability**: Unit tests for non-CLI, integration tests for CLI.
+3. **Maintainability**: Clear separation of concerns.
+4. **Flexibility**: Users can choose CLI or Python interface.
+
+### Why use exit codes?
+
+Exit codes allow:
+
+1. **CI/CD integration**: Pipelines can fail on invalid data.
+2. **Script composition**: Can be used in shell pipelines.
+3. **Automation**: Other tools can programmatically detect success/failure.
+
+### Why both human and JSON output?
+
+Providing both allows:
+
+1. **Interactive use**: Humans can read human-readable output.
+2. **Machine processing**: Tools can parse JSON output.
+3. **Flexibility**: Different contexts need different formats.

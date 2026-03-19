@@ -1,0 +1,331 @@
+---
+title: "Outputs"
+---
+
+This document describes the outputs of `check-datapackage`, including
+the structure of the `Issue` class and how outputs are formatted for
+different display modes. It primarily serves as a reference for us to
+develop from and track what has been finished and what remains to be done.
+
+{{< include /docs/includes/_design-status.qmd >}}
+
+## Overview
+
+The output of `check-datapackage` is either:
+
+1. A list of `Issue` objects (Python interface)
+2. Human-readable text (CLI with default output)
+3. JSON-formatted text (CLI with `--output json`)
+
+All three outputs convey the same information: the issues found when
+checking a Data Package's properties against the standard. The difference
+is in how the information is formatted and presented.
+
+## `Issue` class
+
+The fundamental output unit is the `Issue` class, which represents a
+single failed check. When `check()` finds issues, it returns a list of
+`Issue` objects.
+
+### Structure
+
+Each `Issue` object has four attributes:
+
+| Attribute | Type | Description |
+|----------|------|-------------|
+| `jsonpath` | `str` | JSON path to the field where the issue occurred. E.g., `$.resources[0].name` |
+| `type` | `str` | Type of the check that failed. E.g., `"required"`, `"type"`, `"pattern"` |
+| `message` | `str` | Human-readable description of the issue |
+| `instance` | `Any` | The actual value that failed the check |
+
+### Example
+
+``` python
+import check_datapackage as cdp
+
+# Example Issue objects
+issue1 = cdp.Issue(
+    jsonpath="$.resources[0].name",
+    type="pattern",
+    message="The `name` property must match the pattern \"^[a-z0-9._-]+$\".",
+    instance="woolly-dormice-2015"  # Not matching pattern due to "-"
+)
+
+issue2 = cdp.Issue(
+    jsonpath="$.resources[0].schema.fields[2].type",
+    type="enum",
+    message="The `type` property must be one of the allowed types.",
+    instance="integer"  # Should be "integer" which is not in the enum
+)
+
+# Issues are sortable and comparable
+issues = [issue1, issue2]
+sorted_issues = sorted(issues)  # Sorted by jsonpath, then type
+unique_issues = list(set(issues))  # Deduplicated
+```
+
+### JSON representation
+
+When output as JSON (using `--output json`), each issue is represented as:
+
+``` json
+{
+  "jsonpath": "$.resources[0].name",
+  "type": "pattern",
+  "message": "The `name` property must match the pattern \"^[a-z0-9._-]+$\".",
+  "instance": "woolly-dormice-2015"
+}
+```
+
+## Human-readable output
+
+The `explain()` function (or CLI default output) converts a list of
+`Issue` objects into human-readable text. This format is designed to be
+easy to read and understand, with clear indicators of where issues occur.
+
+### Structure
+
+The human-readable output has this structure:
+
+```
+{count} issue{singular/plural} found in your datapackage.json:
+
+At {jsonpath}:
+|
+| {property}{colon}{value}
+|   {carets}
+{message}
+
+At {jsonpath}:
+|
+| {property}{colon}{value}
+|   {carets}
+{message}
+```
+
+Where:
+- `{count}`: Number of issues found
+- `{singular/plural}`: "issue was" or "issues were"
+- `{jsonpath}`: The JSON path without the `$.` prefix
+- `{property}`: The name of the property that has the issue
+- `{value}`: The actual value that caused the issue
+- `{carets}`: Carets (`^`) pointing to the problematic value
+- `{message}`: Description of what's wrong
+
+### Example
+
+Running:
+
+``` {.bash filename="Terminal"}
+check-datapackage check ./datapackage.json
+```
+
+When there are issues, outputs:
+
+```
+3 issues were found in your datapackage.json:
+
+At resources[0].name:
+|
+| name: woolly-dormice-2015
+|   ^^^^^^^^^^^^^^^^^^^^^
+The `name` property must match the pattern "^[a-z0-9._-]+$".
+
+At resources[0].schema.fields[2].type:
+|
+| type: integer
+|   ^^^^^^^^^^^
+The `type` property must be one of the allowed types.
+
+At resources[1].schema.primaryKey:
+|
+| No fields found in resource for primary key fields: 'unknown_field'.
+```
+
+When there are no issues, outputs:
+
+```
+All checks passed! Your Data Package is valid.
+```
+
+### Design rationale
+
+This format is designed to:
+
+1. **Be scannable**: Developers can quickly identify where issues are.
+2. **Show context**: The actual value is shown with carets pointing to it.
+3. **Explain clearly**: Each issue has a clear message explaining the problem.
+4. **Match conventions**: Similar to how compilers and linters show errors.
+
+## JSON output
+
+When using `--output json`, the output is a JSON array of issue objects.
+This format is designed for programmatic consumption, such as:
+
+- Integration with other tools
+- CI/CD pipelines
+- IDE extensions
+- Programmatic processing
+
+### Structure
+
+``` json
+[
+  {
+    "jsonpath": "$.resources[0].name",
+    "type": "pattern",
+    "message": "The `name` property must match the pattern \"^[a-z0-9._-]+$\".",
+    "instance": "woolly-dormice-2015"
+  },
+  {
+    "jsonpath": "$.resources[0].schema.fields[2].type",
+    "type": "enum",
+    "message": "The `type` property must be one of the allowed types.",
+    "instance": "integer"
+  }
+]
+```
+
+An empty array `[]` indicates no issues were found.
+
+### Usage example
+
+``` {.bash filename="Terminal"}
+# Output to file
+check-datapackage check ./datapackage.json --output json > issues.json
+
+# Use in scripts
+issues=$(check-datapackage check ./datapackage.json --output json)
+if [ "$issues" = "[]" ]; then
+  echo "No issues found"
+else
+  echo "Issues found: $issues"
+fi
+```
+
+## Error mode output
+
+When the `--error` flag is used (or `error=True` in Python), instead of
+returning issues, a `DataPackageError` exception is raised with the
+human-readable explanation. This is useful for:
+
+- Failing fast in CI/CD pipelines
+- Ensuring invalid data doesn't proceed
+- Getting immediate user attention
+
+### CLI example
+
+``` {.bash filename="Terminal"}
+# Without --error flag (default)
+check-datapackage check ./datapackage.json
+# Outputs issues and exits with code 0
+
+# With --error flag
+check-datapackage check ./datapackage.json --error
+# Raises DataPackageError and exits with code 1 if issues found
+```
+
+### Python example
+
+``` python
+import check_datapackage as cdp
+
+properties = cdp.read_json("datapackage.json")
+
+# Without error mode (default)
+issues = cdp.check(properties)
+if issues:
+    print(f"Found {len(issues)} issues")
+else:
+    print("No issues found")
+
+# With error mode
+try:
+    issues = cdp.check(properties, error=True)
+    print("No issues found")
+except cdp.DataPackageError as e:
+    print(f"Issues found:\n{e}")
+```
+
+## Integration patterns
+
+### With CI/CD pipelines
+
+``` yaml
+# .github/workflows/check-datapackage.yml
+name: Check Data Package
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install check-datapackage
+        run: pip install check-datapackage
+      - name: Check Data Package
+        run: check-datapackage check ./datapackage.json --error
+```
+
+### With pre-commit hooks
+
+``` yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: check-datapackage
+        name: Check Data Package
+        entry: check-datapackage check
+        args: ['--error']
+        language: system
+        files: datapackage\.json
+```
+
+### With IDE extensions
+
+The JSON output can be consumed by IDE extensions to show inline errors:
+
+``` json
+[
+  {
+    "jsonpath": "$.resources[0].name",
+    "type": "pattern",
+    "message": "The `name` property must match the pattern \"^[a-z0-9._-]+$\".",
+    "instance": "woolly-dormice-2015"
+  }
+]
+```
+
+IDE extensions can parse this output to show errors at the correct
+location in the `datapackage.json` file.
+
+## Design decisions
+
+### Why a structured `Issue` class?
+
+Using a structured class instead of plain strings provides:
+
+1. **Machine-readable**: Can be processed programmatically.
+2. **Flexible output**: Same issue can be formatted differently (JSON, text).
+3. **Comparable**: Issues can be sorted and deduplicated.
+4. **Extensible**: New attributes can be added without breaking changes.
+
+### Why separate `check()` and `explain()`?
+
+Separating these functions allows:
+
+1. **Flexibility**: Users can process issues programmatically or get
+   human-readable output.
+2. **Composability**: `explain()` can be used in scripts, CLIs, or GUIs.
+3. **Performance**: `check()` is fast; `explain()` is only called when needed.
+
+### Why JSON as structured output format?
+
+JSON is chosen because:
+
+1. **Universal**: Supported by all programming languages.
+2. **Human-readable**: Can be inspected directly.
+3. **Tool support**: Many tools can parse JSON.
+4. **Standard**: Well-defined specification.
