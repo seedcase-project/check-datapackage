@@ -6,7 +6,7 @@ ci:
 
 repos:
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.30.0
+    rev: v8.30.1
     hooks:
       - id: gitleaks
 
@@ -19,7 +19,7 @@ repos:
         args: [--assume-in-merge]
 
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.13.7
+    rev: v4.13.9
     hooks:
       - id: commitizen
 
@@ -27,7 +27,7 @@ repos:
   # sub-packages, which confuses pre-commit when it tries to find the latest
   # version
   - repo: https://github.com/adhtruong/mirrors-typos
-    rev: v1.43.4
+    rev: v1.44.0
     hooks:
       - id: typos
 
