@@ -16,7 +16,8 @@
     "charliermarsh.ruff",
     "pshaddel.conventional-branch",
     "tekumara.typos-vscode",
-    "EditorConfig.EditorConfig"
+    "EditorConfig.EditorConfig",
+    "rvben.rumdl"
   ],
   "unwantedRecommendations": []
 }

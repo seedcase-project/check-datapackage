@@ -4,9 +4,8 @@ EXPLANATION
 
 Closes #
 
-Needs a quick/an in-depth review.
+Needs a quick/thorough review.
 
 ## Checklist
 
-- [ ] Formatted Markdown
 - [ ] Ran `just run-all`

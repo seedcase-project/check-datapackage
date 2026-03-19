@@ -1,3 +1,8 @@
 gh:
   repo: check-datapackage
   org: seedcase-project
+
+links:
+  github: "https://github.com/seedcase-project/check-datapackage"
+  # TODO: Confirm this is the correct URL
+  site: "https://check-datapackage.seedcase-project.org

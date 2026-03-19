@@ -11,7 +11,7 @@ website:
     pinned: true
     title: false
     logo: "_extensions/seedcase-project/seedcase-theme/logos/check-datapackage/navbar.svg"
-    logo-alt: "check-datapackage: Main page"
+    logo-alt: "check-datapackage logo: Main page"
     left:
       - text: "Overview"
         href: docs/index.qmd
@@ -101,10 +101,6 @@ format:
   seedcase-theme-html:
     theme:
       - brand
-    include-before-body:
-      - "docs/includes/site-counter.html"
-
-editor:
-  markdown:
-    wrap: 72
-    canonical: true
+    # TODO: Uncomment if using the goatcounter website visitor counter
+    # include-before-body:
+      # - "docs/includes/site-counter.html"
