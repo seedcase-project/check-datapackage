@@ -40,9 +40,13 @@ website:
       contents:
         - section: "Design"
           href: docs/design/index.qmd
+        - section: "Architecture"
+          href: docs/design/architecture.qmd
+        - section: "Interface"
+          href: docs/design/interface/index.qmd
           contents:
-            - docs/design/architecture.qmd
-            - docs/design/interface.qmd
+            - auto: "docs/design/interface/*.qmd"
+            # - docs/design/interface.qmd
     - id: guide
       contents:
         - section: "Guide"
