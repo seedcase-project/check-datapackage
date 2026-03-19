@@ -1,7 +1,7 @@
 # Changelog
 
-<<<<<<< before updating
-Since we follow [Conventional
+<<<<<<< before updating Since we follow
+[Conventional
 Commits](https://decisions.seedcase-project.org/why-conventional-commits),
 we're able to automatically create a release with
 [Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen)
@@ -14,7 +14,8 @@ with what was changed within it.
 
 ### Feat
 
-- :sparkles: re-export `print()` from rich, use it `explain()` docs (#265)
+- :sparkles: re-export `print()` from rich, use it `explain()` docs
+  (#265)
 
 ## 0.29.0 (2025-12-21)
 
@@ -224,7 +225,7 @@ with what was changed within it.
 
 ### Refactor
 
-- ♻️  rename example dicts from "descriptor" to "properties" (#140)
+- ♻️ rename example dicts from "descriptor" to "properties" (#140)
 
 ## 0.8.4 (2025-10-17)
 
@@ -344,18 +345,19 @@ with what was changed within it.
 
 ### Fix
 
-- :bug: fix website build (#27)
-||||||| last update
-Since we follow [Conventional
+- :bug: fix website build (#27) ||||||| last update Since we follow
+
+[Conventional
 Commits](https://decisions.seedcase-project.org/why-conventional-commits),
 we're able to automatically create a release with
 [Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen)
 based on the commit messages. This means that releases can happen quite
 often, sometimes several in a day. It also means any individual release
 will not have many changes within it. Below is a list of releases along
-with what was changed within it.
-=======
-Since we follow
+
+## with what was changed within it
+
+======= Since we follow
 [Conventional Commits](https://decisions.seedcase-project.org/why-conventional-commits/)
 when writing commit messages, we're able to automatically create formal
 releases of the Python package based on the commit messages. The
