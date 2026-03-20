@@ -99,8 +99,5 @@ metadata-files:
 
 format:
   seedcase-theme-html:
-    theme:
-      - brand
-    # TODO: Uncomment if using the goatcounter website visitor counter
-    # include-before-body:
-      # - "docs/includes/site-counter.html"
+    include-before-body:
+      - "docs/includes/site-counter.html"
