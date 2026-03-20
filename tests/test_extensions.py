@@ -108,7 +108,7 @@ def test_no_matching_jsonpath():
     custom_check = CustomCheck(
         jsonpath="$.missing",
         message="This check always fails.",
-        check=lambda value: False,
+        check=lambda _: False,
         type="always-fail",
     )
     config = Config(extensions=Extensions(custom_checks=[custom_check]))
