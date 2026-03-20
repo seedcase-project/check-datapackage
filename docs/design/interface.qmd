@@ -13,10 +13,10 @@ remove the signatures from the documentation and point to the reference
 documentation instead. The symbols we use are described in the table
 below.
 
-| Status | Description |
-|:-----------------------------:|:----------------------------------------|
-| {{< var done >}} | Interface that has been implemented. |
-| {{< var wip >}} | Interface that is currently being worked on. |
+|       Status        | Description                                                     |
+|:-------------------:|:----------------------------------------------------------------|
+|  {{< var done >}}   | Interface that has been implemented.                            |
+|   {{< var wip >}}   | Interface that is currently being worked on.                    |
 | {{< var planned >}} | Interface that is planned, but isn't being worked on currently. |
 
 : A table showing the symbols used to indicate the status of interface
@@ -26,24 +26,24 @@ components, along with their descriptions.
 
 This section describes the inputs accepted by `check-datapackage`.
 
--   **Properties**: This is a Python dictionary containing the
-    properties of a Data Package. Allowed properties are defined in the
-    [Data Package standard](https://datapackage.org/). A common use case
-    is loading the properties from the `datapackage.json` file.
--   **Config:** A `Config` object can optionally be passed to
-    `check-datapackage` with settings to modify the behaviour and output
-    of the check mechanism.
--   **Error**: A boolean that controls whether the function errors out
-    or returns a value if any issues are found.
+- **Properties**: This is a Python dictionary containing the properties
+  of a Data Package. Allowed properties are defined in the
+  [Data Package standard](https://datapackage.org/). A common use case
+  is loading the properties from the `datapackage.json` file.
+- **Config:** A `Config` object can optionally be passed to
+  `check-datapackage` with settings to modify the behaviour and output
+  of the check mechanism.
+- **Error**: A boolean that controls whether the function errors out or
+  returns a value if any issues are found.
 
 ## Outputs
 
 For each failed check, `check-datapackage` flags the corresponding issue
 in the properties. If all checks pass, an empty list is returned.
 
--   Default mode: The issues are returned as a list without stopping
-    program execution.
--   Error mode: The issues result in errors that stop program execution.
+- Default mode: The issues are returned as a list without stopping
+  program execution.
+- Error mode: The issues result in errors that stop program execution.
 
 ## Functions
 

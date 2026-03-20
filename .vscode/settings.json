@@ -6,8 +6,6 @@
     "source.organizeImports": "always"
   },
   "git.autofetch": false,
-  "quarto.visualEditor.markdownWrap": "column",
-  "quarto.visualEditor.markdownWrapColumn": 72,
   "autoDocstring.customTemplatePath": ".vscode/google-notypes.mustache",
   "editor.tabCompletion": "on",
   "editor.snippetSuggestions": "inline",

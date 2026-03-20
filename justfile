@@ -1,12 +1,14 @@
 @_default:
     just --list --unsorted
 
-@_checks: check-python check-unused check-security check-spelling check-commits
+@_checks: check-python check-unused check-security check-spelling check-urls check-commits
+
 @_tests: test-python
+
 @_builds: build-contributors build-website build-readme
 
 # Run all build-related recipes in the justfile
-run-all: install-deps update-quarto-theme format-python _checks _tests _builds
+run-all: install-deps update-quarto-theme format-python format-md _checks _tests _builds
 
 # List all TODO items in the repository
 list-todos:
@@ -53,25 +55,29 @@ check-python:
   # Check formatting
   uv run ruff check .
   # Check types
-  uv run mypy .
+  uv run mypy --pretty .
 
 # Reformat Python code to match coding style and general structure
 format-python:
   uv run ruff check --fix .
   uv run ruff format .
 
+# Format Markdown files
+format-md:
+  uvx rumdl fmt --silent
+
 # Build the Python docstrings as a section in the website using quartodoc
 build-quartodoc:
-  # To let Quarto know where python is.
-  export QUARTO_PYTHON=.venv/bin/python3
-  # Delete any previously built files from quartodoc.
-  # -f is to not give an error if the files don't exist yet.
-  rm -rf docs/reference
-  uv run quartodoc build
+    # To let Quarto know where python is.
+    export QUARTO_PYTHON=.venv/bin/python3
+    # Delete any previously built files from quartodoc.
+    # -f is to not give an error if the files don't exist yet.
+    rm -rf docs/reference
+    uv run quartodoc build
 
 # Build the documentation website using Quarto
-build-website:  build-quartodoc
-  uv run quarto render --execute
+build-website: build-quartodoc
+    uv run quarto render --execute
 
 # Preview the documentation website with automatic reload on changes
 preview-website: build-quartodoc
@@ -98,6 +104,14 @@ check-security:
 check-spelling:
   uv run typos
 
+# Install lychee from https://lychee.cli.rs/guides/getting-started/
+# Check that URLs work
+check-urls:
+  lychee . \
+    --verbose \
+    --extensions md,qmd,py \
+    --exclude-path "_badges.qmd"
+
 # Build the documentation as PDF using Quarto
 build-pdf:
   # To let Quarto know where python is.
@@ -118,7 +132,7 @@ check-unused:
   # - 60 %: attribute, class, function, method, property, variable
   # There are some things should be ignored though, with the allowlist.
   # Create an allowlist with `vulture --make-allowlist`
-  uv run vulture src/ tests/ **/vulture-allowlist.py
+  uv run vulture --min-confidence 100 src/ tests/ **/vulture-allowlist.py
 
 # Re-build the README file from the Quarto version
 build-readme:

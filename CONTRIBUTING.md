@@ -1,13 +1,13 @@
 # Contributing
 
-## Issues and bugs :bug:
+## :bug: Issues and bugs
 
 The easiest way to contribute is to report issues or bugs that you might
 find while using `check-datapackage`. You can do this by creating a
 [new](https://github.com/seedcase-project/check-datapackage/issues/new/choose)
 issue on the GitHub repository.
 
-## Adding or modifying content :pencil2:
+## :pencil2: Adding or modifying content
 
 If you would like to contribute content, please check out our
 [guidebook](https://guidebook.seedcase-project.org/) for more specific
@@ -22,7 +22,7 @@ and justfile have documentation with more detailed guides on how to use
 them, but below are some simple instructions to get you started.
 
 It's easiest to install uv and justfile using
-[pipx](https://pypa.github.io/pipx/), so install that first. Then,
+[pipx](https://pipx.pypa.io/stable/), so install that first. Then,
 install uv and justfile by running:
 
 ``` bash
@@ -45,13 +45,13 @@ repository. Then run:
 just run-all
 ```
 
-When committing changes, please follow the [Conventional
-Commits](https://decisions.seedcase-project.org/why-conventional-commits)
-standard for Git messages. Using this convention allows us to be able to
-automatically create a release based on the commit message with
-[Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen).
+When committing changes, please try to follow
+[Conventional Commits](https://decisions.seedcase-project.org/why-conventional-commits/)
+as Git messages. Using this convention allows us to be able to
+automatically create a release based on the commit message by using
+[Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen/).
 If you don't use Conventional Commits when making a commit, we will
-revise the pull request title to follow that format, as we use [squash
-merges](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/squashing-commits/about-squash-merges)
-when merging pull requests, so all other commits in the pull request
-will be squashed into one commit.
+revise the pull request title to follow that format, as we use
+[squash merges](https://git-scm.com/docs/git-merge) when merging pull
+requests, so all other commits in the pull request will be squashed into
+one commit.
