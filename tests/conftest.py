@@ -2,7 +2,7 @@ import os
 
 
 # Can get debug output by using `CDP_DEBUG=true uv run pytest -sv`
-def pytest_report_teststatus(report, config):
+def pytest_report_teststatus(report):
     if os.getenv("CDP_DEBUG"):
         if report.when == "call":
             # Add newlines to separate test results

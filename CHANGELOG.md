@@ -1,19 +1,28 @@
 # Changelog
 
-Since we follow [Conventional
-Commits](https://decisions.seedcase-project.org/why-conventional-commits),
-we're able to automatically create a release with
-[Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen)
-based on the commit messages. This means that releases can happen quite
-often, sometimes several in a day. It also means any individual release
-will not have many changes within it. Below is a list of releases along
-with what was changed within it.
+Since we follow
+[Conventional Commits](https://decisions.seedcase-project.org/why-conventional-commits/)
+when writing commit messages, we're able to automatically create formal
+"releases" of the template based on the commit messages. Releases in the
+context of template are when changes occur to the `template/` files or
+to the `copier.yaml` files. The releases are also published to Zenodo
+for easier discovery, archival, and citation purposes. We use
+[Commitizen](https://decisions.seedcase-project.org/why-semantic-release-with-commitizen/)
+to be able to automatically create these releases, which uses
+[SemVar](https://semverdoc.org) as the version numbering scheme.
+
+Because releases are created based on commit messages, we release quite
+often, sometimes several times in a day. This also means that any
+individual release will not have many changes within it. Below is a list
+of the releases we've made so far, along with what was changed within
+each release.
 
 ## 0.30.0 (2026-01-06)
 
 ### Feat
 
-- :sparkles: re-export `print()` from rich, use it `explain()` docs (#265)
+- :sparkles: re-export `print()` from rich, use it `explain()` docs
+  (#265)
 
 ## 0.29.0 (2025-12-21)
 
@@ -223,7 +232,7 @@ with what was changed within it.
 
 ### Refactor
 
-- ♻️  rename example dicts from "descriptor" to "properties" (#140)
+- ♻️ rename example dicts from "descriptor" to "properties" (#140)
 
 ## 0.8.4 (2025-10-17)
 

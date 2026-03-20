@@ -9,7 +9,9 @@ extend-select = [
   # Add rule that all functions have docstrings.
   "D",
   # Add isort to list.
-  "I"
+  "I",
+  # Check for unused arguments
+  "ARG",
 ]
 # Ignore missing docstring at the top of files
 ignore = ["D100"]
