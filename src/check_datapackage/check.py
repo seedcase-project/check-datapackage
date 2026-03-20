@@ -28,33 +28,89 @@ from check_datapackage.internals import (
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
 
+# Type alias for Python exception hook
+PythonExceptionHook = Callable[
+    [type[BaseException], BaseException, Optional[TracebackType]],
+    None,
+]
+
+# Type alias for IPython custom exception handler (includes self and tb_offset)
+IPythonExceptionHandler = Callable[
+    [Any, type[BaseException], BaseException, Optional[TracebackType], None],
+    Optional[list[str]],
+]
+
 
 def _pretty_print_exception(
     exc_type: type[BaseException],
     exc_value: BaseException,
 ) -> None:
-    # Print the error type and message, without traceback
-    return rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
+    rprint(f"\n[red]{exc_type.__name__}[/red]: {exc_value}")
 
 
-def no_traceback_hook(
-    exc_type: type[BaseException],
-    exc_value: BaseException,
-    exc_traceback: TracebackType | None,
-) -> None:
-    """Exception hook to hide tracebacks for DataPackageError."""
-    if issubclass(exc_type, DataPackageError):
-        _pretty_print_exception(exc_type, exc_value)
-    else:
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+def _create_suppressed_traceback_hook(
+    exception_types: tuple[type[BaseException], ...],
+    old_hook: PythonExceptionHook,
+) -> PythonExceptionHook:
+    """Create a Python exception hook that suppresses tracebacks.
+
+    Args:
+        exception_types: Exception types to suppress tracebacks for.
+        old_hook: The previous exception hook to delegate unregistered exceptions to.
+
+    Returns:
+        A composable exception hook function.
+    """
+
+    def hook(
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: Optional[TracebackType],
+    ) -> None:
+        if issubclass(exc_type, exception_types):
+            _pretty_print_exception(exc_type, exc_value)
+        else:
+            old_hook(exc_type, exc_value, exc_traceback)
+
+    return hook
 
 
-# Need to use a custom exception hook to hide tracebacks for our custom exceptions
-sys.excepthook = no_traceback_hook
+def _create_suppressed_traceback_ipython_hook(
+    exception_types: tuple[type[BaseException], ...],
+    old_custom_tb: Optional[IPythonExceptionHandler],
+) -> Callable[
+    [Any, type[BaseException], BaseException, Optional[TracebackType], None],
+    Optional[list[str]],
+]:
+    """Create an IPython exception hook that suppresses tracebacks.
+
+    Args:
+        exception_types: Exception types to suppress tracebacks for.
+        old_custom_tb: The previous IPython custom exception handler, if any.
+
+    Returns:
+        A composable IPython exception hook function.
+    """
+    has_old_handler = old_custom_tb is not None
+
+    def hook(
+        self: Any,
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: Optional[TracebackType],
+        tb_offset: None = None,
+    ) -> Optional[list[str]]:
+        if issubclass(exc_type, exception_types):
+            _pretty_print_exception(exc_type, exc_value)
+            return []
+        elif has_old_handler and old_custom_tb is not None:
+            return old_custom_tb(self, exc_type, exc_value, exc_traceback, tb_offset)
+        else:
+            return None
+
+    return hook
 
 
-# Unfortunately, IPython uses its own exception handling mechanism,
-# so we need to set a separate custom exception handler there.
 def _is_running_from_ipython() -> bool:
     """Checks whether running in IPython interactive console or not."""
     try:
@@ -65,25 +121,44 @@ def _is_running_from_ipython() -> bool:
         return get_ipython() is not None  # type: ignore[no-untyped-call]
 
 
-if _is_running_from_ipython():
+def _setup_suppressed_tracebacks(
+    *exception_types: type[BaseException],
+) -> None:
+    """Set up exception hooks to hide tracebacks for specified exceptions.
 
-    def no_traceback_in_ipython(
-        self: Any,
-        exc_type: type[BaseException],
-        exc_value: BaseException,
-        exc_traceback: TracebackType | None,
-        tb_offset: None = None,
-    ) -> None:
-        """Hide tracebacks and correctly display rich markup in IPython."""
-        if issubclass(exc_type, DataPackageError):
-            _pretty_print_exception(exc_type, exc_value)
-        else:
-            # Regular IPython traceback
-            self.showtraceback(
-                (exc_type, exc_value, exc_traceback), tb_offset=tb_offset
-            )
+    This function is composable - multiple calls add to the existing hook
+    rather than replacing it. Each package only needs to register its own
+    exceptions.
 
-    get_ipython().set_custom_exc((Exception,), no_traceback_in_ipython)  # type: ignore  # noqa: F821
+    Args:
+        *exception_types: Exception types to hide tracebacks for.
+
+    Raises:
+        TypeError: If any exception_type is not an exception class.
+
+    Examples:
+        ```python
+        # In package A
+        _setup_suppressed_tracebacks(ErrorA)
+
+        # In package B - adds to existing hook
+        _setup_suppressed_tracebacks(ErrorB, ErrorC)
+        # Now ErrorA, ErrorB, and ErrorC will all have suppressed tracebacks
+        ```
+    """
+    for exc_type in exception_types:
+        if not (isinstance(exc_type, type) and issubclass(exc_type, BaseException)):
+            raise TypeError(f"{exc_type!r} is not an exception class")
+
+    sys.excepthook = _create_suppressed_traceback_hook(exception_types, sys.excepthook)
+
+    if _is_running_from_ipython():
+        ip = get_ipython()  # type: ignore  # noqa: F821
+        old_custom_tb: Optional[IPythonExceptionHandler] = getattr(ip, "CustomTB", None)
+        ip.set_custom_exc(
+            (Exception,),
+            _create_suppressed_traceback_ipython_hook(exception_types, old_custom_tb),
+        )
 
 
 class DataPackageError(Exception):
@@ -930,3 +1005,7 @@ def _get_errors_in_group(
 
 def _strip_index(jsonpath: str) -> str:
     return re.sub(r"\[\d+\]$", "", jsonpath)
+
+
+# Set up exception hooks at module load time
+_setup_suppressed_tracebacks(DataPackageError)

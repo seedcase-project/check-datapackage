@@ -2,7 +2,11 @@
 
 from rich import print as pretty_print
 
-from .check import DataPackageError, check, explain
+from .check import (
+    DataPackageError,
+    check,
+    explain,
+)
 from .config import Config
 from .examples import (
     example_field_properties,
