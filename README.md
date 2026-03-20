@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://check-datapackage.seedcase-project.org/">
-        <img src="https://raw.githubusercontent.com/seedcase-project/check-datapackage/main/_extensions/seedcase-project/seedcase-theme/logos/navbar-logo-check-datapackage.svg" alt="Link to Sprout website" height="150"/>
+        <img src="https://raw.githubusercontent.com/seedcase-project/check-datapackage/main/_extensions/seedcase-project/seedcase-theme/logos/check-datapackage/navbar.svg" alt="Link to Sprout website" height="150"/>
     </a>
 </p>
 
@@ -28,7 +28,7 @@ package](https://github.com/seedcase-project/check-datapackage/actions/workflows
 Scorecard](https://api.scorecard.dev/projects/github.com/seedcase-project/check-datapackage/badge?raw=true.svg)](https://scorecard.dev/viewer/?uri=github.com/seedcase-project/check-datapackage)
 [![CodeQL](https://github.com/seedcase-project/check-datapackage/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/seedcase-project/check-datapackage/actions/workflows/github-code-scanning/codeql)
 [![code
-coverage](https://raw.githubusercontent.com/seedcase-project/check-datapackage/coverage/coverage.svg?raw=true)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/seedcase-project/check-datapackage/coverage/index.html)
+coverage](https://raw.githubusercontent.com/seedcase-project/check-datapackage/coverage/coverage.svg?raw=true)](https://raw.githack.com/seedcase-project/check-datapackage/coverage/index.html)
 [![pre-commit.ci
 status](https://results.pre-commit.ci/badge/github/seedcase-project/check-datapackage/main.svg)](https://results.pre-commit.ci/latest/github/seedcase-project/check-datapackage/main)
 [![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -67,7 +67,7 @@ to ensure that it’s compliant with the standard. Specifically, it:
 
 - `.github/`: Contains GitHub-specific files, such as issue and pull
   request templates, workflows,
-  [dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide)
+  [dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart-guide)
   configuration, pull request templates, and a
   [CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
   file.
@@ -113,6 +113,8 @@ to ensure that it’s compliant with the standard. Specifically, it:
   for linting and formatting Python code.
 - `uv.lock`: Lockfile used by [`uv`](https://docs.astral.sh/uv/) to
   record exact versions of installed dependencies.
+- `.rumdl.toml`: [rumdl](https://rumdl.dev/) configuration file for
+  formatting Markdown files so that they are standardized and consistent
 
 ## Contributing
 

@@ -4,7 +4,6 @@ metadata-files:
   - _metadata.yml
 execute:
   echo: false
-jupyter: python3
 ---
 
 <!-- NOTE: This README.md is auto-generated from README.qmd. Edit that file. -->
@@ -25,16 +24,16 @@ jupyter: python3
 metadata against the [Data Package standard](https://datapackage.org/)
 to ensure that it's compliant with the standard. Specifically, it:
 
--   Checks your metadata in `datapackage.json` against the Data Package
-    standard.
--   Enables you to configure which components of the metadata should or
-    should not be checked.
--   Enables you to turn off specific checks defined in the standard.
--   Supports user-defined, custom checks.
--   Provides clear and user-friendly messages that point directly to
-    where issues occur in the metadata.
--   Supports a strict mode that enforces full compliance with the
-    standard, including properties that must and should be included.
+- Checks your metadata in `datapackage.json` against the Data Package
+  standard.
+- Enables you to configure which components of the metadata should or
+  should not be checked.
+- Enables you to turn off specific checks defined in the standard.
+- Supports user-defined, custom checks.
+- Provides clear and user-friendly messages that point directly to where
+  issues occur in the metadata.
+- Supports a strict mode that enforces full compliance with the
+  standard, including properties that must and should be included.
 
 ::: callout-warning
 `check-datapackage` only checks the metadata in your `datapackage.json`
@@ -125,10 +124,11 @@ For a list of changes, see our [changelog](CHANGELOG.md) page.
 
 ## Citing
 
-This project is part of the [Seedcase
-Project](https://seedcase-project.org), which is a collaborative effort
-to create a framework for data management and analysis in research. If
-you use this project in your work, please cite it as follows:
+This project is part of the
+[Seedcase Project](https://seedcase-project.org), which is a
+collaborative effort to create a framework for data management and
+analysis in research. If you use this project in your work, please cite
+it as follows:
 
 ```{python}
 #| output: asis
