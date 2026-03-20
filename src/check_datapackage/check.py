@@ -121,7 +121,7 @@ def _is_running_from_ipython() -> bool:
         return get_ipython() is not None  # type: ignore[no-untyped-call]
 
 
-def setup_suppressed_tracebacks(
+def _setup_suppressed_tracebacks(
     *exception_types: type[BaseException],
 ) -> None:
     """Set up exception hooks to hide tracebacks for specified exceptions.
@@ -139,10 +139,10 @@ def setup_suppressed_tracebacks(
     Examples:
         ```python
         # In package A
-        setup_suppressed_tracebacks(ErrorA)
+        _setup_suppressed_tracebacks(ErrorA)
 
         # In package B - adds to existing hook
-        setup_suppressed_tracebacks(ErrorB, ErrorC)
+        _setup_suppressed_tracebacks(ErrorB, ErrorC)
         # Now ErrorA, ErrorB, and ErrorC will all have suppressed tracebacks
         ```
     """
@@ -1008,4 +1008,4 @@ def _strip_index(jsonpath: str) -> str:
 
 
 # Set up exception hooks at module load time
-setup_suppressed_tracebacks(DataPackageError)
+_setup_suppressed_tracebacks(DataPackageError)

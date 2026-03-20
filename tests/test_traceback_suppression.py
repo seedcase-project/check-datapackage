@@ -6,7 +6,7 @@ from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
-from check_datapackage import setup_suppressed_tracebacks
+from check_datapackage.check import _setup_suppressed_tracebacks
 
 
 @pytest.fixture(autouse=True)
@@ -28,28 +28,28 @@ def reset_excepthook():
 def test_rejects_non_exception_class():
     """Non-exception classes should raise TypeError."""
     with pytest.raises(TypeError, match="is not an exception class"):
-        setup_suppressed_tracebacks(str)  # type: ignore[arg-type]
+        _setup_suppressed_tracebacks(str)  # type: ignore[arg-type]
 
 
 def test_rejects_exception_instance():
     """Exception instances should raise TypeError."""
     with pytest.raises(TypeError, match="is not an exception class"):
-        setup_suppressed_tracebacks(ValueError("test"))  # type: ignore[arg-type]
+        _setup_suppressed_tracebacks(ValueError("test"))  # type: ignore[arg-type]
 
 
 def test_rejects_mixed_types():
     """Mixed correct and incorrect types should raise TypeError."""
     with pytest.raises(TypeError, match="is not an exception class"):
-        setup_suppressed_tracebacks(ValueError, int)  # type: ignore[arg-type]
+        _setup_suppressed_tracebacks(ValueError, int)  # type: ignore[arg-type]
 
 
 def test_accepts_single_and_multiple_exceptions(capsys):
     """Single and multiple exceptions should be accepted and suppressed."""
-    setup_suppressed_tracebacks(ValueError)
+    _setup_suppressed_tracebacks(ValueError)
     sys.excepthook(ValueError, ValueError("a"), None)
     assert "ValueError" in capsys.readouterr().out
 
-    setup_suppressed_tracebacks(TypeError, RuntimeError)
+    _setup_suppressed_tracebacks(TypeError, RuntimeError)
     sys.excepthook(TypeError, TypeError("b"), None)
     assert "TypeError" in capsys.readouterr().out
     sys.excepthook(RuntimeError, RuntimeError("c"), None)
@@ -61,7 +61,7 @@ def test_accepts_single_and_multiple_exceptions(capsys):
 
 def test_registered_exception_calls_pretty_print(capsys):
     """Registered exception should use pretty print, not traceback."""
-    setup_suppressed_tracebacks(ValueError)
+    _setup_suppressed_tracebacks(ValueError)
 
     sys.excepthook(ValueError, ValueError("test error message"), None)
 
@@ -74,7 +74,7 @@ def test_unregistered_exception_not_suppressed():
     """Unregistered exception should delegate to original hook."""
     mock_original = MagicMock()
     sys.excepthook = mock_original
-    setup_suppressed_tracebacks(ValueError)
+    _setup_suppressed_tracebacks(ValueError)
 
     sys.excepthook(TypeError, TypeError("unregistered error"), None)
 
@@ -87,7 +87,7 @@ def test_exception_subclass_is_suppressed(capsys):
     class SubclassError(Exception):
         pass
 
-    setup_suppressed_tracebacks(Exception)
+    _setup_suppressed_tracebacks(Exception)
 
     sys.excepthook(SubclassError, SubclassError("error from subclass"), None)
 
@@ -104,7 +104,7 @@ def test_parent_not_suppressed_when_only_subclass_registered():
 
     mock_original = MagicMock()
     sys.excepthook = mock_original
-    setup_suppressed_tracebacks(SubclassError)
+    _setup_suppressed_tracebacks(SubclassError)
 
     sys.excepthook(Exception, Exception("parent error"), None)
 
@@ -126,9 +126,9 @@ def test_multiple_registrations_compose(capsys):
     class ErrorC(Exception):
         pass
 
-    setup_suppressed_tracebacks(ErrorA)
-    setup_suppressed_tracebacks(ErrorB)
-    setup_suppressed_tracebacks(ErrorC)
+    _setup_suppressed_tracebacks(ErrorA)
+    _setup_suppressed_tracebacks(ErrorB)
+    _setup_suppressed_tracebacks(ErrorC)
 
     # When a traceback is suppressed, the exception is pretty printed to stdout
     # leaving stderr empty. If the traceback is not suppressed, the exception
@@ -152,8 +152,8 @@ def test_multiple_registrations_compose(capsys):
 
 def test_re_registering_same_exception(capsys):
     """Re-registering same exception type should work correctly."""
-    setup_suppressed_tracebacks(ValueError)
-    setup_suppressed_tracebacks(ValueError)
+    _setup_suppressed_tracebacks(ValueError)
+    _setup_suppressed_tracebacks(ValueError)
 
     sys.excepthook(ValueError, ValueError("test"), None)
 
@@ -175,7 +175,7 @@ def test_ipython_hook_only_suppresses_registered_exceptions():
 
     with patch("check_datapackage.check._is_running_from_ipython", return_value=True):
         with patch.dict(builtins.__dict__, {"get_ipython": lambda: mock_shell}):
-            setup_suppressed_tracebacks(CustomError)
+            _setup_suppressed_tracebacks(CustomError)
 
     mock_shell.set_custom_exc.assert_called_once()
     ipython_hook = mock_shell.set_custom_exc.call_args[0][1]
@@ -207,21 +207,21 @@ def test_ipython_hook_composes_with_existing():
 
     with patch("check_datapackage.check._is_running_from_ipython", return_value=True):
         with patch.dict(builtins.__dict__, {"get_ipython": lambda: mock_shell}):
-            setup_suppressed_tracebacks(ErrorA)
+            _setup_suppressed_tracebacks(ErrorA)
 
     first_hook = mock_shell.set_custom_exc.call_args[0][1]
     mock_shell.CustomTB = first_hook
 
     with patch("check_datapackage.check._is_running_from_ipython", return_value=True):
         with patch.dict(builtins.__dict__, {"get_ipython": lambda: mock_shell}):
-            setup_suppressed_tracebacks(ErrorB)
+            _setup_suppressed_tracebacks(ErrorB)
 
     second_hook = mock_shell.set_custom_exc.call_args[0][1]
     mock_shell.CustomTB = second_hook
 
     with patch("check_datapackage.check._is_running_from_ipython", return_value=True):
         with patch.dict(builtins.__dict__, {"get_ipython": lambda: mock_shell}):
-            setup_suppressed_tracebacks(ErrorC)
+            _setup_suppressed_tracebacks(ErrorC)
 
     third_hook = mock_shell.set_custom_exc.call_args[0][1]
 
