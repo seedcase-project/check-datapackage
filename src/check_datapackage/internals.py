@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-from itertools import chain
-from typing import Annotated, Any, Callable, Iterable, TypeVar
+from itertools import chain, repeat
+from typing import Annotated, Any, Callable, Iterable, Optional, TypeVar
 
+from cyclopts.annotations import get_hint_name
+from cyclopts.help import HelpEntry
 from jsonpath import (
     CompoundJSONPath,
     JSONPathMatch,
@@ -85,3 +87,20 @@ def _is_jsonpath(value: str) -> str:
 
 
 type JsonPath = Annotated[str, AfterValidator(_is_jsonpath)]
+
+
+def _format_param_help(entry: HelpEntry) -> str:
+    """Re-structure the parameter help into a more readable format."""
+    names = map(_add_highlight_syntax, sorted(entry.names), repeat(entry.type))
+    return f"{' '.join(names)}".strip()
+
+
+def _add_highlight_syntax(name: str, entry_type: Optional[type]) -> str:
+    """Add markup character to highlight in colors, etc where desired."""
+    formatted_name = f"[bold cyan]{name}[/bold cyan]"
+    if not name.startswith("-"):
+        formatted_name = f"[dim]<{name}>[/dim]"
+
+        if get_hint_name(entry_type) == "bool":
+            formatted_name = ""
+    return formatted_name
