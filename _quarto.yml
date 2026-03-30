@@ -38,9 +38,9 @@ website:
         - CONTRIBUTING.md
     - id: design
       contents:
-        - section: "Design"
+        - text: "Design"
           href: docs/design/index.qmd
-        - section: "Architecture"
+        - text: "Architecture"
           href: docs/design/architecture.qmd
         - section: "Interface"
           href: docs/design/interface/index.qmd
