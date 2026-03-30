@@ -8,7 +8,7 @@
 [![Check package](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/check-package.yml/badge.svg)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/check-package.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/badge?raw=true.svg)](https://scorecard.dev/viewer/?uri=github.com/{{< meta gh.org >}}/{{< meta gh.repo >}})
 [![CodeQL](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/actions/workflows/github-code-scanning/codeql)
-[![code coverage](https://raw.githubusercontent.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/coverage.svg?raw=true)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/index.html)
+[![code coverage](https://raw.githubusercontent.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/coverage.svg?raw=true)](https://raw.githack.com/{{< meta gh.org >}}/{{< meta gh.repo >}}/coverage/index.html)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/{{< meta gh.org >}}/{{< meta gh.repo >}}/main.svg)](https://results.pre-commit.ci/latest/github/{{< meta gh.org >}}/{{< meta gh.repo >}}/main)
 [![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)

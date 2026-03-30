@@ -21,8 +21,8 @@ how to configure which checks you want to run with the `config`
 argument, and how to handle failed checks with the `error` argument.
 
 ::: callout-tip
-For the full reference of the `check()` function, see the [reference
-documentation](/docs/reference/check.qmd).
+For the full reference of the `check()` function, see the
+[reference documentation](/docs/reference/check.qmd).
 :::
 
 ## Getting started with `check()` (`properties`)
@@ -39,8 +39,8 @@ these properties from the JSON file using the helper function
 By default, if any issues are found, `check()` returns a list of `Issue`
 objects---each one describing a failed check on a property. If no issues
 are found, `check()` returns an empty list. If you'd rather have the
-function give an error if it finds any issues, see the [Stop program on
-failed checks (`error=True`)](#stop-program-on-failed-checks-errortrue)
+function give an error if it finds any issues, see the
+[Stop program on failed checks (`error=True`)](#stop-program-on-failed-checks-errortrue)
 section below.
 
 Let's look at an example. The code below defines a `package_properties`
@@ -70,8 +70,8 @@ package_properties["name"] = 123
 cdp.check(properties=package_properties)
 ```
 
-The output now lists one `Issue` for the `name` field being of the
-wrong type.
+The output now lists one `Issue` for the `name` field being of the wrong
+type.
 
 ## Default checks and configuration (`config`)
 
@@ -88,9 +88,9 @@ certain checks, include additional `SHOULD` recommendations from the
 Data Package standard, or add your own custom checks.
 
 ::: callout-tip
-For more details on configuring checks, see the [Configuring
-checks](config.qmd) guide or the [`Config` reference
-documentation](/docs/reference/Config.qmd).
+For more details on configuring checks, see the
+[Configuring checks](config.qmd) guide or the
+[`Config` reference documentation](/docs/reference/Config.qmd).
 :::
 
 ## Stop program on failed checks (`error=True`) {#stop-program-on-failed-checks-errortrue}
