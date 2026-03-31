@@ -14,41 +14,13 @@ to be done.
 Configuration settings allow users to customise the checking behaviour
 of `check-datapackage`.
 
-## Python classes & functions
-
-### {{< var done >}} `Config`
-
-`Config` is a class that holds all the configurations for the `check()`
-function.
-
-See the help documentation with
-[`help(Config)`](/docs/reference/Config.qmd) for more details.
-
-### {{< var planned >}} `read_config()`
-
-This is a simple helper function to read a configuration file into a
-`Config` object for when we extend to having the configurations in a
-file.
-
-```{.python}
-def read_config(path: Path) -> Config:
-    """Reads a configuration file into a `Config` object.
-
-    Args:
-        path: The path to the configuration file.
-
-    Returns:
-        A `Config` object populated with the contents of the configuration
-            file.
-    """
-```
-
 ## {{< var planned >}} Configuration file
 
-When we develop the CLI, we'll use a config file to store the settings
-contained within the `Config` class. This file will be named `.cdp.toml`
-and will be located in the same directory as the `datapackage.json`
-file. This is an example of what that file could look like:
+When we develop the CLI, we'll use a configuration file to store the
+settings contained within the `Config` class. This file will be named
+`.cdp.toml` and will be located in the same directory as the
+`datapackage.json` file. This is an example of what that file could look
+like:
 
 ```{.toml}
 # The Data Package standard version to check against.
