@@ -8,8 +8,8 @@ implemented. It is split into the following documents:
 - The [Inputs](inputs.qmd) accepted by `check-datapackage`.
 - The [Outputs](outputs.qmd), including the structure of the `Issue`
   class and different output formats.
-- The [Command Line Interface](cli.qmd) that forms the main entry point.
+- The [Command line interface](cli.qmd) that forms the main entry point.
 - The [Configuration settings](config.qmd) as a TOML file and Python
   `Config` class.
-- The [Python functions](python.qmd) that contain the Python code that
+- The [Python interface](python.qmd) that contains the Python code that
   powers the CLI commands.
