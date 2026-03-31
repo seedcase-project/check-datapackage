@@ -1,323 +1,86 @@
 ---
-title: "Configuration settings"
+title: "Configuration"
 ---
 
-This document describes the configuration settings for the CLI and Python
-interface, including the configuration file structure and the Python
-`Config` class. It includes examples, explanations, and design decisions.
-It primarily serves as a reference for us to develop from and track what
-has been finished and what remains to be done.
+This document describes the configuration settings for both the Python
+classes and the configuration file. It primarily serves as a reference
+for us to develop from and track what has been finished and what remains
+to be done.
 
 {{< include /docs/includes/_design-status.qmd >}}
 
 ## Overview
 
 Configuration settings allow users to customise the checking behaviour of
-`check-datapackage`. Configuration can be provided in two ways:
+`check-datapackage`.
 
-1. **Configuration file**: A `.cdp.toml` file (or `[tool.check-datapackage]`
-   section in `pyproject.toml`) that stores settings in a version-controlled
-   file.
-2. **Python `Config` object**: A Python object that can be passed to the
-   `check()` function when using the Python interface.
+## Python classes & functions
 
-Both approaches use the same settings, just expressed differently. This
-document focuses on the configuration file format, while the Python `Config`
-class is documented in the [Python interface](python.qmd) document.
+### {{< var done >}} `Config`
 
-## Configuration file location
+`Config` is a class that holds all the configurations for the `check()`
+function.
 
-The CLI will search for configuration files in this order:
+See the help documentation with
+[`help(Config)`](/docs/reference/Config.qmd) for more details.
 
-1. `.cdp.toml` in the current directory
-2. `[tool.check-datapackage]` section in `pyproject.toml` in the current
-   directory
-3. `.cdp.toml` in parent directories (up to the project root)
-4. No configuration file found (uses defaults)
 
-We support both a dedicated configuration file (`.cdp.toml`) and a section
-in `pyproject.toml` to accommodate different project structures:
+### {{< var planned >}} `read_config()`
 
-- `.cdp.toml`: For projects that want to keep configuration separate from
-  Python project settings, or for non-Python projects.
-- `pyproject.toml`: For Python projects that already use `pyproject.toml`
-  for other configurations, keeping all settings in one place.
+This is a simple helper function to read a configuration file into a
+`Config` object for when we extend to having the configurations in a
+file.
 
-## Configuration file structure
+```{.python}
+def read_config(path: Path) -> Config:
+    """Reads a configuration file into a `Config` object.
 
-The configuration file uses TOML format. Here is the complete structure:
+    Args:
+        path: The path to the configuration file.
 
-``` toml
+    Returns:
+        A `Config` object populated with the contents of the configuration
+            file.
+    """
+```
+
+## {{< var planned >}} Configuration file
+
+When we develop the CLI, we'll use a config file to store the settings
+contained within the `Config` class. This file will be named `.cdp.toml`
+and will be located in the same directory as the `datapackage.json`
+file. This is an example of what that file could look like:
+
+```{.toml}
 # The Data Package standard version to check against.
-# Values: "v1" | "v2" (default: "v2")
 version = "v2"
 
 # Whether to check properties that must *and should* be included.
-# Values: true | false (default: false)
-strict = false
+strict = true
 
-# List of exclusions - checks to skip.
+# Exclude all issues related to the "resources" property.
 [[exclusions]]
-# JSON path to the field to exclude (optional)
 jsonpath = "$.resources"
 
-# Type of check to exclude (optional)
-# Values: "required" | "type" | "pattern" | "format" | "enum" | etc.
-type = "required"
+# Exclude all issues related to the "format" type in the schema.
+[[exclusions]]
+type = "format"
 
-# More exclusions can be added with multiple [[exclusions]] entries
+# Exclude issues that are both a "pattern" type and found in
+# the "path" property of the "contributors" field.
 [[exclusions]]
 jsonpath = "$.contributors[*].path"
 type = "pattern"
 
-# Extensions - additional checks beyond the standard.
-[extensions]
-# Required checks - properties that must be present
+# Require that the "description" property is included in the Data Package.
 [[extensions.required_checks]]
 jsonpath = "$.description"
-message = "A description is required for all Data Packages."
+message = "This Data Package needs to include a 'description' property."
 
-[[extensions.required_checks]]
-jsonpath = "$.resources[*].title"
-message = "All resources must have a title."
-
-# Custom checks - user-defined validation rules
+# A custom check to ensure that all resource names are lowercase.
 [[extensions.custom_checks]]
 jsonpath = "$.resources[*].name"
 type = "name-lowercase"
-message = "Resource names must be lowercase."
-check = "lambda name: name.islower()"
-
-[[extensions.custom_checks]]
-jsonpath = "$.licenses[*].name"
-type = "only-mit"
-message = "Data Packages may only be licensed under MIT."
-check = "lambda license_name: license_name == 'mit'"
-```
-
-## Settings explained
-
-### `version`
-
-Specify which version of the Data Package standard to validate against.
-
-- **Type**: String
-- **Values**: `"v1"` or `"v2"`
-- **Default**: `"v2"`
-- **Required**: No
-
-Currently, we support versions `"v1"` and `"v2"` of the Data Package
-standard. The default is `"v2"`, which is the current version.
-
-### `strict`
-
-Whether to enforce "SHOULD" checks in addition to "MUST" checks from the
-Data Package standard.
-
-- **Type**: Boolean
-- **Values**: `true` or `false`
-- **Default**: `false`
-- **Required**: No
-
-When `strict = true`, properties marked as "SHOULD" in the standard will
-also be checked. This includes properties like `name`, `id`, and
-`licenses` that are recommended but not required by the standard.
-
-### `exclusions`
-
-A list of checks to exclude (skip) during validation. Each exclusion can
-specify a `jsonpath`, a `type`, or both.
-
-- **Type**: Array of tables
-- **Required**: No
-
-When both `jsonpath` and `type` are specified, only issues matching
-*both* criteria are excluded (AND logic). Use multiple `[[exclusions]]`
-entries for OR logic.
-
-#### `jsonpath`
-
-A JSON path to the field or fields to exclude from checks.
-
-- **Type**: String
-- **Required**: No (but either `jsonpath` or `type` must be specified)
-
-Uses [JSON path syntax](https://jg-rp.github.io/python-jsonpath/syntax/).
-Examples:
-- `$.resources` - Exclude all issues in resources
-- `$.resources[0]` - Exclude all issues in the first resource
-- `$.resources[*].name` - Exclude issues in all resource names
-- `$.contributors[*].path` - Exclude issues in all contributor paths
-
-#### `type`
-
-The type of check to exclude.
-
-- **Type**: String
-- **Required**: No (but either `jsonpath` or `type` must be specified)
-- **Values**: Any check type from the JSON schema validator or custom types
-
-Common values:
-- `"required"` - Missing required fields
-- `"type"` - Wrong field type
-- `"pattern"` - Pattern mismatch
-- `"format"` - Format violation (e.g., date format)
-- `"enum"` - Value not in allowed enumeration
-- Custom types defined by custom checks
-
-### `extensions`
-
-Container for additional checks beyond the standard.
-
-- **Type**: Table (dictionary)
-- **Required**: No
-
-#### `required_checks`
-
-List of properties to mark as required, beyond what the standard requires.
-
-- **Type**: Array of tables
-- **Required**: No
-
-Each required check has:
-- `jsonpath`: Location of the field (required)
-- `message`: Error message when field is missing (required)
-
-#### `custom_checks`
-
-List of user-defined validation rules.
-
-- **Type**: Array of tables
-- **Required**: No
-
-Each custom check has:
-- `jsonpath`: Location of the field(s) to check (required)
-- `type`: Type identifier for the check (default: `"custom"`)
-- `message`: Error message when check fails (required)
-- `check`: Python lambda expression as a string (required)
-
-The `check` field is a Python lambda expression that takes the field value
-as input and returns `True` if the check passes, `False` if it fails.
-
-## Complete example
-
-Here's a complete example configuration file for a Python project:
-
-``` toml
-# .cdp.toml - check-datapackage configuration
-
-# Use Data Package standard v2
-version = "v2"
-
-# Don't enforce SHOULD checks by default
-strict = false
-
-# Exclude some checks we know will fail
-[[exclusions]]
-jsonpath = "$.contributors[*].path"
-type = "pattern"
-
-[[exclusions]]
-jsonpath = "$.resources[*].format"
-type = "required"
-
-# Add custom required fields
-[[extensions.required_checks]]
-jsonpath = "$.description"
-message = "All Data Packages must include a description."
-
-[[extensions.required_checks]]
-jsonpath = "$.resources[*].title"
-message = "All resources must have a title."
-
-# Add custom validation
-[[extensions.custom_checks]]
-jsonpath = "$.name"
-type = "name-format"
-message = "The package name must be lowercase and use hyphens."
-check = "lambda name: name.islower() and '-' in name"
-
-[[extensions.custom_checks]]
-jsonpath = "$.resources[*].name"
-type = "resource-name-format"
-message = "Resource names must be lowercase."
+message = "The value in the 'name' property of the 'resources' must be lowercase."
 check = "lambda name: name.islower()"
 ```
-
-## Use with CLI
-
-When using the CLI, the configuration file is automatically loaded:
-
-``` {.bash filename="Terminal"}
-# Uses .cdp.toml or pyproject.toml in current directory
-check-datapackage check ./datapackage.json
-
-# Specify a different config file
-check-datapackage check ./datapackage.json --config ./my-config.toml
-```
-
-## Use with Python interface
-
-When using the Python interface, create a `Config` object:
-
-``` python
-import check_datapackage as cdp
-
-# Create configuration
-exclusion = cdp.Exclusion(jsonpath="$.resources[*].format", type="required")
-required_check = cdp.RequiredCheck(
-    jsonpath="$.description",
-    message="All Data Packages must include a description."
-)
-custom_check = cdp.CustomCheck(
-    jsonpath="$.name",
-    type="name-format",
-    message="The package name must be lowercase.",
-    check=lambda name: name.islower()
-)
-config = cdp.Config(
-    version="v2",
-    strict=False,
-    exclusions=[exclusion],
-    extensions=cdp.Extensions(
-        required_checks=[required_check],
-        custom_checks=[custom_check]
-    )
-)
-
-# Use with check()
-properties = cdp.read_json("datapackage.json")
-issues = cdp.check(properties, config=config)
-```
-
-## Design decisions
-
-### Why TOML format?
-
-We chose TOML for the configuration file because:
-
-1. **Human-readable**: TOML is easy to read and write by hand.
-2. **Well-defined**: TOML has a clear specification and good tooling support.
-3. **Python-friendly**: TOML is already used in Python projects
-   (`pyproject.toml`), making it familiar to our target users.
-4. **Type-safe**: TOML supports the basic types we need (strings, booleans,
-   arrays, tables).
-
-### Why support both `.cdp.toml` and `pyproject.toml`?
-
-Supporting both formats allows:
-
-1. **Flexibility**: Projects can choose where to store configuration.
-2. **Integration**: Python projects can keep all settings in one file.
-3. **Portability**: Non-Python projects can use a dedicated config file.
-
-### Why lambda expressions as strings for custom checks?
-
-In the configuration file, checks are stored as strings because:
-
-1. **Portable**: Can be stored in a file and version controlled.
-2. **Safe**: Evaluated in a controlled context, not arbitrary code.
-3. **Simple**: Covers most common validation use cases.
-
-For more complex validation logic, users should use the Python interface
-directly with callable functions.
