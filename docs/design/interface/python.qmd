@@ -1,0 +1,162 @@
+---
+title: Python
+---
+
+This section of the documentation focuses on the design of the interface
+and how it is implemented as Python code.
+
+{{< include /docs/includes/_design-status.qmd >}}
+
+## Flow
+
+This is the flow of how `check-datapackage` is used, or at least how
+properties flow through `check-datapackage` functions and classes.
+
+```{mermaid}
+%%| label: fig-interface-flow
+%%| fig-cap: "Flow of inputs and outputs through the functions and classes of `check-datapackage`."
+%%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the properties with the config, and finally explaining any issues found."
+flowchart TD
+    descriptor_file[(datapackage.json)]
+    read_json["read_json()"]
+    properties[/"Properties<br>(dict)"/]
+
+    config_file[(.cdp.toml)]
+    read_config["read_config()"]
+
+    config[/Config/]
+    extensions[/Extensions/]
+    exclusion[/Exclusion/]
+    check["check()"]
+    issues[/"list[Issue]"/]
+
+    explain["explain()"]
+    messages[/messages/]
+
+    descriptor_file --> read_json --> properties
+    config_file -.-> read_config -.-> config
+    extensions & exclusion --> config
+    extensions & exclusion -.-> config_file
+
+    properties & config --> check --> issues --> explain --> messages
+```
+
+## Functions
+
+There are two main functions and two helper functions that we expose in
+this package. Together, these functions could be combined to create a
+command-line interface.
+
+::: content-hidden
+Potentially we could also have a function that lists what the checks are
+or lists what fields can be excluded. Not sure if that works better as a
+CLI or if it could be used some way as Python code. I didn't include it
+for now though.
+:::
+
+### {{< var done >}} `check()`
+
+This is the main function of this package, which will check a Data
+Package properties against the Data Package standard, as well as include
+any custom exclusions or custom checks listed in the configuration.
+
+See the help documentation with
+[`help(check)`](/docs/reference/check.qmd) for more details.
+
+The `Config` class is described below. By default, `check()` does not
+result in an error when issues are found, but errors can be triggered by
+setting `error=True`. We don't want `check-datapackage` to trigger
+errors by default because we want to allow users the flexibility to
+decide when and how failed checks should be enforced or handled. The
+output of this function is a list of `Issue` objects, which are
+described below.
+
+### {{< var done >}} `explain()`
+
+The output of `check()` is a list of `Issue` objects, which are
+structured and machine-readable, but not very human-readable and
+user-friendly. It's important to have this output to provide structured
+information about the issues, but we also want to provide a way to
+explain these issues in a more pleasant and ergonomic way.
+
+See the help documentation with
+[`help(explain)`](/docs/reference/explain.qmd) for more details.
+
+### {{< var done >}} `read_json()`
+
+This is a simple helper function to read the `datapackage.json` file
+into a Python dictionary. See
+[`help(read_json)`](/docs/reference/read_json.qmd) for more details.
+
+### {{< var planned >}} `read_config()`
+
+This is a simple helper function to read a configuration file into a
+`Config` object for when we extend to having the configurations in a
+file.
+
+``` python
+def read_config(path: Path) -> Config:
+    """Reads a configuration file into a `Config` object.
+
+    Args:
+        path: The path to the configuration file.
+
+    Returns:
+        A `Config` object populated with the contents of the configuration
+            file.
+    """
+```
+
+## Classes
+
+With all the configurations kept in one class, we can potentially store
+the configuration in a file that can be read into the class, which would
+be useful for a CLI interface.
+
+### {{< var done >}} `Config`
+
+`Config` is a class that holds all the configurations for the `check()`
+function.
+
+See the help documentation with
+[`help(Config)`](/docs/reference/Config.qmd) for more details.
+
+### {{< var done >}} `Exclusion`
+
+A sub-item of `Config` that expresses checks to exclude. This can be
+useful if you want to exclude (or skip) certain checks from the Data
+Package standard that are not relevant to your use case.
+
+See the help documentation with
+[`help(Exclusion)`](/docs/reference/Exclusion.qmd) for more details.
+
+#### {{< var done >}} `Extensions`
+
+This sub-item of `Config` defines extensions, i.e., additional checks
+that supplement those specified by the Data Package standard.
+
+See the help documentation with
+[`Extensions`](/docs/reference/Extensions.qmd) for more details.
+
+#### {{< var done >}} `RequiredCheck`
+
+A sub-item of `Extensions` that allows users to set specific properties
+as required that are not required by the Data Package standard. See the
+help documentation with
+[`help(RequiredCheck)`](/docs/reference/RequiredCheck.qmd) for more
+details.
+
+#### {{< var done >}} `CustomCheck`
+
+A sub-item of `Extensions` that allows users to add an additional,
+custom check that `check-datapackage` will run alongside the standard
+checks. See the help documentation with
+[`help(CustomCheck)`](/docs/reference/CustomCheck.qmd) for more details.
+
+### {{< var done >}} `Issue`
+
+This class represents an issue that is found when checking a Data
+Package.
+
+See the help documentation with
+[`help(Issue)`](/docs/reference/Issue.qmd) for more details.

@@ -38,11 +38,17 @@ website:
         - CONTRIBUTING.md
     - id: design
       contents:
-        - section: "Design"
+        - text: "Design"
           href: docs/design/index.qmd
+        - text: "Architecture"
+          href: docs/design/architecture.qmd
+        - section: "Interface"
+          href: docs/design/interface/index.qmd
           contents:
-            - docs/design/architecture.qmd
-            - docs/design/interface.qmd
+            - docs/design/interface/inputs.qmd
+            - docs/design/interface/outputs.qmd
+            - docs/design/interface/config.qmd
+            - docs/design/interface/python.qmd
     - id: guide
       contents:
         - section: "Guide"

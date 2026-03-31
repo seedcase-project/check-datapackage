@@ -1,0 +1,15 @@
+---
+title: "Inputs"
+---
+
+This section describes the inputs accepted by `check-datapackage`.
+
+- **Properties**: This is a Python dictionary containing the properties
+  of a Data Package. Allowed properties are defined in the
+  [Data Package standard](https://datapackage.org/). A common use case
+  is loading the properties from the `datapackage.json` file.
+- **Config:** A `Config` object can optionally be passed to
+  `check-datapackage` with settings to modify the behaviour and output
+  of the check mechanism.
+- **Error**: A boolean that controls whether the function errors out or
+  returns a value if any issues are found.
