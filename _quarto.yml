@@ -45,8 +45,11 @@ website:
         - section: "Interface"
           href: docs/design/interface/index.qmd
           contents:
-            - auto: "docs/design/interface/*.qmd"
-            # - docs/design/interface.qmd
+            - docs/design/interface/inputs.qmd
+            - docs/design/interface/outputs.qmd
+            - docs/design/interface/cli.qmd
+            - docs/design/interface/config.qmd
+            - docs/design/interface/python.qmd
     - id: guide
       contents:
         - section: "Guide"
