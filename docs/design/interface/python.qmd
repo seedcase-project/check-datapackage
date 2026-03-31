@@ -2,6 +2,9 @@
 title: Python
 ---
 
+This section of the documentation focuses on the design of the interface
+and how it is implemented as Python code.
+
 {{< include /docs/includes/_design-status.qmd >}}
 
 ## Flow
