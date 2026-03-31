@@ -157,4 +157,3 @@ Package.
 
 See the help documentation with
 [`help(Issue)`](/docs/reference/Issue.qmd) for more details.
-

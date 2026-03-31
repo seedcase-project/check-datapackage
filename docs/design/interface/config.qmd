@@ -11,8 +11,8 @@ to be done.
 
 ## Overview
 
-Configuration settings allow users to customise the checking behaviour of
-`check-datapackage`.
+Configuration settings allow users to customise the checking behaviour
+of `check-datapackage`.
 
 ## Python classes & functions
 
@@ -23,7 +23,6 @@ function.
 
 See the help documentation with
 [`help(Config)`](/docs/reference/Config.qmd) for more details.
-
 
 ### {{< var planned >}} `read_config()`
 
