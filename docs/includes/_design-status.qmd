@@ -1,11 +1,7 @@
-We use symbols to indicate the status of implementation for the
-different parts of the interface (see table below). For work that is
-planned or is in progress, we include in-depth descriptions of the
-planned implementation. This may include signatures, docstrings, and
-pseudocode to clarify the design. Once the interface is implemented
-(done), we will remove the signatures from the documentation and point
-to the reference documentation instead. The symbols we use are described
-in the table below.
+We use symbols to indicate the status of implementation (see table
+below). For planned or in-progress work, we might include signatures,
+docstrings, and pseudocode to clarify the design. Once the interface is
+implemented, these are replaced by links to the reference documentation.
 
 |       Status        | Description                                                     |
 |:-------------------:|:----------------------------------------------------------------|
