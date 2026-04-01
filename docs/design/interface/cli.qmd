@@ -345,5 +345,3 @@ Future integration with other Seedcase tools (e.g., Seedcase Sprout) is
 planned, where `check-datapackage` will be used to ensure Data Package
 validity before operations like data ingestion or metadata updates.
 :::
-
-
