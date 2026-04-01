@@ -44,7 +44,7 @@ check-datapackage check [SOURCE] [STRICT] [VERBOSE]
 For example:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check SOURCE --config CONFIG --error --output OUTPUT
+check-datapackage check SOURCE --strict
 ```
 
 The diagram below shows the flow of inputs and outputs for the `check` command:
@@ -54,28 +54,21 @@ The diagram below shows the flow of inputs and outputs for the `check` command:
 %%| fig-cap: "The flow of input and output through the CLI `check` command."
 %%| fig-alt: "Diagram showing the flow of input and output through the CLI `check` command. The user provides the source of the `datapackage.json` file and optional configuration, which are used by the `check` command to output issues."
 flowchart LR
-    source("datapackage.json<br>[SOURCE: file, https,<br>gh/github]")
-    config_file[".cdp.toml or<br>pyproject.toml<br>[file]")
-    config_opt("--config<br>[option]")
-    error_opt("--error<br>[flag]")
-    output_opt("--output<br>[option]")
+    source("datapackage.json<br>(file,https,gh/github)<br>[SOURCE]")
+    config_file(".cdp.toml/pyproject.toml<br>[file]")
+    strict_opt("--strict<br>[option]")
     verbose_opt("--verbose<br>[option]")
-    check("check")
-    file{"file"}
     cli{"cli"}
-    issues["Issues<br>[list]")
-    stdout["Output<br>[Terminal]"]
+    check("check<br>(error=True)")
+    explain("explain")
+    stdout["Messages<br>[terminal]"]
 
-    source --> check
-    config_file --> file
-    config_opt --> cli
-    error_opt --> check
-    output_opt --> cli
-    verbose_opt --> check
-    file -- "or" --> check
+    source --> cli
+    strict_opt --> cli
+    verbose_opt --> cli
     cli --> check
-    check --> issues
-    issues --> stdout
+    config_file --> check
+    check --> explain --> stdout
 ```
 
 Configuration can be provided as command-line arguments or through a
