@@ -15,8 +15,8 @@ development reference and to track implementation status.
 check-datapackage <COMMAND> [PARAMETERS]
 ```
 
-When used on its own, `check-datapackage` shows the help message as
-a shorthand for `--help`:
+When used on its own, `check-datapackage` shows the help message as a
+shorthand for `--help`:
 
 ``` {.bash filename="Terminal"}
 check-datapackage
@@ -24,7 +24,7 @@ check-datapackage
 
 ::: callout-note
 As a convenience, we provide the command `cdp` as a shorthand for
-`check-datapackage`. It can be used in place of `seedcase-flower` in all
+`check-datapackage`. It can be used in place of `check-datapackage` in all
 instances.
 :::
 
@@ -38,7 +38,7 @@ Package standard. It has the following signature, that is positional as
 well as keyword-based:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check [SOURCE] [CONFIG] [ERROR] [OUTPUT] [VERBOSE]
+check-datapackage check [SOURCE] [STRICT] [VERBOSE]
 ```
 
 For example:
@@ -47,7 +47,7 @@ For example:
 check-datapackage check SOURCE --config CONFIG --error --output OUTPUT
 ```
 
-The diagram below shows the flow of inputs and outputs for `check`:
+The diagram below shows the flow of inputs and outputs for the `check` command:
 
 ```{mermaid}
 %%| label: fig-cli-check-flow
@@ -78,11 +78,9 @@ flowchart LR
     issues --> stdout
 ```
 
-Configuration can be provided either as command-line arguments (as shown
-in the signature) or through a configuration file. The CLI command will
-first look for a configuration file named `.cdp.toml` (or in
-`pyproject.toml` under the `[tool.check-datapackage]` section) in the
-current directory.
+Configuration can be provided as command-line arguments or through a
+configuration file. `check` first looks for `.cdp.toml` (and then
+`pyproject.toml`) in the current directory.
 
 The main argument to `check` is the location of the Data Package file as
 a `SOURCE` (e.g. a file path or a URL) to check against the standard.
@@ -92,22 +90,22 @@ a `SOURCE` (e.g. a file path or a URL) to check against the standard.
 - {{< var planned >}} `https://`
 - {{< var planned >}} `gh:` or `github:`
 
-Depending on the source given, there are different behaviours:
+The behavior of `check` depends on the `SOURCE` format given:
 
-- If nothing is given, `check` will by default assume that `source` is a
-  file path to the current directory and look for a `datapackage.json`
-  file there, so the source becomes `./datapackage.json`.
+- If nothing is given, `check` by default assumes that `SOURCE` is a
+  file path to the current directory and looks for a `datapackage.json`
+  file there, corresponding to `./datapackage.json`.
 - If a relative path to a folder is given, `check` will parse it to the
   absolute path and append `datapackage.json`, so that the path becomes
-  `/ABSOLUTE_PATH/datapackage.json`.
+  `ABSOLUTE_PATH/datapackage.json`.
 - `https://` sources must point to a raw file. We won't support using
   `http://` for security reasons.
 - `gh:` or `github:` sources must be in the format `gh:OWNER/REPO` or
-  `github:OWNER/REPO`. It's possible to add `@REF` to the end to specify
-  a Git ref, which can be a branch name, tag, or commit hash. `check`
-  will parse this source to the raw `https:` of the `datapackage.json`
-  file in the repository, assuming the `datapackage.json` file is in the
-  root of the repository. For example:
+  `github:OWNER/REPO`. It's possible to append `@REF` to specify a Git
+  ref, like a branch name, tag, or commit hash. `check` will parse this
+  source to the raw `https:` of the `datapackage.json` file in the
+  repository, assuming the `datapackage.json` file is in the root of the
+  repository. For example:
   - `gh:seedcase-project/example-seed-beetle` will parse to
     `https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/main/datapackage.json`.
   - `github:seedcase-project/example-seed-beetle@0.2.0` will parse to
