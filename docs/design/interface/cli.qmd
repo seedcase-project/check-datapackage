@@ -2,11 +2,8 @@
 title: "Command line"
 ---
 
-This document describes the command-line interface (CLI) with
-signatures, documentation, some pseudocode, and diagrams that represent
-its interface along with explanations for these design decisions. It
-primarily serves as a reference for us to develop from and track what
-has been finished and what remains to be done.
+This document describes the command-line interface (CLI) as a
+development reference and to track implementation status.
 
 {{< include /docs/includes/_design-status.qmd >}}
 
@@ -18,41 +15,39 @@ has been finished and what remains to be done.
 check-datapackage <COMMAND> [PARAMETERS]
 ```
 
-When used on its own it will show the help message with information on
-the available commands. This default behavior prevents accidental
-execution of commands and acts as a convenient shorthand for
-`check-datapackage --help`:
+When used on its own, `check-datapackage` shows the help message as
+a shorthand for `--help`:
 
 ``` {.bash filename="Terminal"}
 check-datapackage
 ```
 
-There are two commands available:
-
-- `check`: Check a Data Package's properties against the Data Package
-  standard.
-
 ::: callout-note
-As a convenience, the short form `cdp` can be used in place of `check-datapackage`.
+As a convenience, we provide the command `cdp` as a shorthand for
+`check-datapackage`. It can be used in place of `seedcase-flower` in all
+instances.
 :::
+
+`check-datapackage` has one command, `check`, which is described in the
+following section.
 
 ## {{< var planned >}} `check`
 
-The `check` command has the following signature, that is positional as
+The `check` command checks a Data Package's properties against the Data
+Package standard. It has the following signature, that is positional as
 well as keyword-based:
 
 ``` {.bash filename="Terminal"}
 check-datapackage check [SOURCE] [CONFIG] [ERROR] [OUTPUT] [VERBOSE]
 ```
 
-And when used, it would look like this:
+For example:
 
 ``` {.bash filename="Terminal"}
 check-datapackage check SOURCE --config CONFIG --error --output OUTPUT
 ```
 
-The diagram below shows a simple flow for how the inputs and outputs
-work for `check`.
+The diagram below shows the flow of inputs and outputs for `check`:
 
 ```{mermaid}
 %%| label: fig-cli-check-flow
