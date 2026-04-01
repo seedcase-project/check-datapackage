@@ -1,0 +1,57 @@
+---
+title: "Configuration"
+---
+
+This document describes the configuration settings for both the Python
+classes and the configuration file. It primarily serves as a reference
+for us to develop from and track what has been finished and what remains
+to be done.
+
+{{< include /docs/includes/_design-status.qmd >}}
+
+## Overview
+
+Configuration settings allow users to customise the checking behaviour
+of `check-datapackage`.
+
+## {{< var planned >}} Configuration file
+
+When we develop the CLI, we'll use a configuration file to store the
+settings contained within the `Config` class. This file will be named
+`.cdp.toml` and will be located in the same directory as the
+`datapackage.json` file. This is an example of what that file could look
+like:
+
+```{.toml}
+# The Data Package standard version to check against.
+version = "v2"
+
+# Whether to check properties that must *and should* be included.
+strict = true
+
+# Exclude all issues related to the "resources" property.
+[[exclusions]]
+jsonpath = "$.resources"
+
+# Exclude all issues related to the "format" type in the schema.
+[[exclusions]]
+type = "format"
+
+# Exclude issues that are both a "pattern" type and found in
+# the "path" property of the "contributors" field.
+[[exclusions]]
+jsonpath = "$.contributors[*].path"
+type = "pattern"
+
+# Require that the "description" property is included in the Data Package.
+[[extensions.required_checks]]
+jsonpath = "$.description"
+message = "This Data Package needs to include a 'description' property."
+
+# A custom check to ensure that all resource names are lowercase.
+[[extensions.custom_checks]]
+jsonpath = "$.resources[*].name"
+type = "name-lowercase"
+message = "The value in the 'name' property of the 'resources' must be lowercase."
+check = "lambda name: name.islower()"
+```

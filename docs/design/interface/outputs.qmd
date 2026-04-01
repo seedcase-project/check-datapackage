@@ -1,0 +1,12 @@
+---
+title: "Outputs"
+---
+
+## Outputs
+
+For each failed check, `check-datapackage` flags the corresponding issue
+in the properties. If all checks pass, an empty list is returned.
+
+- Default mode: The issues are returned as a list without stopping
+  program execution.
+- Error mode: The issues result in errors that stop program execution.
