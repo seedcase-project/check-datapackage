@@ -1,0 +1,119 @@
+---
+title: "Command line"
+---
+
+This document describes the command-line interface (CLI) as a
+development reference and to track implementation status.
+
+{{< include /docs/includes/_design-status.qmd >}}
+
+## {{< var planned >}} `check-datapackage`
+
+`check-datapackage` has the following signature:
+
+``` {.bash filename="Terminal"}
+check-datapackage <COMMAND> [PARAMETERS]
+```
+
+When used on its own, `check-datapackage` shows the help message as a
+shorthand for `--help`:
+
+``` {.bash filename="Terminal"}
+check-datapackage
+```
+
+::: callout-note
+As a convenience, we provide the command `cdp` as a shorthand for
+`check-datapackage`. It can be used in place of `check-datapackage` in all
+instances.
+:::
+
+`check-datapackage` has one command, `check`, which is described in the
+following section.
+
+## {{< var planned >}} `check`
+
+The `check` command checks a Data Package's properties against the Data
+Package standard. It has the following signature, that is positional as
+well as keyword-based:
+
+``` {.bash filename="Terminal"}
+check-datapackage check [SOURCE] [STRICT] [VERBOSE]
+```
+
+For example:
+
+``` {.bash filename="Terminal"}
+check-datapackage check SOURCE --strict
+```
+
+The diagram below shows the flow of inputs and outputs for the `check` command:
+
+```{mermaid}
+%%| label: fig-cli-check-flow
+%%| fig-cap: "The flow of input and output through the CLI `check` command."
+%%| fig-alt: "Diagram showing the flow of input and output through the CLI `check` command. The user provides the source of the `datapackage.json` file and optional configuration, which are used by the `check` command to output issues."
+flowchart LR
+    source("datapackage.json<br>(file,https,gh/github)<br>[SOURCE]")
+    config_file(".cdp.toml or<br>pyproject.toml<br>[file]")
+    strict_opt("--strict<br>[option]")
+    verbose_opt("--verbose<br>[option]")
+    cli{"cli"}
+    check("check<br>(error=True)")
+    explain("explain")
+    stdout["Messages<br>[terminal]"]
+
+    source --> cli
+    strict_opt --> cli
+    verbose_opt --> cli
+    cli --> check
+    config_file --> check
+    check --> explain --> stdout
+```
+
+Configuration can be provided as command-line arguments or through a
+configuration file. `check` first looks for `.cdp.toml` (and then
+`pyproject.toml`) in the current directory.
+
+The main argument to `check` is the location of the Data Package file as
+a `SOURCE` (e.g. a file path or a URL) to check against the standard.
+`check-datapackage` supports the following sources:
+
+- {{< var planned >}} `file://` or a path without `file://`
+- {{< var planned >}} `https://`
+- {{< var planned >}} `gh:` or `github:`
+
+The behavior of `check` depends on the `SOURCE` format given:
+
+- If nothing is given, `check` by default assumes that `SOURCE` is a
+  file path to the current directory and looks for a `datapackage.json`
+  file there, corresponding to `./datapackage.json`.
+- If a relative path to a folder is given, `check` will parse it to the
+  absolute path and append `datapackage.json`, so that the path becomes
+  `ABSOLUTE_PATH/datapackage.json`.
+- `https://` sources must point to a raw file. We won't support using
+  `http://` for security reasons.
+- `gh:` or `github:` sources must be in the format `gh:OWNER/REPO` or
+  `github:OWNER/REPO`. It's possible to append `@REF` to specify a Git
+  ref, like a branch name, tag, or commit hash. `check` will parse this
+  source to the raw `https:` of the `datapackage.json` file in the
+  repository, assuming the `datapackage.json` file is in the root of the
+  repository. For example:
+  - `gh:seedcase-project/example-seed-beetle` will parse to
+    `https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/main/datapackage.json`.
+  - `github:seedcase-project/example-seed-beetle@0.2.0` will parse to
+    `https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/0.2.0/datapackage.json`.
+  - `gh:seedcase-project/example-seed-beetle@main` will parse to
+    `https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/main/datapackage.json`.
+
+The behavior of `check` can optionally be modified via the its option flags:
+
+- `--strict` Enables [strict mode](/docs/guide/config.html#strict-mode)
+- `--verbose`: Outputs more detailed messages about the checking
+  process.
+
+We override settings in the configuration file if the user specifies an
+option via the CLI. This will allow for quicker testing of different
+configurations as well as preventing the unintended side effects that
+might arise when a configuration is mixed with incompatible option
+settings.
