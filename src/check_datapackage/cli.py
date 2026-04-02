@@ -30,14 +30,12 @@ def check_cmd(
 ) -> None:
     """Check a Data Package's metadata against the Data Package standard.
 
-    Reads a Data Package file and validates its properties against the
-    Data Package standard. Outputs a human-readable explanation of any
-    issues found and exits with a non-zero exit code if issues are found.
+    Outputs a human-readable explanation of any issues found.
 
     Args:
         source: The local location of a `datapackage.json` file.
         strict: If True, check "SHOULD" properties in addition to "MUST"
-            properties from the Data Package standard. Defaults to False.
+            properties from the Data Package standard.
     """
     properties: dict[str, Any] = read_json(Path(source))
     config = Config(strict=strict)
