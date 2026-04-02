@@ -37,8 +37,13 @@ dependencies = [
     "pydantic>=2.12.3",
     "python-jsonpath>=2.0.1",
     "rich>=14.3.0",
+    "seedcase-soil",
     "types-jsonschema>=4.25.1.20250822",
 ]
+
+[project.scripts]
+check-datapackage = "check_datapackage.cli:main"
+cdp = "check_datapackage.cli:main"
 
 [project.urls]
 homepage = "https://check-datapackage.seedcase-project.org"
@@ -66,3 +71,6 @@ dev = [
     "typos>=1.35.6",
     "vulture>=2.14",
 ]
+
+[tool.uv.sources]
+seedcase-soil = { git = "https://github.com/seedcase-project/seedcase-soil", rev = "feat/beautify-cli" }
