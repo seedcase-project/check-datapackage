@@ -9,8 +9,9 @@ from seedcase_soil import (
     setup_cli,
 )
 
-from check_datapackage.check import check, read_json
+from check_datapackage.check import check
 from check_datapackage.config import Config
+from check_datapackage.read_json import read_json
 
 app = setup_cli(
     name="check-datapackage",
