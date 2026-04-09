@@ -24,8 +24,8 @@ check-datapackage
 
 ::: callout-note
 As a convenience, we provide the command `cdp` as a shorthand for
-`check-datapackage`. It can be used in place of `check-datapackage` in all
-instances.
+`check-datapackage`. It can be used in place of `check-datapackage` in
+all instances.
 :::
 
 `check-datapackage` has one command, `check`, which is described in the
