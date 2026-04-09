@@ -16,7 +16,7 @@ def mock_read_json(mocker):
 
 @pytest.fixture
 def mock_check(mocker):
-    """Mock check to isolate CLI from validation logic."""
+    """Mock check to isolate CLI from logic."""
     return mocker.patch("check_datapackage.cli.check")
 
 
@@ -55,7 +55,7 @@ def test_check_reads_source_from_cdp_toml(tmp_path, monkeypatch):
 def test_check_valid_datapackage_succeeds(
     capsys, datapackage_path, tmp_path, monkeypatch
 ):
-    """A valid datapackage should pass checks."""
+    """A correct data package should pass checks."""
     monkeypatch.chdir(tmp_path)
     app(["check", datapackage_path], result_action="return_value")
 
@@ -71,12 +71,12 @@ def test_check_missing_datapackage_raises_error(tmp_path, monkeypatch):
         app(["check", "nonexistent.json"], result_action="return_value")
 
 
-def test_check_raises_error_on_validation_failure(tmp_path, monkeypatch):
-    """Check should raise DataPackageError when validation fails."""
+def test_check_raises_error_on_failure(tmp_path, monkeypatch):
+    """Failed check should give DataPackageError."""
 
-    invalid_datapackage = {"name": "invalid-name!"}
+    wrong_datapackage = {"name": "bad-name!"}
     file_path = tmp_path / "datapackage.json"
-    file_path.write_text(json.dumps(invalid_datapackage))
+    file_path.write_text(json.dumps(wrong_datapackage))
 
     monkeypatch.chdir(tmp_path)
 

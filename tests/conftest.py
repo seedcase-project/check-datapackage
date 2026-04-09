@@ -6,7 +6,7 @@ import pytest
 
 @pytest.fixture
 def datapackage():
-    """Return a valid datapackage dict with resources."""
+    """Returns a data package dict with resources."""
     return {
         "name": "test-package",
         "title": "Test Package",
