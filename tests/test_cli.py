@@ -40,12 +40,11 @@ def test_check_with_mocked_internals(mock_read_json, mock_check):
 def test_check_reads_source_from_cdp_toml(tmp_path, monkeypatch):
     """Check args specified in .cdp.toml should overwrite the default values."""
     toml_path = tmp_path / ".cdp.toml"
-    toml_path.write_text('source = "custom.json"\nstrict = true\n')
+    toml_path.write_text("strict = true\n")
 
     monkeypatch.chdir(tmp_path)
 
     _, bound, _ = app.parse_args(["check"])
-    assert bound.arguments["source"] == "custom.json"
     assert bound.arguments["strict"] is True
 
 

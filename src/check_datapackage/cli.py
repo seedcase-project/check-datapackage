@@ -26,6 +26,8 @@ app = setup_cli(
 @app.command(name="check")
 def check_cmd(
     source: str = "datapackage.json",
+    /,
+    *,
     strict: bool = False,
 ) -> None:
     """Check a Data Package's metadata against the Data Package standard.
