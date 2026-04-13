@@ -37,8 +37,13 @@ dependencies = [
     "pydantic>=2.12.3",
     "python-jsonpath>=2.0.1",
     "rich>=14.3.0",
+    "seedcase-soil",
     "types-jsonschema>=4.25.1.20250822",
 ]
+
+[project.scripts]
+check-datapackage = "check_datapackage.cli:main"
+cdp = "check_datapackage.cli:main"
 
 [project.urls]
 homepage = "https://check-datapackage.seedcase-project.org"
@@ -60,9 +65,13 @@ dev = [
     "pre-commit>=4.3.0",
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
+    "pytest-mock>=3.15.1",
     "quartodoc>=0.11.1",
     "ruff>=0.12.11",
     "types-tabulate>=0.9.0.20241207",
     "typos>=1.35.6",
     "vulture>=2.14",
 ]
+
+[tool.uv.sources]
+seedcase-soil = { git = "https://github.com/seedcase-project/seedcase-soil", rev = "0.2.0" }
