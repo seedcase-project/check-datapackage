@@ -17,6 +17,12 @@ individual release will not have many changes within it. Below is a list
 of the releases we've made so far, along with what was changed within
 each release.
 
+## 0.32.0 (2026-04-13)
+
+### Feat
+
+- :sparkles: implement CLI (#323)
+
 ## 0.31.0 (2026-03-20)
 
 ### Feat
