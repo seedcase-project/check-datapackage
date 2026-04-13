@@ -42,7 +42,7 @@ def check_cmd(
     properties: dict[str, Any] = read_json(Path(source))
     config = Config(strict=strict)
     check(properties, config=config, error=True)
-    pretty_print("[green]All checks passed! Your Data Package is valid.[/green]")
+    pretty_print("[green]All checks passed![/green]")
 
 
 def main() -> None:
