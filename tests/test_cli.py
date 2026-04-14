@@ -3,15 +3,22 @@
 import json
 
 import pytest
+from seedcase_soil.errors import FileDoesNotExistError
 
 from check_datapackage.check import DataPackageError
 from check_datapackage.cli import app
 
 
 @pytest.fixture
-def mock_read_json(mocker):
-    """Mock read_json to isolate CLI tests from filesystem resolution."""
-    return mocker.patch("check_datapackage.cli.read_json")
+def mock_parse_source(mocker):
+    """Mock parse_source to isolate CLI tests from source resolution."""
+    return mocker.patch("check_datapackage.cli.parse_source")
+
+
+@pytest.fixture
+def mock_read_properties(mocker):
+    """Mock read_properties to isolate CLI tests from file I/O."""
+    return mocker.patch("check_datapackage.cli.read_properties")
 
 
 @pytest.fixture
@@ -23,15 +30,26 @@ def mock_check(mocker):
 # Testing CLI invocation ====
 
 
-def test_check_with_mocked_internals(mock_read_json, mock_check):
+def test_check_with_mocked_internals(
+    mock_parse_source,
+    mock_read_properties,
+    mock_check,
+):
     """Isolate CLI behaviour by mocking internal helpers."""
-    mock_read_json.return_value = {"name": "test-package"}
+    fake_source = object()
+    mock_parse_source.return_value = fake_source
+    mock_read_properties.return_value = {"name": "test-package"}
     mock_check.return_value = []
 
     app(["check", "datapackage.json"], result_action="return_value")
 
-    mock_read_json.assert_called_once()
+    mock_parse_source.assert_called_once_with("datapackage.json")
+    mock_read_properties.assert_called_once_with(fake_source)
     mock_check.assert_called_once()
+    args, kwargs = mock_check.call_args
+    assert args[0] == mock_read_properties.return_value
+    assert kwargs["error"] is True
+    assert kwargs["config"].strict is False
 
 
 # File-based config ====
@@ -66,7 +84,7 @@ def test_check_missing_datapackage_raises_error(tmp_path, monkeypatch):
     """Missing datapackage file should raise an error."""
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(FileDoesNotExistError):
         app(["check", "nonexistent.json"], result_action="return_value")
 
 

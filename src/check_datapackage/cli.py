@@ -1,17 +1,18 @@
 """Functions for the exposed CLI."""
 
-from pathlib import Path
 from typing import Any
 
 from seedcase_soil import (
+    Address,
+    parse_source,
     pretty_print,
+    read_properties,
     run_without_tracebacks,
     setup_cli,
 )
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
-from check_datapackage.read_json import read_json
 
 app = setup_cli(
     name="check-datapackage",
@@ -35,11 +36,17 @@ def check_cmd(
     Outputs a human-readable explanation of any issues found.
 
     Args:
-        source: The local location of a `datapackage.json` file.
+        source: The location of a `datapackage.json`, defaults to a file or folder
+            path. Can also be an `https:` source to a remote `datapackage.json` or a
+            `github:` / `gh:` pointing to a repo with a `datapackage.json`
+            in the repo root (in the format `gh:org/repo`, which can also include
+            reference to a tag or branch, such as `gh:org/repo@main` or
+            `gh:org/repo@1.0.1`).
         strict: If True, check "SHOULD" properties in addition to "MUST"
             properties from the Data Package standard.
     """
-    properties: dict[str, Any] = read_json(Path(source))
+    address: Address = parse_source(source)
+    properties: dict[str, Any] = read_properties(address)
     config = Config(strict=strict)
     check(properties, config=config, error=True)
     pretty_print("[green]All checks passed![/green]")
