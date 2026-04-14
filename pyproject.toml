@@ -55,6 +55,9 @@ issues = "https://github.com/seedcase-project/check-datapackage/issues"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.uv.sources]
+seedcase-soil = { path = "../seedcase-soil" }
+
 [dependency-groups]
 dev = [
     "bandit>=1.8.6",

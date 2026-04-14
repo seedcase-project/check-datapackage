@@ -7,7 +7,7 @@ from check_datapackage.examples import (
     example_resource_properties,
 )
 from check_datapackage.extensions import CustomCheck, Extensions, RequiredCheck
-from check_datapackage.internals import _map
+from check_datapackage.internals import fmap
 from check_datapackage.issue import Issue
 
 lowercase_check = CustomCheck(
@@ -169,8 +169,8 @@ def test_required_check_union():
 
     issues = check(properties, config=config)
 
-    assert all(_map(issues, lambda issue: issue.type == "required"))
-    assert _map(issues, lambda issue: issue.jsonpath) == [
+    assert all(fmap(issues, lambda issue: issue.type == "required"))
+    assert fmap(issues, lambda issue: issue.jsonpath) == [
         "$.licenses",
         "$.resources[0].licenses",
         "$.resources[0].sources",
@@ -189,7 +189,7 @@ def test_required_check_non_final_recursive_descent():
 
     issues = check(properties, config=config)
 
-    assert _map(issues, lambda issue: issue.jsonpath) == [
+    assert fmap(issues, lambda issue: issue.jsonpath) == [
         "$.licenses[0].title",
         "$.resources[0].licenses[0].title",
     ]

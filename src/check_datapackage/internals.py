@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from itertools import chain
-from typing import Annotated, Any, Callable, Iterable, TypeVar
+from typing import Annotated, Any
 
 from jsonpath import (
     CompoundJSONPath,
@@ -10,6 +9,17 @@ from jsonpath import (
     finditer,
 )
 from pydantic import AfterValidator
+from seedcase_soil import keep, flat_fmap, fmap
+
+__all__ = [
+    "PropertyField",
+    "JsonPath",
+    "fmap",
+    "keep",
+    "flat_fmap",
+    "_get_fields_at_jsonpath",
+    "_get_direct_jsonpaths",
+]
 
 
 @dataclass
@@ -30,13 +40,13 @@ def _get_fields_at_jsonpath(
 ) -> list[PropertyField]:
     """Returns all fields that match the JSON path."""
     matches = finditer(jsonpath, json_object)
-    return _map(matches, _create_property_field)
+    return fmap(matches, _create_property_field)
 
 
 def _get_direct_jsonpaths(jsonpath: str, json_object: dict[str, Any]) -> list[str]:
     """Returns all direct JSON paths that match a direct or indirect JSON path."""
     fields = _get_fields_at_jsonpath(jsonpath, json_object)
-    return _map(fields, lambda field: field.jsonpath)
+    return fmap(fields, lambda field: field.jsonpath)
 
 
 def _create_property_field(match: JSONPathMatch) -> PropertyField:
@@ -44,23 +54,6 @@ def _create_property_field(match: JSONPathMatch) -> PropertyField:
         jsonpath=match.path.replace("['", ".").replace("']", ""),
         value=match.obj,
     )
-
-
-In = TypeVar("In")
-Out = TypeVar("Out")
-
-
-def _map(x: Iterable[In], fn: Callable[[In], Out]) -> list[Out]:
-    return list(map(fn, x))
-
-
-def _filter(x: Iterable[In], fn: Callable[[In], bool]) -> list[In]:
-    return list(filter(fn, x))
-
-
-def _flat_map(items: Iterable[In], fn: Callable[[In], Iterable[Out]]) -> list[Out]:
-    """Maps and flattens the items by one level."""
-    return list(chain.from_iterable(map(fn, items)))
 
 
 def _is_jsonpath(value: str) -> str:
@@ -74,7 +67,7 @@ def _is_jsonpath(value: str) -> str:
 
     # Doesn't allow intersection paths (e.g. `$.resources & $.name`).
     intersection_token = jsonpath.env.intersection_token
-    if isinstance(jsonpath, CompoundJSONPath) and _filter(
+    if isinstance(jsonpath, CompoundJSONPath) and keep(
         jsonpath.paths, lambda path: path[0] == intersection_token
     ):
         raise ValueError(
