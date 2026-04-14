@@ -1,4 +1,5 @@
 from pytest import mark, raises
+from seedcase_soil import fmap
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
@@ -7,7 +8,6 @@ from check_datapackage.examples import (
     example_resource_properties,
 )
 from check_datapackage.extensions import CustomCheck, Extensions, RequiredCheck
-from check_datapackage.internals import fmap
 from check_datapackage.issue import Issue
 
 lowercase_check = CustomCheck(

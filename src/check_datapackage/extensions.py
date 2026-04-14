@@ -7,15 +7,13 @@ from jsonpath import JSONPath, compile
 from jsonpath.segments import JSONPathRecursiveDescentSegment
 from jsonpath.selectors import NameSelector
 from pydantic import BaseModel, PrivateAttr, field_validator, model_validator
+from seedcase_soil import flat_fmap, fmap, keep
 
 from check_datapackage.internals import (
     JsonPath,
     PropertyField,
-    keep,
-    flat_fmap,
     _get_direct_jsonpaths,
     _get_fields_at_jsonpath,
-    fmap,
 )
 from check_datapackage.issue import Issue
 

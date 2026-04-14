@@ -9,6 +9,7 @@ from typing import Any, Callable, Iterator, Optional, cast
 from jsonpath import findall, resolve
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 from rich import print as rprint
+from seedcase_soil import flat_fmap, fmap, keep
 
 from check_datapackage.config import Config
 from check_datapackage.constants import (
@@ -20,10 +21,7 @@ from check_datapackage.exclusion import exclude
 from check_datapackage.extensions import apply_extensions
 from check_datapackage.internals import (
     PropertyField,
-    keep,
-    flat_fmap,
     _get_fields_at_jsonpath,
-    fmap,
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
@@ -614,9 +612,7 @@ def _handle_S_resources_x(
     if errors_in_group:
         edits.remove.append(parent_error)
 
-    path_or_data_required_errors = keep(
-        errors_in_group, _path_or_data_required_error
-    )
+    path_or_data_required_errors = keep(errors_in_group, _path_or_data_required_error)
     # If path and data are both missing, add a more informative error
     if len(path_or_data_required_errors) > 1:
         edits.add.append(

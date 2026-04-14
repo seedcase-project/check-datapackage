@@ -2,13 +2,9 @@ import re
 from typing import Any, Optional
 
 from pydantic import BaseModel
+from seedcase_soil import fmap, keep
 
-from check_datapackage.internals import (
-    JsonPath,
-    keep,
-    _get_direct_jsonpaths,
-    fmap,
-)
+from check_datapackage.internals import JsonPath, _get_direct_jsonpaths
 from check_datapackage.issue import Issue
 
 

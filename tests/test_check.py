@@ -1,6 +1,7 @@
 from typing import Any
 
 from pytest import fixture, mark, raises
+from seedcase_soil import fmap, keep
 
 from check_datapackage.check import DataPackageError, check, explain
 from check_datapackage.config import Config
@@ -11,7 +12,6 @@ from check_datapackage.examples import (
 )
 from check_datapackage.exclusion import Exclusion
 from check_datapackage.extensions import Extensions, RequiredCheck
-from check_datapackage.internals import keep, fmap
 from tests.test_extensions import lowercase_check
 
 # "MUST" checks
