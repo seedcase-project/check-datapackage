@@ -1,6 +1,7 @@
 """Check functions and constants for the Frictionless Data Package standard."""
 
 from rich import print as pretty_print
+from seedcase_soil import parse_source, read_properties
 
 from .check import (
     DataPackageError,
@@ -16,7 +17,6 @@ from .examples import (
 from .exclusion import Exclusion
 from .extensions import CustomCheck, Extensions, RequiredCheck
 from .issue import Issue
-from .read_json import read_json
 
 __all__ = [
     "Config",
@@ -31,6 +31,7 @@ __all__ = [
     "example_field_properties",
     "check",
     "explain",
-    "read_json",
+    "parse_source",
+    "read_properties",
     "pretty_print",
 ]
