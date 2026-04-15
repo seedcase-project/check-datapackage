@@ -7,15 +7,13 @@ from jsonpath import JSONPath, compile
 from jsonpath.segments import JSONPathRecursiveDescentSegment
 from jsonpath.selectors import NameSelector
 from pydantic import BaseModel, PrivateAttr, field_validator, model_validator
+from seedcase_soil import flat_fmap, fmap, keep
 
 from check_datapackage.internals import (
     JsonPath,
     PropertyField,
-    _filter,
-    _flat_map,
     _get_direct_jsonpaths,
     _get_fields_at_jsonpath,
-    _map,
 )
 from check_datapackage.issue import Issue
 
@@ -83,11 +81,11 @@ class CustomCheck(BaseModel, frozen=True):
             self.jsonpath,
             properties,
         )
-        matches: list[PropertyField] = _filter(
+        matches: list[PropertyField] = keep(
             fields,
             lambda field: not self.check(field.value),
         )
-        return _map(
+        return fmap(
             matches,
             lambda field: Issue(
                 jsonpath=field.jsonpath, type=self.type, message=self.message
@@ -124,15 +122,15 @@ def _jsonpath_to_targets(jsonpath: JSONPath) -> list[TargetJsonPath]:
 
     # Things like field names, array indices, and/or wildcards.
     selectors = last_segment.selectors
-    if _filter(selectors, lambda selector: not isinstance(selector, NameSelector)):
+    if keep(selectors, lambda selector: not isinstance(selector, NameSelector)):
         raise ValueError(
             f"Cannot use `RequiredCheck` for the JSON path `{full_path}`"
             " because it doesn't end in a name selector."
         )
 
-    parent = "".join(_map(jsonpath.segments[:-1], str))
+    parent = "".join(fmap(jsonpath.segments[:-1], str))
     name_selectors = cast(tuple[NameSelector], selectors)
-    return _map(
+    return fmap(
         name_selectors,
         lambda selector: TargetJsonPath(
             parent=str(compile(parent)), field=selector.name
@@ -170,9 +168,9 @@ class RequiredCheck(BaseModel, frozen=True):
             paths = [jsonpath]
         else:
             first_path = cast(JSONPath, jsonpath.path)
-            paths = [first_path] + _map(jsonpath.paths, itemgetter(1))
+            paths = [first_path] + fmap(jsonpath.paths, itemgetter(1))
 
-        object.__setattr__(self, "_targets", _flat_map(paths, _jsonpath_to_targets))
+        object.__setattr__(self, "_targets", flat_fmap(paths, _jsonpath_to_targets))
         return self
 
     def apply(self, properties: dict[str, Any]) -> list[Issue]:
@@ -185,7 +183,7 @@ class RequiredCheck(BaseModel, frozen=True):
             A list of `Issue`s.
         """
         matching_paths = _get_direct_jsonpaths(self.jsonpath, properties)
-        return _flat_map(
+        return flat_fmap(
             self._targets,
             lambda target: self._target_to_issues(target, matching_paths, properties),
         )
@@ -198,11 +196,11 @@ class RequiredCheck(BaseModel, frozen=True):
     ) -> list[Issue]:
         """Create a list of `Issue`s from a `TargetJsonPath`."""
         direct_parent_paths = _get_direct_jsonpaths(target.parent, properties)
-        missing_paths = _filter(
+        missing_paths = keep(
             direct_parent_paths,
             lambda path: f"{path}.{target.field}" not in matching_paths,
         )
-        return _map(
+        return fmap(
             missing_paths,
             lambda path: Issue(
                 jsonpath=f"{path}.{target.field}",
@@ -278,7 +276,7 @@ def apply_extensions(
     extensions_as_one: list[CustomCheck | RequiredCheck] = (
         extensions.required_checks + extensions.custom_checks
     )
-    return _flat_map(
+    return flat_fmap(
         extensions_as_one,
         lambda extension: extension.apply(properties),
     )

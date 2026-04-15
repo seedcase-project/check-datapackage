@@ -74,4 +74,4 @@ dev = [
 ]
 
 [tool.uv.sources]
-seedcase-soil = { git = "https://github.com/seedcase-project/seedcase-soil", rev = "0.2.0" }
+seedcase-soil = { git = "https://github.com/seedcase-project/seedcase-soil", rev = "0.4.0" }

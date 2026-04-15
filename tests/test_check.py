@@ -1,6 +1,7 @@
 from typing import Any
 
 from pytest import fixture, mark, raises
+from seedcase_soil import fmap, keep
 
 from check_datapackage.check import DataPackageError, check, explain
 from check_datapackage.config import Config
@@ -11,7 +12,6 @@ from check_datapackage.examples import (
 )
 from check_datapackage.exclusion import Exclusion
 from check_datapackage.extensions import Extensions, RequiredCheck
-from check_datapackage.internals import _filter, _map
 from tests.test_extensions import lowercase_check
 
 # "MUST" checks
@@ -313,7 +313,7 @@ def test_do_not_check_bad_foreign_keys_against_fields_same_resource():
 
     issues = check(properties)
 
-    assert not _filter(issues, lambda issue: "foreign-key" in issue.type)
+    assert not keep(issues, lambda issue: "foreign-key" in issue.type)
 
 
 def test_do_not_check_foreign_keys_against_bad_field_same_resource():
@@ -389,7 +389,7 @@ def test_do_not_check_bad_foreign_keys_against_fields_different_resource(propert
 
     issues = check(properties_fk)
 
-    assert not _filter(issues, lambda issue: "foreign-key" in issue.type)
+    assert not keep(issues, lambda issue: "foreign-key" in issue.type)
 
 
 def test_do_not_check_foreign_keys_against_bad_field_different_resource(properties_fk):
@@ -831,7 +831,7 @@ def test_fail_foreign_keys_with_bad_fields_while_keeping_other_issues():
     issues = check(properties)
 
     assert len(issues) == 3
-    assert _map(issues, lambda issue: issue.type) == ["type", "required", "type"]
+    assert fmap(issues, lambda issue: issue.type) == ["type", "required", "type"]
 
 
 @mark.parametrize(

@@ -2,13 +2,9 @@ import re
 from typing import Any, Optional
 
 from pydantic import BaseModel
+from seedcase_soil import fmap, keep
 
-from check_datapackage.internals import (
-    JsonPath,
-    _filter,
-    _get_direct_jsonpaths,
-    _map,
-)
+from check_datapackage.internals import JsonPath, _get_direct_jsonpaths
 from check_datapackage.issue import Issue
 
 
@@ -53,14 +49,14 @@ class Exclusion(BaseModel, frozen=True):
 
 def exclude(issues: list[Issue], exclusions: list[Exclusion]) -> list[Issue]:
     """Exclude issues defined by Exclusion objects."""
-    return _filter(
+    return keep(
         issues,
         lambda issue: not _get_any_matches(issue, exclusions),
     )
 
 
 def _get_any_matches(issue: Issue, exclusions: list[Exclusion]) -> bool:
-    matches: list[bool] = _map(
+    matches: list[bool] = fmap(
         exclusions, lambda exclusion: _get_matches(issue, exclusion)
     )
     return any(matches)
@@ -109,7 +105,7 @@ def _get_object_from_path_parts(path_parts: list[str]) -> dict[str, Any]:
         # If the current field is an array, insert the next value as the last item
         # in the array
         name, index = array_parts.groups()
-        value: list[dict[str, Any]] = _map(range(int(index)), lambda _: {})
+        value: list[dict[str, Any]] = fmap(range(int(index)), lambda _: {})
         return {name: value + [next_value]}
 
     # If the current field is a dict, insert the next value as a property

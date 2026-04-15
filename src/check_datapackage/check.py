@@ -9,6 +9,7 @@ from typing import Any, Callable, Iterator, Optional, cast
 from jsonpath import findall, resolve
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 from rich import print as rprint
+from seedcase_soil import flat_fmap, fmap, keep
 
 from check_datapackage.config import Config
 from check_datapackage.constants import (
@@ -20,10 +21,7 @@ from check_datapackage.exclusion import exclude
 from check_datapackage.extensions import apply_extensions
 from check_datapackage.internals import (
     PropertyField,
-    _filter,
-    _flat_map,
     _get_fields_at_jsonpath,
-    _map,
 )
 from check_datapackage.issue import Issue
 from check_datapackage.read_json import read_json
@@ -205,7 +203,7 @@ def explain(issues: list[Issue]) -> str:
         cdp.pretty_print(issues)
         ```
     """
-    issue_explanations: list[str] = _map(
+    issue_explanations: list[str] = fmap(
         issues,
         _create_explanation,
     )
@@ -291,7 +289,7 @@ def _check_keys(properties: dict[str, Any], issues: list[Issue]) -> list[Issue]:
     resources_with_pk = _keep_resources_with_no_issue_at_property(
         resources_with_pk, issues, "schema.primaryKey"
     )
-    key_issues = _flat_map(resources_with_pk, _check_primary_key)
+    key_issues = flat_fmap(resources_with_pk, _check_primary_key)
 
     # Foreign keys
     resources_with_fk = _get_fields_at_jsonpath(
@@ -301,7 +299,7 @@ def _check_keys(properties: dict[str, Any], issues: list[Issue]) -> list[Issue]:
     resources_with_fk = _keep_resources_with_no_issue_at_property(
         resources_with_fk, issues, "schema.foreignKeys"
     )
-    key_issues += _flat_map(
+    key_issues += flat_fmap(
         resources_with_fk,
         lambda resource: _check_foreign_keys(resource, properties),
     )
@@ -311,7 +309,7 @@ def _check_keys(properties: dict[str, Any], issues: list[Issue]) -> list[Issue]:
 def _issues_at_property(
     resource: PropertyField, issues: list[Issue], jsonpath: str
 ) -> list[Issue]:
-    return _filter(
+    return keep(
         issues,
         lambda issue: f"{resource.jsonpath}.{jsonpath}" in issue.jsonpath,
     )
@@ -321,7 +319,7 @@ def _keep_resources_with_no_issue_at_property(
     resources: list[PropertyField], issues: list[Issue], jsonpath: str
 ) -> list[PropertyField]:
     """Filter out resources that have an issue at or under the given `jsonpath`."""
-    return _filter(
+    return keep(
         resources,
         lambda resource: not _issues_at_property(resource, issues, jsonpath),
     )
@@ -356,20 +354,20 @@ def _check_foreign_keys(
     foreign_keys = cast(
         list[dict[str, Any]], resolve("/schema/foreignKeys", resource.value)
     )
-    foreign_keys_diff_resource = _filter(
+    foreign_keys_diff_resource = keep(
         foreign_keys,
         lambda fk: "resource" in fk["reference"] and fk["reference"]["resource"] != "",
     )
-    foreign_keys_same_resource = _filter(
+    foreign_keys_same_resource = keep(
         foreign_keys, lambda fk: fk not in foreign_keys_diff_resource
     )
 
-    issues = _flat_map(foreign_keys, lambda fk: _check_fk_source_fields(fk, resource))
-    issues += _flat_map(
+    issues = flat_fmap(foreign_keys, lambda fk: _check_fk_source_fields(fk, resource))
+    issues += flat_fmap(
         foreign_keys_same_resource,
         lambda fk: _check_fk_dest_fields_same_resource(fk, resource),
     )
-    issues += _flat_map(
+    issues += flat_fmap(
         foreign_keys_diff_resource,
         lambda fk: _check_fk_dest_fields_diff_resource(fk, resource, properties),
     )
@@ -395,8 +393,8 @@ def _get_unknown_key_fields(
 ) -> str:
     """Return the key fields that don't exist on the specified resource."""
     known_fields = findall(f"{resource_path}schema.fields[*].name", properties)
-    unknown_fields = _filter(key_fields, lambda field: field not in known_fields)
-    unknown_fields = _map(unknown_fields, lambda field: f"{field!r}")
+    unknown_fields = keep(key_fields, lambda field: field not in known_fields)
+    unknown_fields = fmap(unknown_fields, lambda field: f"{field!r}")
     return ", ".join(unknown_fields)
 
 
@@ -588,11 +586,11 @@ def _validation_errors_to_issues(
     Returns:
         A list of `Issue`s.
     """
-    schema_errors = _flat_map(validation_errors, _validation_error_to_schema_errors)
-    grouped_errors = _filter(schema_errors, lambda error: error.type in GROUP_ERRORS)
+    schema_errors = flat_fmap(validation_errors, _validation_error_to_schema_errors)
+    grouped_errors = keep(schema_errors, lambda error: error.type in GROUP_ERRORS)
     schema_errors = reduce(_handle_grouped_error, grouped_errors, schema_errors)
 
-    return _map(schema_errors, _create_issue)
+    return fmap(schema_errors, _create_issue)
 
 
 @dataclass(frozen=True)
@@ -614,9 +612,7 @@ def _handle_S_resources_x(
     if errors_in_group:
         edits.remove.append(parent_error)
 
-    path_or_data_required_errors = _filter(
-        errors_in_group, _path_or_data_required_error
-    )
+    path_or_data_required_errors = keep(errors_in_group, _path_or_data_required_error)
     # If path and data are both missing, add a more informative error
     if len(path_or_data_required_errors) > 1:
         edits.add.append(
@@ -648,7 +644,7 @@ def _handle_S_resources_x_path(
     """
     edits = SchemaErrorEdits()
     errors_in_group = _get_errors_in_group(schema_errors, parent_error)
-    type_errors = _filter(errors_in_group, _is_path_type_error)
+    type_errors = keep(errors_in_group, _is_path_type_error)
     only_type_errors = len(errors_in_group) == len(type_errors)
 
     if type_errors:
@@ -709,7 +705,7 @@ def _handle_S_resources_x_schema_fields_x(
     # The field's type is known; keep only errors for this field type
     schema_index = FIELD_TYPES.index(field_type)
 
-    errors_for_other_types = _filter(
+    errors_for_other_types = keep(
         errors_in_group,
         lambda error: f"fields/items/oneOf/{schema_index}/" not in error.schema_path,
     )
@@ -730,7 +726,7 @@ def _handle_S_resources_x_schema_fields_x_constraints_enum(
         edits.remove.extend(errors_in_group)
         return edits
 
-    value_errors = _filter(
+    value_errors = keep(
         errors_in_group,
         lambda error: not error.jsonpath.endswith("enum"),
     )
@@ -749,9 +745,9 @@ def _get_enum_values_error(
     value_errors: list[SchemaError],
 ) -> SchemaError:
     message = "All enum values must be the same type."
-    same_type = len(set(_map(parent_error.instance, lambda value: type(value)))) == 1
+    same_type = len(set(fmap(parent_error.instance, lambda value: type(value)))) == 1
     if same_type:
-        allowed_types = set(_map(value_errors, lambda error: str(error.schema_value)))
+        allowed_types = set(fmap(value_errors, lambda error: str(error.schema_value)))
         message = (
             "The enum value type is not correct. Enum values should be "
             f"one of {', '.join(allowed_types)}."
@@ -788,7 +784,7 @@ def _handle_S_resources_x_schema_primary_key(
     if key_type in PRIMARY_KEY_TYPES:
         schema_for_type = f"primaryKey/oneOf/{PRIMARY_KEY_TYPES.index(key_type)}/"
         edits.remove.extend(
-            _filter(
+            keep(
                 errors_in_group,
                 lambda error: schema_for_type not in error.schema_path,
             )
@@ -832,7 +828,7 @@ def _handle_S_resources_x_schema_foreign_keys(
     ):
         schema_part = f"foreignKeys/items/oneOf/{FOREIGN_KEY_TYPES.index(key_type)}/"
         edits.remove.extend(
-            _filter(
+            keep(
                 errors_in_group,
                 lambda error: schema_part not in error.schema_path,
             )
@@ -840,7 +836,7 @@ def _handle_S_resources_x_schema_foreign_keys(
         return edits
 
     # If the key type is incorrect, remove all errors that depend on it
-    key_type_errors = _filter(
+    key_type_errors = keep(
         errors_in_group,
         lambda error: (
             error.schema_path.endswith("fields/type")
@@ -939,7 +935,7 @@ def _handle_grouped_error(
         )
 
     edits = _get_edits(_schema_path_to_handler)
-    return _filter(schema_errors, lambda error: error not in edits.remove) + edits.add
+    return keep(schema_errors, lambda error: error not in edits.remove) + edits.add
 
 
 def _validation_error_to_schema_errors(error: ValidationError) -> list[SchemaError]:
@@ -947,7 +943,7 @@ def _validation_error_to_schema_errors(error: ValidationError) -> list[SchemaErr
     if not error.context:
         return current
 
-    return current + _flat_map(error.context, _validation_error_to_schema_errors)
+    return current + flat_fmap(error.context, _validation_error_to_schema_errors)
 
 
 def _get_full_json_path_from_error(error: ValidationError) -> str:
@@ -973,7 +969,7 @@ def _create_schema_error(error: ValidationError) -> SchemaError:
         message=error.message,
         type=str(error.validator),
         jsonpath=_get_full_json_path_from_error(error),
-        schema_path="/".join(_map(error.absolute_schema_path, str)),
+        schema_path="/".join(fmap(error.absolute_schema_path, str)),
         instance=error.instance,
         schema_value=error.validator_value,
         parent=_create_schema_error(error.parent) if error.parent else None,  # type: ignore[arg-type]
@@ -1000,7 +996,7 @@ def _create_issue(error: SchemaError) -> Issue:
 def _get_errors_in_group(
     schema_errors: list[SchemaError], parent_error: SchemaError
 ) -> list[SchemaError]:
-    return _filter(schema_errors, lambda error: error.parent == parent_error)
+    return keep(schema_errors, lambda error: error.parent == parent_error)
 
 
 def _strip_index(jsonpath: str) -> str:
