@@ -18,7 +18,8 @@ properties flow through `check-datapackage` functions and classes.
 %%| fig-alt: "A flowchart showing the flow of using `check-datapackage`, starting with reading the `datapackage.json` and `.cdp.toml` files, then checking the properties with the config, and finally explaining any issues found."
 flowchart TD
     descriptor_file[(datapackage.json)]
-    read_json["read_json()"]
+    parse_source["parse_source()"]
+    read_properties["read_properties()"]
     properties[/"Properties<br>(dict)"/]
 
     config_file[(.cdp.toml)]
@@ -33,7 +34,7 @@ flowchart TD
     explain["explain()"]
     messages[/messages/]
 
-    descriptor_file --> read_json --> properties
+    descriptor_file --> parse_source --> read_properties --> properties
     config_file -.-> read_config -.-> config
     extensions & exclusion --> config
     extensions & exclusion -.-> config_file
@@ -82,11 +83,17 @@ explain these issues in a more pleasant and ergonomic way.
 See the help documentation with
 [`help(explain)`](/docs/reference/explain.qmd) for more details.
 
-### {{< var done >}} `read_json()`
+### {{< var done >}} `parse_source()` and `read_properties()`
 
-This is a simple helper function to read the `datapackage.json` file
-into a Python dictionary. See
-[`help(read_json)`](/docs/reference/read_json.qmd) for more details.
+These helper functions are used together to load a Data Package's metadata.
+First, `parse_source()` converts a source string into an `Address`, and then
+`read_properties()` reads metadata from that address into a Python dictionary.
+
+See
+[`parse_source()`](https://seedcase-soil.seedcase-project.org/docs/reference/parse_source.qmd)
+and
+[`read_properties()`](https://seedcase-soil.seedcase-project.org/docs/reference/read_properties.qmd)
+for more details.
 
 ### {{< var planned >}} `read_config()`
 

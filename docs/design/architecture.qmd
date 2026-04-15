@@ -208,7 +208,8 @@ flowchart LR
         end
 
         read_config["read_config()<br>[function]"]
-        read_json["read_json()<br>[function]"]
+        parse_source["parse_source()<br>[function]"]
+        read_properties["read_properties()<br>[function]"]
         check("check()<br>[function]")
         explain("explain()<br>[function]")
 
@@ -216,7 +217,8 @@ flowchart LR
         extension --"Defines additional checks"--> config
         config_file -. "Reads configuration<br>from file" .-> read_config
 
-        read_json --"Provides properties<br>as dict"--> check
+        parse_source --"Parses source<br>to address"--> read_properties
+        read_properties --"Provides properties<br>as dict"--> check
         read_config -. "Adds check<br>configurations" .-> check
         config --"Adds check<br>configurations"--> check
 
@@ -227,7 +229,7 @@ flowchart LR
     user("User<br>[person]")
 
     dp_standard --"Defines the Data<br>Package standard"--> check
-    user --"Provides datapackage.json<br>to check"--> read_json
+    user --"Provides datapackage source<br>to check"--> parse_source
     user --"Provides configuration file<br>(optional)"--> config_file
 
     %% Styling
