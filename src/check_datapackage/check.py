@@ -9,7 +9,7 @@ from typing import Any, Callable, Iterator, Optional, cast
 from jsonpath import findall, resolve
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 from rich import print as rprint
-from seedcase_soil import flat_fmap, fmap, keep
+from seedcase_soil import flat_fmap, fmap, keep, read_properties
 
 from check_datapackage.config import Config
 from check_datapackage.constants import (
