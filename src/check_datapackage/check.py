@@ -9,11 +9,11 @@ from typing import Any, Callable, Iterator, Optional, cast
 from jsonpath import findall, resolve
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 from rich import print as rprint
-from seedcase_soil import flat_fmap, fmap, keep
+from seedcase_soil import flat_fmap, fmap, keep, read_properties
 
 from check_datapackage.config import Config
 from check_datapackage.constants import (
-    DATA_PACKAGE_SCHEMA_PATH,
+    DATA_PACKAGE_SCHEMA_ADDRESS,
     FIELD_TYPES,
     GROUP_ERRORS,
 )
@@ -24,7 +24,6 @@ from check_datapackage.internals import (
     _get_fields_at_jsonpath,
 )
 from check_datapackage.issue import Issue
-from check_datapackage.read_json import read_json
 
 # Type alias for Python exception hook
 PythonExceptionHook = Callable[
@@ -255,7 +254,7 @@ def check(
             while checking the properties. If no issues are found, an empty list
             is returned.
     """
-    schema = read_json(DATA_PACKAGE_SCHEMA_PATH)
+    schema = read_properties(DATA_PACKAGE_SCHEMA_ADDRESS)
 
     if config.strict:
         _set_should_fields_to_required(schema)

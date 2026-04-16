@@ -33,8 +33,9 @@ against the Data Package standard and reports any issues it finds.
 It requires one main input, `properties`, which is a Python `dict`
 representing the properties in the `datapackage.json` file. You can load
 these properties from the JSON file using the helper function
-[`read_json()`](/docs/reference/read_json.qmd) included in
-`check-datapackage`.
+`read_properties()`
+after first parsing the source with
+`parse_source()` (from [`seedcase-soil`](https://github.com/seedcase-project/seedcase-soil).
 
 By default, if any issues are found, `check()` returns a list of `Issue`
 objects---each one describing a failed check on a property. If no issues
