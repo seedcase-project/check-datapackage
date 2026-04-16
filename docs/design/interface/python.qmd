@@ -90,9 +90,9 @@ First, `parse_source()` converts a source string into an `Address`, and then
 `read_properties()` reads metadata from that address into a Python dictionary.
 
 See
-[`parse_source()`](https://seedcase-soil.seedcase-project.org/docs/reference/parse_source.qmd)
+`parse_source()`
 and
-[`read_properties()`](https://seedcase-soil.seedcase-project.org/docs/reference/read_properties.qmd)
+`read_properties()` from [`seedcase-soil`](https://github.com/seedcase-project/seedcase-soil)
 for more details.
 
 ### {{< var planned >}} `read_config()`
