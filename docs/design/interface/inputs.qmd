@@ -4,7 +4,7 @@ title: "Inputs"
 
 This section describes the inputs accepted by `check-datapackage`.
 
-- The Data Package properties: This is a Python dictionary containing
+- The Data Package properties: This is a `Properties` type containing
   the metadata of a Data Package. Allowed properties are defined in the
   [Data Package standard](https://datapackage.org/). A common use case
   is loading the properties from the `datapackage.json` file.

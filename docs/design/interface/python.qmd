@@ -87,7 +87,8 @@ See the help documentation with
 
 These helper functions are used together to load a Data Package's metadata.
 First, `parse_source()` converts a source string into an `Address`, and then
-`read_properties()` reads metadata from that address into a Python dictionary.
+`read_properties()` reads metadata from that address into a `Properties`
+value (a type alias for `dict[str, Any]`).
 
 See
 `parse_source()`
