@@ -1,0 +1,152 @@
+---
+title: "Using the CLI"
+description: "How to use check-datapackage on the command-line."
+order: 1
+---
+
+`check-datapackage` has one command, `check`, which checks a Data
+Package's metadata against the Data Package standard. The general
+pattern for the CLI is:
+
+```{.bash filename="Terminal"}
+check-datapackage COMMAND [ARGS] [OPTIONS]
+```
+
+To get an overview of the available commands and flags, run the
+following command, which is equivalent to using the `--help` flag:
+
+```{.bash filename="Terminal"}
+check-datapackage
+```
+::: {.callout-tip collapse="true" icon="false"}
+
+## Output
+
+```{python}
+#| echo: false
+!uv run check-datapackage
+```
+:::
+
+## Checking Data Package metadata
+
+Use the `check` command to check a Data Package's metadata:
+
+```{.bash filename="Terminal"}
+check-datapackage check
+```
+
+::: {.callout-tip collapse="true" icon="false"}
+
+### Output
+
+The example below shows the output of running `check-datapackage check`
+in a directory containing a `datapackage.json` for an example Data
+Package, `flora`.
+
+```{python}
+#| echo: false
+from pathlib import Path
+
+from seedcase_soil import ExampleDataPackageName, write_example_datapackage
+
+datapackage_path = write_example_datapackage(
+    Path("."),
+    ExampleDataPackageName.flora,
+)
+!uv run check-datapackage check {datapackage_path}
+```
+:::
+
+### Checking metadata in a custom location
+
+By default, `check` looks for a `datapackage.json` file in the current
+directory, but you can specify a different path using the `source`
+argument:
+
+```{.bash filename="Terminal"}
+check-datapackage check another/directory/datapackage.json
+```
+
+You can also point `check-datapackage` to a remote Data Package by
+providing the full URL to the `datapackage.json`. For example:
+
+```{.bash filename="Terminal"}
+check-datapackage check https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json
+```
+
+::: {.callout-tip collapse="true" icon="false"}
+
+### Output
+
+```{python}
+#| echo: false
+!uv run check-datapackage check https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json
+```
+:::
+
+For Data Packages on GitHub, use either a `gh:` or `github:` prefix as a
+shortcut instead of the full URL:
+
+```{.bash filename="Terminal"}
+check-datapackage check gh:seedcase-project/example-seed-beetle
+```
+
+::: {.callout-tip collapse="true" icon="false"}
+
+### Output
+
+```{python}
+#| echo: false
+!uv run check-datapackage check gh:seedcase-project/example-seed-beetle
+```
+:::
+
+You can also include a branch or tag:
+
+```{.bash filename="Terminal"}
+check-datapackage check gh:seedcase-project/example-seed-beetle@main
+```
+
+<!-- TODO add example with error when we have a datapackge for it -->
+
+::: callout-important
+`check` raises an error when checks fail. This makes it suitable for CI
+and pre-commit workflows where failed checks should stop execution.
+:::
+
+### Enabling strict checks
+
+By default, `check` checks properties marked as "MUST" in the Data
+Package standard. To additionally check "SHOULD" properties, use the
+`--strict` flag:
+
+```{.bash filename="Terminal"}
+check-datapackage check --strict
+```
+
+You can set `strict = true` in `.cdp.toml` as well; command-line options
+override file-based configuration. See the
+[configuration guide](/docs/guide/config.qmd) for details.
+
+For more details, see the [check](/docs/guide/check.qmd) guide or run:
+
+```{.bash filename="Terminal"}
+check-datapackage check --help
+```
+
+## Global options
+
+In addition to `--help`, the top-level CLI provides:
+
+```{.bash filename="Terminal"}
+check-datapackage --install-completion
+```
+
+This installs shell completion for supported shells.
+
+```{.bash filename="Terminal"}
+check-datapackage --version
+```
+
+This prints the installed `check-datapackage` version.
