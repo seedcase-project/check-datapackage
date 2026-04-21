@@ -43,7 +43,7 @@ used throughout the package can be found in the tables below.
 |------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | package    | A Data Package that contains a collection of related data resources and descriptor(s).                                                                     |
 | descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`.                                                 |
-| properties | Metadata fields (name-value pairs) of a descriptor loaded as a Python dictionary. This can be a subset of the original descriptor or the entire structure. |
+| properties | Metadata fields (name-value pairs) of a descriptor loaded as a `Properties` type. This can be a subset of the original descriptor or the entire structure. |
 | schema     | The JSON schema defining the Data Package standard.                                                                                                        |
 | config     | An object containing settings for modifying the behaviour and output of the check mechanism.                                                               |
 
@@ -218,7 +218,7 @@ flowchart LR
         config_file -. "Reads configuration<br>from file" .-> read_config
 
         parse_source --"Parses source<br>to address"--> read_properties
-        read_properties --"Provides properties<br>as dict"--> check
+        read_properties --"Read datapackages<br>into properties"--> check
         read_config -. "Adds check<br>configurations" .-> check
         config --"Adds check<br>configurations"--> check
 
