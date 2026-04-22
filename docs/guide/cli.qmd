@@ -1,6 +1,6 @@
 ---
 title: "Using the CLI"
-description: "How to use check-datapackage on the command-line."
+description: "How to use `check-datapackage` on the command-line."
 order: 1
 ---
 
