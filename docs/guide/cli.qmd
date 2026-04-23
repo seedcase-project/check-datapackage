@@ -48,11 +48,11 @@ Package, `flora`.
 #| echo: false
 from pathlib import Path
 
-from seedcase_soil import ExampleDataPackageName, write_example_datapackage
+from seedcase_soil import ExampleDatapackageName, write_example_datapackage
 
 datapackage_path = write_example_datapackage(
     Path("."),
-    ExampleDataPackageName.flora,
+    ExampleDatapackageName.flora,
 )
 !uv run check-datapackage check {datapackage_path}
 ```
