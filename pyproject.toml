@@ -72,6 +72,3 @@ dev = [
     "typos>=1.35.6",
     "vulture>=2.14",
 ]
-
-[tool.uv.sources]
-seedcase-soil = { git = "https://github.com/seedcase-project/seedcase-soil", rev = "0.7.1" }
