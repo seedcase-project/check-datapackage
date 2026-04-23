@@ -33,10 +33,11 @@ against the Data Package standard and reports any issues it finds.
 It requires one main input, `properties`, which is a `Properties` type
 representing the properties in the `datapackage.json` file. You can load
 these properties from the JSON file using the helper function
-[`read_properties()`](https://seedcase-soil.seedcase-project.org/docs/reference/read_properties.qmd)
+[`read_properties()`](https://soil.seedcase-project.org/docs/reference/read_properties)
 after first parsing the source with
-[`parse_source()`](https://seedcase-soil.seedcase-project.org/docs/reference/parse_source.qmd)
-from [`seedcase-soil`](https://github.com/seedcase-project/seedcase-soil).
+[`parse_source()`](https://soil.seedcase-project.org/docs/reference/parse_source)
+from
+[`seedcase-soil`](https://github.com/seedcase-project/seedcase-soil).
 
 By default, if any issues are found, `check()` returns a list of `Issue`
 objects---each one describing a failed check on a property. If no issues
