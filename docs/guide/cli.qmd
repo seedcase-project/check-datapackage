@@ -46,7 +46,9 @@ Package, `flora`.
 
 ```{python}
 #| echo: false
-!uv run check-datapackage check https://raw.githubusercontent.com/seedcase-project/seedcase-soil/refs/heads/main/src/seedcase_soil/example-datapackages/flora.json
+import seedcase_soil as so
+
+!uv run check-datapackage check {so.Example.flora.address.value}
 ```
 :::
 
