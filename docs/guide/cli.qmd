@@ -46,15 +46,7 @@ Package, `flora`.
 
 ```{python}
 #| echo: false
-from pathlib import Path
-
-from seedcase_soil import ExampleDatapackageName, write_example_datapackage
-
-datapackage_path = write_example_datapackage(
-    Path("."),
-    ExampleDatapackageName.flora,
-)
-!uv run check-datapackage check {datapackage_path}
+!uv run check-datapackage check https://raw.githubusercontent.com/seedcase-project/seedcase-soil/refs/heads/main/src/seedcase_soil/example-datapackages/flora.json
 ```
 :::
 
