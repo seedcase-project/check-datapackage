@@ -46,15 +46,9 @@ Package, `flora`.
 
 ```{python}
 #| echo: false
-from pathlib import Path
+import seedcase_soil as so
 
-from seedcase_soil import ExampleDataPackageName, write_example_datapackage
-
-datapackage_path = write_example_datapackage(
-    Path("."),
-    ExampleDataPackageName.flora,
-)
-!uv run check-datapackage check {datapackage_path}
+!uv run check-datapackage check {so.Example.flora.address.value}
 ```
 :::
 
