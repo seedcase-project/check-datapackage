@@ -96,24 +96,16 @@ check-datapackage check "$simple_example"
 #| echo: false
 import seedcase_soil as so
 from pathlib import Path
-from seedcase_soil import format_output_for_docs
-from tempfile import TemporaryDirectory
 
 
-def _run_check(source, cwd):
-    format_output_for_docs(
-        ["cdp", "check", str(source)],
-        cwd=cwd,
-        width=62,
-    )
-
-# tmpdir is used to avoid conflicts with a potential local cdp.toml file
-with TemporaryDirectory() as tmpdir:
-    tmp_path = Path(tmpdir)
-    (tmp_path / ".cdp.toml").write_text("""
+config_path = Path(".cdp.toml")
+config_path.write_text("""
 strict = true
 """)
-    _run_check(so.Example.simple.path, cwd=tmp_path)
+try:
+    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+finally:
+    config_path.unlink(missing_ok=True)
 ```
 
 This fails because strict mode requires the `id` property.
@@ -137,13 +129,14 @@ check-datapackage check "$simple_example"
 
 ```{python}
 #| echo: false
-with TemporaryDirectory() as tmpdir:
-    tmp_path = Path(tmpdir)
-    (tmp_path / ".cdp.toml").write_text("""
+config_path.write_text("""
 strict = true
 [[exclusions]]
 jsonpath = "$.id"
 type = "required"
 """)
-    _run_check(so.Example.simple.path, cwd=tmp_path)
+try:
+    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+finally:
+    config_path.unlink(missing_ok=True)
 ```

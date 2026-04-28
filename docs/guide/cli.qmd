@@ -24,7 +24,8 @@ check-datapackage
 
 ```{python}
 #| echo: false
-!check-datapackage
+import seedcase_soil as so
+so.format_output_for_docs(["cdp"])
 ```
 :::
 
