@@ -12,11 +12,11 @@ the Python `Config` class used with `check()`, see
 
 ## Configuration files
 
-A configuration file lets you set preferences once, so you do'nt have to
+A configuration file lets you set preferences once, so you don't have to
 repeat them every time you run `check-datapackage check`.
 `check-datapackage` supports two configuration files: `.cdp.toml`
 `pyproject.toml`. These files should be placed in the root of your
-project—`check-datapackage` will find them automatically.
+project---`check-datapackage` will find them automatically.
 
 Use `.cdp.toml` if you want a file dedicated to `check-datapackage`
 settings, or `pyproject.toml` if your Data Package is a Python project
