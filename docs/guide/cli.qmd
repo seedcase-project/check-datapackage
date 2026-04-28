@@ -24,7 +24,7 @@ check-datapackage
 
 ```{python}
 #| echo: false
-!uv run check-datapackage
+!check-datapackage
 ```
 :::
 
@@ -48,7 +48,7 @@ Package, `flora`.
 #| echo: false
 import seedcase_soil as so
 
-!uv run check-datapackage check {so.Example.flora.address.value}
+!cdp check {so.Example.flora.address.value}
 ```
 :::
 
@@ -75,7 +75,7 @@ check-datapackage check https://raw.githubusercontent.com/seedcase-project/examp
 
 ```{python}
 #| echo: false
-!uv run check-datapackage check https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json
+!cdp check https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json
 ```
 :::
 
@@ -92,7 +92,7 @@ check-datapackage check gh:seedcase-project/example-seed-beetle
 
 ```{python}
 #| echo: false
-!uv run check-datapackage check gh:seedcase-project/example-seed-beetle
+!cdp check gh:seedcase-project/example-seed-beetle
 ```
 :::
 
