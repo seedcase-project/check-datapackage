@@ -75,13 +75,21 @@ build-quartodoc:
     rm -rf docs/reference
     uv run quartodoc build
 
+# Run Quarto with an isolated execution directory for docs code
+_quarto-with-docs-tmpdir *args:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  tmpdir=$(mktemp -d)
+  trap 'rm -rf "$tmpdir"' EXIT
+  uv run quarto {{args}} --execute-dir "$tmpdir"
+
 # Build the documentation website using Quarto
 build-website: build-quartodoc
-    uv run quarto render --execute
+    just _quarto-with-docs-tmpdir render --execute
 
 # Preview the documentation website with automatic reload on changes
 preview-website: build-quartodoc
-  uv run quarto preview --execute
+  just _quarto-with-docs-tmpdir preview --execute
 
 # Check the commit messages on the current branch that are not on the main branch
 check-commits:
@@ -119,7 +127,7 @@ build-pdf:
   uv run quarto install tinytex
   # For generating images from Mermaid diagrams
   uv run quarto install chromium
-  uv run quarto render --profile pdf --to pdf
+  just _quarto-with-docs-tmpdir render --profile pdf --to pdf
   find docs -name "mermaid-figure-*.png" -delete
 
 # Check for unused code in the package and its tests
