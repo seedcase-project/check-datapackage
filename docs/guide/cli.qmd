@@ -118,13 +118,19 @@ check-datapackage check --strict
 
 You can set `strict = true` in `.cdp.toml` as well; command-line options
 override file-based configuration. See the
-[configuration guide](/docs/guide/config-files.qmd) for details.
+[configuration guide](/docs/guide/config-file.qmd) for details.
 
 For more details, see the [check](/docs/guide/check.qmd) guide or run:
 
 ```{.bash filename="Terminal"}
 check-datapackage check --help
 ```
+
+```{python}
+#| echo: false
+so.format_output_for_docs(["cdp", "check", "--help"])
+```
+
 
 ## Global options
 

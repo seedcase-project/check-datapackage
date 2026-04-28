@@ -102,6 +102,7 @@ config_path = Path(".cdp.toml")
 config_path.write_text("""
 strict = true
 """)
+
 try:
     so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
 finally:
@@ -135,6 +136,7 @@ strict = true
 jsonpath = "$.id"
 type = "required"
 """)
+
 try:
     so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
 finally:
