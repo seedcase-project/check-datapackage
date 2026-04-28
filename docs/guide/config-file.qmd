@@ -94,14 +94,81 @@ check-datapackage check "$simple_example"
 
 ```{python}
 #| echo: false
+#| output: asis
 import seedcase_soil as so
+from html import escape
+import os
 from pathlib import Path
+import re
+import subprocess
+from tempfile import TemporaryDirectory
 
-Path(".cdp.toml").write_text("""
+
+project_root = next(
+    path for path in [Path.cwd(), *Path.cwd().parents] if (path / "pyproject.toml").exists()
+)
+
+
+def _ansi_to_html(output):
+    style = []
+    parts = []
+    position = 0
+
+    def span_start():
+        if not style:
+            return ""
+        return f'<span style="{"; ".join(style)}">'
+
+    for match in re.finditer(r"\x1b\[([0-9;]*)m", output):
+        parts.append(escape(output[position : match.start()]))
+        codes = match.group(1).split(";") if match.group(1) else ["0"]
+
+        if style:
+            parts.append("</span>")
+        if "0" in codes:
+            style = []
+        for code in codes:
+            if code == "1":
+                style.append("font-weight: bold")
+            elif code == "4":
+                style.append("text-decoration: underline")
+            elif code == "31":
+                style.append("color: #d73a49")
+            elif code == "32":
+                style.append("color: #22863a")
+            elif code == "36":
+                style.append("color: #005cc5")
+        parts.append(span_start())
+        position = match.end()
+
+    parts.append(escape(output[position:]))
+    if style:
+        parts.append("</span>")
+    return "".join(parts)
+
+
+def _run_check(source, cwd):
+    env = os.environ.copy()
+    env["COLUMNS"] = "72"
+    env["FORCE_COLOR"] = "1"
+    result = subprocess.run(
+        ["uv", "--project", str(project_root), "run", "cdp", "check", str(source)],
+        cwd=cwd,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    output = _ansi_to_html(result.stdout.rstrip())
+    print(f"<pre><code>{output}</code></pre>")
+
+with TemporaryDirectory() as tmpdir:
+    tmp_path = Path(tmpdir)
+    (tmp_path / ".cdp.toml").write_text("""
 strict = true
 """)
-!uv run cdp check {so.Example.simple.path}
-!rm .cdp.toml
+    _run_check(so.Example.simple.path, cwd=tmp_path)
 ```
 
 This fails because strict mode requires the `id` property.
@@ -125,13 +192,14 @@ check-datapackage check "$simple_example"
 
 ```{python}
 #| echo: false
-Path(".cdp.toml").write_text("""
+#| output: asis
+with TemporaryDirectory() as tmpdir:
+    tmp_path = Path(tmpdir)
+    (tmp_path / ".cdp.toml").write_text("""
 strict = true
 [[exclusions]]
 jsonpath = "$.id"
 type = "required"
 """)
-
-!uv run cdp check {so.Example.simple.path}
-!rm .cdp.toml
+    _run_check(so.Example.simple.path, cwd=tmp_path)
 ```
