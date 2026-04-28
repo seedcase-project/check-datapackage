@@ -48,7 +48,7 @@ Package, `flora`.
 #| echo: false
 import seedcase_soil as so
 
-!uv run check-datapackage check {so.Example.flora.address.value}
+!uv run check-datapackage check {so.Example.flora.path}
 ```
 :::
 
