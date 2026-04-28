@@ -1,7 +1,8 @@
 """Functions for the exposed CLI."""
 
-from typing import Any
+from typing import Annotated, Any
 
+from cyclopts import Parameter
 from seedcase_soil import (
     Address,
     parse_source,
@@ -13,6 +14,7 @@ from seedcase_soil import (
 
 from check_datapackage.check import check
 from check_datapackage.config import Config
+from check_datapackage.exclusion import Exclusion
 
 app = setup_cli(
     name="check-datapackage",
@@ -30,6 +32,7 @@ def check_cmd(
     /,  # End of positional-only args
     *,  # Start of keyword-only params
     strict: bool = False,
+    exclusions: Annotated[list[Exclusion], Parameter(show=False)] = [],
 ) -> None:
     """Check a Data Package's metadata against the Data Package standard.
 
@@ -44,10 +47,12 @@ def check_cmd(
             `gh:org/repo@1.0.1`).
         strict: If True, check "SHOULD" properties in addition to "MUST"
             properties from the Data Package standard.
+        exclusions: A hidden CLI/config parameter for excluding issues by JSONPath
+            and/or issue type.
     """
     address: Address = parse_source(source)
     properties: dict[str, Any] = read_properties(address)
-    config = Config(strict=strict)
+    config = Config(strict=strict, exclusions=exclusions)
     check(properties, config=config, error=True)
     pretty_print("[green]All checks passed![/green]")
 
