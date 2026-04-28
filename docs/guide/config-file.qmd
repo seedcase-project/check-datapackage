@@ -115,7 +115,12 @@ def _ansi_to_html(output):
     console = Console(record=True, file=StringIO(), force_jupyter=False, width=200)
     lines = list(AnsiDecoder().decode(output.rstrip()))
     console.print(*lines, sep="\n", soft_wrap=True)
-    return console.export_html(inline_styles=True, code_format="{code}").rstrip()
+    html = console.export_html(inline_styles=True, code_format="{code}").rstrip()
+    return (
+        html.replace("#800000", "#E75C58")
+        .replace("#008000", "#00A250")
+        .replace("#008080", "#60C6C8")
+    )
 
 
 def _run_check(source, cwd):
