@@ -77,7 +77,7 @@ strict = true
 The examples below use Soil's built-in `simple` Data Package:
 
 ``` {.bash filename="Terminal"}
-SOURCE="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"
+simple_example="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"
 ```
 
 First, enable strict mode without any exclusions:
@@ -89,13 +89,25 @@ strict = true
 Run the check:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check "$SOURCE"
+check-datapackage check "$simple_example"
+```
+
+```{python}
+#| echo: false
+import seedcase_soil as so
+from pathlib import Path
+
+Path(".cdp.toml").write_text("""
+strict = true
+""")
+!uv run cdp check {so.Example.simple.path}
+!rm .cdp.toml
 ```
 
 This fails because strict mode requires the `id` property.
 
-To exclude only that issue, add an exclusion that matches both the JSONPath
-and issue type:
+To exclude only that issue, add an exclusion that matches both the
+JSONPath and issue type:
 
 ``` {.toml filename=".cdp.toml"}
 strict = true
@@ -108,9 +120,18 @@ type = "required"
 Running the same command now passes:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check "$SOURCE"
+check-datapackage check "$simple_example"
 ```
 
-``` {.text filename="Output"}
-All checks passed!
+```{python}
+#| echo: false
+Path(".cdp.toml").write_text("""
+strict = true
+[[exclusions]]
+jsonpath = "$.id"
+type = "required"
+""")
+
+!uv run cdp check {so.Example.simple.path}
+!rm .cdp.toml
 ```
