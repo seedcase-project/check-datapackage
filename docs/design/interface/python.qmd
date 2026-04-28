@@ -85,16 +85,14 @@ See the help documentation with
 
 ### {{< var done >}} `parse_source()` and `read_properties()`
 
-These helper functions are used together to load a Data Package's metadata.
-First, `parse_source()` converts a source string into an `Address`, and then
-`read_properties()` reads metadata from that address into a `Properties`
-value (a type alias for `dict[str, Any]`).
+These helper functions are used together to load a Data Package's
+metadata. First, `parse_source()` converts a source string into an
+`Address`, and then `read_properties()` reads metadata from that address
+into a `Properties` value (a type alias for `dict[str, Any]`).
 
-See
-`parse_source()`
-and
-`read_properties()` from [`seedcase-soil`](https://github.com/seedcase-project/seedcase-soil)
-for more details.
+See `parse_source()` and `read_properties()` from
+[`seedcase-soil`](https://github.com/seedcase-project/seedcase-soil) for
+more details.
 
 ### {{< var planned >}} `read_config()`
 
