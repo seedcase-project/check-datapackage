@@ -37,7 +37,7 @@ dependencies = [
     "pydantic>=2.12.3",
     "python-jsonpath>=2.0.1",
     "rich>=14.3.0",
-    "seedcase-soil",
+    "seedcase-soil>=0.10.0",
     "types-jsonschema>=4.25.1.20250822",
 ]
 
@@ -72,6 +72,3 @@ dev = [
     "typos>=1.35.6",
     "vulture>=2.14",
 ]
-
-[tool.uv.sources]
-seedcase-soil = { git = "https://github.com/seedcase-project/seedcase-soil", rev = "0.4.0" }
