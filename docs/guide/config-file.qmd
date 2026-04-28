@@ -36,6 +36,7 @@ can be configured via the configuration file:
 - `strict`: If `true`, include checks for Data Package properties marked
   as "SHOULD" in addition to those marked as "MUST". Defaults to
   `false`.
+- `exclusions`: Exclude issues by JSONPath, issue type, or both.
 
 Only option flags are configurable in these files. Positional
 arguments---such as the `source` path/URL passed to
@@ -69,4 +70,47 @@ you used above in `.cdp.toml` below this table header.
 ``` {.toml filename="pyproject.toml"}
 [tool.check-datapackage]
 strict = true
+```
+
+## Exclusion examples
+
+The examples below use Soil's built-in `simple` Data Package:
+
+``` {.bash filename="Terminal"}
+SOURCE="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"
+```
+
+First, enable strict mode without any exclusions:
+
+``` {.toml filename=".cdp.toml"}
+strict = true
+```
+
+Run the check:
+
+``` {.bash filename="Terminal"}
+check-datapackage check "$SOURCE"
+```
+
+This fails because strict mode requires the `id` property.
+
+To exclude only that issue, add an exclusion that matches both the JSONPath
+and issue type:
+
+``` {.toml filename=".cdp.toml"}
+strict = true
+
+[[exclusions]]
+jsonpath = "$.id"
+type = "required"
+```
+
+Running the same command now passes:
+
+``` {.bash filename="Terminal"}
+check-datapackage check "$SOURCE"
+```
+
+``` {.text filename="Output"}
+All checks passed!
 ```
