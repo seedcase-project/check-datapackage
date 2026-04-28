@@ -77,6 +77,7 @@ def test_check_reads_exclusions_from_cdp_toml(tmp_path, monkeypatch):
                 'jsonpath = "$.resources"',
                 "",
                 "[[exclusions]]",
+                'jsonpath = "$.contributors[*].path"',
                 'type = "format"',
             ]
         )
@@ -89,7 +90,7 @@ def test_check_reads_exclusions_from_cdp_toml(tmp_path, monkeypatch):
 
     assert exclusions == [
         Exclusion(jsonpath="$.resources"),
-        Exclusion(type="format"),
+        Exclusion(jsonpath="$.contributors[*].path", type="format"),
     ]
 
 
@@ -109,6 +110,7 @@ def test_check_passes_exclusions_from_config_to_check(
                 'jsonpath = "$.resources"',
                 "",
                 "[[exclusions]]",
+                'jsonpath = "$.contributors[*].path"',
                 'type = "format"',
             ]
         )
@@ -125,7 +127,7 @@ def test_check_passes_exclusions_from_config_to_check(
     _, kwargs = mock_check.call_args
     assert kwargs["config"].exclusions == [
         Exclusion(jsonpath="$.resources"),
-        Exclusion(type="format"),
+        Exclusion(jsonpath="$.contributors[*].path", type="format"),
     ]
 
 
