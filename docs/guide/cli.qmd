@@ -18,16 +18,13 @@ following command, which is equivalent to using the `--help` flag:
 ```{.bash filename="Terminal"}
 check-datapackage
 ```
-::: {.callout-tip collapse="true" icon="false"}
-
-## Output
 
 ```{python}
 #| echo: false
 import seedcase_soil as so
+
 so.format_output_for_docs(["cdp"])
 ```
-:::
 
 ## Checking Data Package metadata
 
@@ -37,48 +34,49 @@ Use the `check` command to check a Data Package's metadata:
 check-datapackage check
 ```
 
-::: {.callout-tip collapse="true" icon="false"}
-
-### Output
-
-The example below shows the output of running `check-datapackage check`
-in a directory containing a `datapackage.json` for an example Data
-Package, `flora`.
+By default, `check` looks for a `datapackage.json` file in the current
+directory. If all checks pass, the following message would be outputted
+to the terminal:
 
 ```{python}
 #| echo: false
-import seedcase_soil as so
-
-!cdp check {so.Example.flora.address.value}
+so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
 ```
-:::
+
+If a check fails, a `DataPackageError` is raised with more details about
+what went wrong:
+
+```{python}
+#| echo: false
+so.format_output_for_docs(["cdp", "check", "--strict", str(so.Example.simple.path)])
+```
 
 ### Checking metadata in a custom location
 
-By default, `check` looks for a `datapackage.json` file in the current
-directory, but you can specify a different path using the `source`
-argument:
+Instead of looking for `datapackage.json` in the current directory, you
+can specify a different path using the `source` argument:
 
 ```{.bash filename="Terminal"}
 check-datapackage check another/directory/datapackage.json
 ```
 
 You can also point `check-datapackage` to a remote Data Package by
-providing the full URL to the `datapackage.json`. For example:
+providing the full URL to `datapackage.json`. Let's use this to check if
+[the example seed beetle datapackage](https://github.com/seedcase-project/example-seed-beetle/blob/main/datapackage.json)
+passes all checks:
 
 ```{.bash filename="Terminal"}
 check-datapackage check https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json
 ```
 
-::: {.callout-tip collapse="true" icon="false"}
-
-### Output
-
 ```{python}
 #| echo: false
-!cdp check https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json
+so.format_output_for_docs([
+    "cdp",
+    "check",
+    "https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json",
+])
 ```
-:::
 
 For Data Packages on GitHub, use either a `gh:` or `github:` prefix as a
 shortcut instead of the full URL:
@@ -87,15 +85,10 @@ shortcut instead of the full URL:
 check-datapackage check gh:seedcase-project/example-seed-beetle
 ```
 
-::: {.callout-tip collapse="true" icon="false"}
-
-### Output
-
 ```{python}
 #| echo: false
-!cdp check gh:seedcase-project/example-seed-beetle
+so.format_output_for_docs(["cdp", "check", "gh:seedcase-project/example-seed-beetle"])
 ```
-:::
 
 You can also include a branch or tag:
 
@@ -103,7 +96,10 @@ You can also include a branch or tag:
 check-datapackage check gh:seedcase-project/example-seed-beetle@main
 ```
 
-<!-- TODO add example with error when we have a datapackge for it -->
+```{python}
+#| echo: false
+so.format_output_for_docs(["cdp", "check", "gh:seedcase-project/example-seed-beetle@main"])
+```
 
 ::: callout-important
 `check` raises an error when checks fail. This makes it suitable for CI
@@ -122,7 +118,7 @@ check-datapackage check --strict
 
 You can set `strict = true` in `.cdp.toml` as well; command-line options
 override file-based configuration. See the
-[configuration guide](/docs/guide/config.qmd) for details.
+[configuration guide](/docs/guide/config-files.qmd) for details.
 
 For more details, see the [check](/docs/guide/check.qmd) guide or run:
 
