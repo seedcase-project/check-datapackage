@@ -95,61 +95,19 @@ check-datapackage check "$simple_example"
 ```{python}
 #| echo: false
 import seedcase_soil as so
-from IPython.display import display
-from io import StringIO
-import os
 from pathlib import Path
-import subprocess
+from seedcase_soil import format_output_for_docs
 from tempfile import TemporaryDirectory
-
-from rich.ansi import AnsiDecoder
-from rich.console import Console
-
-
-project_root = next(
-    path for path in [Path.cwd(), *Path.cwd().parents] if (path / "pyproject.toml").exists()
-)
-
-
-def _ansi_to_html(output):
-    console = Console(record=True, file=StringIO(), force_jupyter=False, width=200)
-    lines = list(AnsiDecoder().decode(output.rstrip()))
-    console.print(*lines, sep="\n", soft_wrap=True)
-    html = console.export_html(inline_styles=True, code_format="{code}").rstrip()
-    return (
-        html.replace("#800000", "#E75C58")
-        .replace("#008000", "#00A250")
-        .replace("#008080", "#60C6C8")
-    )
 
 
 def _run_check(source, cwd):
-    pre_style = (
-        "white-space: pre; overflow-x: auto; line-height: normal; "
-        "font-family: Menlo, 'DejaVu Sans Mono', consolas, 'Courier New', monospace;"
-    )
-    env = os.environ.copy()
-    env["COLUMNS"] = "72"
-    env["FORCE_COLOR"] = "1"
-    result = subprocess.run(
-        ["uv", "--project", str(project_root), "run", "cdp", "check", str(source)],
+    format_output_for_docs(
+        ["cdp", "check", str(source)],
         cwd=cwd,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        check=False,
-    )
-    display(
-        {
-            "text/html": (
-                f'<pre style="{pre_style}">'
-                f"<code>{_ansi_to_html(result.stdout)}</code></pre>"
-            )
-        },
-        raw=True,
+        width=62,
     )
 
+# tmpdir is used to avoid conflicts with a potential local cdp.toml file
 with TemporaryDirectory() as tmpdir:
     tmp_path = Path(tmpdir)
     (tmp_path / ".cdp.toml").write_text("""
