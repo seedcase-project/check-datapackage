@@ -32,6 +32,8 @@ def mock_check(mocker):
 
 
 def test_check_with_mocked_internals(
+    tmp_path,
+    monkeypatch,
     mock_parse_source,
     mock_read_properties,
     mock_check,
@@ -42,6 +44,7 @@ def test_check_with_mocked_internals(
     mock_read_properties.return_value = {"name": "test-package"}
     mock_check.return_value = []
 
+    monkeypatch.chdir(tmp_path)
     app(["check", "datapackage.json"], result_action="return_value")
 
     mock_parse_source.assert_called_once_with("datapackage.json")
