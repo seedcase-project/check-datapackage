@@ -91,14 +91,6 @@ build-website: build-quartodoc
 preview-website: build-quartodoc
   just _quarto-with-docs-tmpdir preview --execute
 
-# Run Quarto with an isolated execution directory for docs code
-_quarto-with-docs-tmpdir *args:
-  #!/usr/bin/env bash
-  set -euo pipefail
-  tmpdir=$(mktemp -d)
-  trap 'rm -rf "$tmpdir"' EXIT
-  uv run quarto {{args}} --execute-dir "$tmpdir"
-
 # Check the commit messages on the current branch that are not on the main branch
 check-commits:
   #!/usr/bin/env bash
