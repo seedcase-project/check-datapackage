@@ -75,6 +75,14 @@ build-quartodoc:
     rm -rf docs/reference
     uv run quartodoc build
 
+# Run Quarto with an isolated execution directory for docs code
+_quarto-with-docs-tmpdir *args:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  tmpdir=$(mktemp -d)
+  trap 'rm -rf "$tmpdir"' EXIT
+  uv run quarto {{args}} --execute-dir "$tmpdir"
+
 # Build the documentation website using Quarto
 build-website: build-quartodoc
     just _quarto-with-docs-tmpdir render --execute
