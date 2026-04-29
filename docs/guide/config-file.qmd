@@ -36,7 +36,7 @@ can be configured via the configuration file:
 - `strict`: If `true`, include checks for Data Package properties marked
   as "SHOULD" in addition to those marked as "MUST". Defaults to
   `false`.
-- `exclusions`: Exclude issues by JSONPath, issue type, or both.
+- `exclusions`: Exclude issues by [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type, or both.
 
 Only option flags are configurable in these files. Positional
 arguments---such as the `source` path/URL passed to
