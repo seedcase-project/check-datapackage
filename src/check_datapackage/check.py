@@ -23,7 +23,7 @@ from check_datapackage.internals import (
     PropertyField,
     _get_fields_at_jsonpath,
 )
-from check_datapackage.issue import Issue
+from check_datapackage.issue import MISSING, Issue
 
 # Type alias for Python exception hook
 PythonExceptionHook = Callable[
@@ -988,7 +988,13 @@ def _create_issue(error: SchemaError) -> Issue:
         message=error.message,
         jsonpath=error.jsonpath,
         type=error.type,
-        instance=error.instance,
+        instance=MISSING if _is_missing_required_property(error) else error.instance,
+    )
+
+
+def _is_missing_required_property(error: SchemaError) -> bool:
+    return error.type == "required" and bool(
+        re.fullmatch(r"'.+' is a required property", error.message)
     )
 
 

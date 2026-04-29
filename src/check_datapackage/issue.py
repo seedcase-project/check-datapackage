@@ -2,6 +2,21 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
+class MissingValue:
+    """Marker for a value that is absent from the checked object."""
+
+    def __repr__(self) -> str:
+        """Represent the absent value in error messages."""
+        return "<MISSING>"
+
+    def __str__(self) -> str:
+        """Represent the absent value in user-facing text."""
+        return "<MISSING>"
+
+
+MISSING = MissingValue()
+
+
 @dataclass(order=True, frozen=True)
 class Issue:
     """An issue found while checking a Data Package's properties.

@@ -12,6 +12,7 @@ from check_datapackage.examples import (
 )
 from check_datapackage.exclusion import Exclusion
 from check_datapackage.extensions import Extensions, RequiredCheck
+from check_datapackage.issue import MISSING
 from tests.test_extensions import lowercase_check
 
 # "MUST" checks
@@ -33,6 +34,7 @@ def test_fails_properties_without_resources():
     assert len(issues) == 1
     assert issues[0].type == "required"
     assert issues[0].jsonpath == "$.resources"
+    assert issues[0].instance is MISSING
 
 
 def test_fails_properties_with_empty_resources():
@@ -541,6 +543,18 @@ def test_fail_with_only_resource_name_missing():
     assert len(issues) == 1
     assert issues[0].jsonpath == "$.resources[0].name"
     assert issues[0].type == "required"
+    assert issues[0].instance is MISSING
+
+
+def test_explain_required_property_as_missing_value():
+    properties = example_package_properties()
+    del properties["resources"]
+
+    explanation = explain(check(properties))
+
+    assert "| resources: <MISSING>" in explanation
+    assert f"resources: {properties}" not in explanation
+    assert "[red]^^^^^^^^^[/red]" in explanation
 
 
 def test_fail_with_multiple_resources():
