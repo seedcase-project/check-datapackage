@@ -1,0 +1,72 @@
+---
+title: "Configuration files"
+description: "Configure `check-datapackage` settings using a configuration file."
+order: 5
+---
+
+`check-datapackage` can be configured through command-line options and a
+configuration file. This guide covers configuration files for the CLI.
+For command-line usage, see the [CLI guide](/docs/guide/cli.qmd). For
+the Python `Config` class used with `check()`, see
+[Configuring the checks](/docs/guide/config.qmd).
+
+## Configuration files
+
+A configuration file lets you set preferences once, so you don't have to
+repeat them every time you run `check-datapackage check`.
+`check-datapackage` supports two configuration files: `.cdp.toml`
+`pyproject.toml`. These files should be placed in the root of your
+project---`check-datapackage` will find them automatically.
+
+Use `.cdp.toml` if you want a file dedicated to `check-datapackage`
+settings, or `pyproject.toml` if your Data Package is a Python project
+that already uses `pyproject.toml` and you prefer to keep all config
+settings in one place.
+
+::: callout-note
+Settings provided via the CLI or Python interface always take priority
+over the configuration file.
+:::
+
+### Configurable settings
+
+Before diving into editing your configuration, let’s see which settings
+can be configured via the configuration file:
+
+- `strict`: If `true`, include checks for Data Package properties marked
+  as "SHOULD" in addition to those marked as "MUST". Defaults to
+  `false`.
+
+Only option flags are configurable in these files. Positional
+arguments---such as the `source` path/URL passed to
+`check-datapackage check SOURCE`---cannot be configured in a file.
+
+### Configuration file syntax
+
+Both configuration files use TOML syntax. The examples below start with
+`.cdp.toml`, then show the `pyproject.toml` variant.
+
+In the root of your project, create a `.cdp.toml` file and add:
+
+``` {.toml filename=".cdp.toml"}
+strict = true
+```
+
+Now, when you run `check-datapackage check`, strict mode is enabled:
+
+``` {.bash filename="Terminal"}
+check-datapackage check
+```
+
+If you prefer to configure `check-datapackage` via `pyproject.toml`, the
+syntax is almost the same as above; the only difference is that you need
+to include a heading to indicate where in the file `check-datapackage`
+can find the settings. Open up your `pyproject.toml` (or create one in
+the root of your project) and add a new table header
+[tool.check-datapackage]. Then put the same configuration settings as
+you used above in `.cdp.toml` below this table header.
+
+``` {.toml filename="pyproject.toml"}
+[tool.check-datapackage]
+strict = true
+```
