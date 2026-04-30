@@ -10,8 +10,6 @@ For command-line usage, see the [CLI guide](/docs/guide/cli.qmd). For
 the Python `Config` class used with `check()`, see
 [Configuring the checks](/docs/guide/config.qmd).
 
-## Configuration files
-
 A configuration file lets you set preferences once, so you don't have to
 repeat them every time you run `check-datapackage check`.
 `check-datapackage` supports two configuration files: `.cdp.toml`
@@ -28,7 +26,7 @@ Settings provided via the CLI or Python interface always take priority
 over the configuration file.
 :::
 
-### Configurable settings
+## Configurable settings
 
 Before diving into editing your configuration, let’s see which settings
 can be configured via the configuration file:
@@ -40,36 +38,68 @@ can be configured via the configuration file:
   [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type,
   or both.
 
-Only option flags are configurable in these files. Positional
-arguments---such as the `source` path/URL passed to
-`check-datapackage check SOURCE`---cannot be configured in a file.
+Note that the positional `source` argument cannot be set via the
+configuration file; it must be passed via the command line or Python
+interface.
 
-::: callout-note
-All the examples below use [Soil's](https://soil.seedcase-project.org)
-built-in
+## Configuration file syntax
+
+Both configuration files use TOML syntax. The examples below start with
+`.cdp.toml`, then show the `pyproject.toml` variant. All the examples
+below use [Soil's](https://soil.seedcase-project.org) built-in
 [`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example):
 
 ``` {.bash filename="Terminal"}
 simple_example="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"
 ```
-:::
 
-### Configuration file syntax
+### Strict checking
 
-Both configuration files use TOML syntax. The examples below start with
-`.cdp.toml`, then show the `pyproject.toml` variant.
+Before creating a configuration file, we can see that the simple example
+data package passes all checks:
 
-In the root of your project, create a `.cdp.toml` file and add:
+``` {.bash filename="Terminal"}
+check-datapackage check "$simple_example"
+```
+
+```{python}
+#| echo: false
+import seedcase_soil as so
+
+so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+```
+
+Now, create a `.cdp.toml` file and enable strict checking:
 
 ``` {.toml filename=".cdp.toml"}
 strict = true
 ```
 
-Now, when you run `check-datapackage check`, strict mode is enabled:
+Now, when you run `check-datapackage check`, strict mode is enabled and
+the example package does not pass all the stricter checks:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check
+check-datapackage check "$simple_example"
 ```
+
+```{python}
+#| echo: false
+from pathlib import Path
+
+config_path = Path(".cdp.toml")
+config_path.write_text("""
+strict = true
+""")
+
+try:
+    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+finally:
+    config_path.unlink(missing_ok=True)
+```
+
+This is the same as if we would have run
+`check-datapackage check --strict "$simple_example"` before creating the
+configuration file.
 
 If you prefer to configure `check-datapackage` via `pyproject.toml`, the
 syntax is almost the same as above; the only difference is that you need
@@ -84,41 +114,12 @@ you used above in `.cdp.toml` below this table header.
 strict = true
 ```
 
-## Exclusion examples
+### Exclusions
 
-First, enable strict mode without any exclusions:
-
-``` {.toml filename=".cdp.toml"}
-strict = true
-```
-
-Run the check:
-
-``` {.bash filename="Terminal"}
-check-datapackage check "$simple_example"
-```
-
-```{python}
-#| echo: false
-import seedcase_soil as so
-from pathlib import Path
-
-
-config_path = Path(".cdp.toml")
-config_path.write_text("""
-strict = true
-""")
-
-try:
-    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
-finally:
-    config_path.unlink(missing_ok=True)
-```
-
-This fails because strict mode requires the `id` property.
-
-To exclude only that issue, add an exclusion to the `.cdp.toml` file that matches both the
-JSONPath and issue type:
+Above, we saw above that the simple example data package fails strict
+checking because the required `id` property is missing. To exclude only
+that issue, add an exclusion to the `.cdp.toml` file that matches both
+the JSONPath and issue type:
 
 ``` {.toml filename=".cdp.toml"}
 strict = true
@@ -151,3 +152,52 @@ finally:
 
 If you want to add different exclusions, you can keep adding more
 `[[exclusions]]` below this one.
+
+### Extensions
+
+You can also add required checks in your configuration file. For
+example, to require the `id` property, add a
+`[[extensions.required_checks]]` table:
+
+``` {.toml filename=".cdp.toml"}
+[[extensions.required_checks]]
+jsonpath = "$.id"
+message = "The Data Package must include an id."
+```
+
+Run the check:
+
+``` {.bash filename="Terminal"}
+check-datapackage check "$simple_example"
+```
+
+```{python}
+#| echo: false
+config_path.write_text("""
+[[extensions.required_checks]]
+jsonpath = "$.id"
+message = "The Data Package must include an id."
+""")
+
+try:
+    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+finally:
+    config_path.unlink(missing_ok=True)
+```
+
+If you use `pyproject.toml`, put the same nested table under
+`[tool.check-datapackage]`:
+
+``` {.toml filename="pyproject.toml"}
+[tool.check-datapackage]
+
+[[tool.check-datapackage.extensions.required_checks]]
+jsonpath = "$.id"
+message = "The Data Package must include an id."
+```
+
+You can add more required checks by adding more
+`[[extensions.required_checks]]` tables. Custom checks require a Python
+function for their `check` argument, so define
+[`CustomCheck`](/docs/reference/CustomCheck.qmd) extensions in Python
+rather than in a TOML configuration file.
