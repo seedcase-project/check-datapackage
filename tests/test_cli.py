@@ -7,6 +7,7 @@ from seedcase_soil.errors import FileDoesNotExistError
 
 from check_datapackage.check import DataPackageError
 from check_datapackage.cli import app
+from check_datapackage.exclusion import Exclusion
 
 
 @pytest.fixture
@@ -31,6 +32,8 @@ def mock_check(mocker):
 
 
 def test_check_with_mocked_internals(
+    tmp_path,
+    monkeypatch,
     mock_parse_source,
     mock_read_properties,
     mock_check,
@@ -41,6 +44,7 @@ def test_check_with_mocked_internals(
     mock_read_properties.return_value = {"name": "test-package"}
     mock_check.return_value = []
 
+    monkeypatch.chdir(tmp_path)
     app(["check", "datapackage.json"], result_action="return_value")
 
     mock_parse_source.assert_called_once_with("datapackage.json")
@@ -64,6 +68,70 @@ def test_check_reads_source_from_cdp_toml(tmp_path, monkeypatch):
 
     _, bound, _ = app.parse_args(["check"])
     assert bound.arguments["strict"] is True
+
+
+def test_check_reads_exclusions_from_cdp_toml(tmp_path, monkeypatch):
+    """Top-level exclusions in .cdp.toml should bind to check command args."""
+    toml_path = tmp_path / ".cdp.toml"
+    toml_path.write_text(
+        "\n".join(
+            [
+                "[[exclusions]]",
+                'jsonpath = "$.resources"',
+                "",
+                "[[exclusions]]",
+                'jsonpath = "$.contributors[*].path"',
+                'type = "format"',
+            ]
+        )
+    )
+
+    monkeypatch.chdir(tmp_path)
+
+    _, bound, _ = app.parse_args(["check"])
+    exclusions = bound.arguments["exclusions"]
+
+    assert exclusions == [
+        Exclusion(jsonpath="$.resources"),
+        Exclusion(jsonpath="$.contributors[*].path", type="format"),
+    ]
+
+
+def test_check_passes_exclusions_from_config_to_check(
+    tmp_path,
+    monkeypatch,
+    mock_parse_source,
+    mock_read_properties,
+    mock_check,
+):
+    """Exclusions loaded from config should be included in Config passed to check."""
+    toml_path = tmp_path / ".cdp.toml"
+    toml_path.write_text(
+        "\n".join(
+            [
+                "[[exclusions]]",
+                'jsonpath = "$.resources"',
+                "",
+                "[[exclusions]]",
+                'jsonpath = "$.contributors[*].path"',
+                'type = "format"',
+            ]
+        )
+    )
+
+    fake_source = object()
+    mock_parse_source.return_value = fake_source
+    mock_read_properties.return_value = {"name": "test-package"}
+    mock_check.return_value = []
+
+    monkeypatch.chdir(tmp_path)
+    app(["check", "datapackage.json"], result_action="return_value")
+
+    _, kwargs = mock_check.call_args
+    assert kwargs["config"].exclusions == [
+        Exclusion(jsonpath="$.resources"),
+        Exclusion(jsonpath="$.contributors[*].path", type="format"),
+    ]
 
 
 # Success and error handling ====
