@@ -46,11 +46,18 @@ interface.
 
 Both configuration files use TOML syntax. The examples below start with
 `.cdp.toml`, then show the `pyproject.toml` variant. All the examples
-below use [Soil's](https://soil.seedcase-project.org) built-in
-[`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example):
+below assume that [Soil's](https://soil.seedcase-project.org) built-in
+[`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example)
+exist in the current directory as `datapackage.json`, which you can
+accomplish by running this code snippet:
 
-``` {.bash filename="Terminal"}
-simple_example="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"
+```{python}
+#| output: false
+import seedcase_soil as so
+from pathlib import Path
+
+properties = so.read_properties(so.Example.simple.address)
+so.write_properties(properties, Path('datapackage.json'))
 ```
 
 ### Strict checking
@@ -59,14 +66,14 @@ Before creating a configuration file, we can see that the simple example
 data package passes all checks:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check "$simple_example"
+check-datapackage check
 ```
 
 ```{python}
 #| echo: false
 import seedcase_soil as so
 
-so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+so.format_output_for_docs(["cdp", "check"])
 ```
 
 Now, create a `.cdp.toml` file and enable strict checking:
@@ -79,27 +86,25 @@ Now, when you run `check-datapackage check`, strict mode is enabled and
 the example package does not pass all the stricter checks:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check "$simple_example"
+check-datapackage check
 ```
 
 ```{python}
 #| echo: false
-from pathlib import Path
-
 config_path = Path(".cdp.toml")
 config_path.write_text("""
 strict = true
 """)
 
 try:
-    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+    so.format_output_for_docs(["cdp", "check"])
 finally:
     config_path.unlink(missing_ok=True)
 ```
 
 This is the same as if we would have run
-`check-datapackage check --strict "$simple_example"` before creating the
-configuration file.
+`check-datapackage check --strict` before creating the configuration
+file.
 
 If you prefer to configure `check-datapackage` via `pyproject.toml`, the
 syntax is almost the same as above; the only difference is that you need
@@ -132,7 +137,7 @@ type = "required"
 Running the same command now passes:
 
 ``` {.bash filename="Terminal"}
-check-datapackage check "$simple_example"
+check-datapackage check
 ```
 
 ```{python}
@@ -145,10 +150,17 @@ type = "required"
 """)
 
 try:
-    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+    so.format_output_for_docs(["cdp", "check"])
 finally:
     config_path.unlink(missing_ok=True)
 ```
 
 If you want to add different exclusions, you can keep adding more
 `[[exclusions]]` below this one.
+
+```{python}
+#| echo: false
+#| output: false
+# Clean up example data from tmp dir
+Path('datapackage.json').unlink(missing_ok=True)
+```
