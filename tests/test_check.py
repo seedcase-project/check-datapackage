@@ -63,6 +63,40 @@ def test_fails_properties_with_bad_type():
     assert issues[0].jsonpath == "$.name"
 
 
+def test_explain_top_level_bad_type_at_parent_path():
+    properties = example_package_properties()
+    properties["resources"] = "not a list"
+
+    explanation = explain(check(properties))
+
+    assert "At top level:" in explanation
+    assert "| resources: not a list" in explanation
+    assert "At resources:" not in explanation
+
+
+def test_explain_nested_bad_type_at_parent_path():
+    properties = example_package_properties()
+    properties["resources"][0]["name"] = 123
+
+    explanation = explain(check(properties))
+
+    assert "At resources[0]:" in explanation
+    assert "| name: 123" in explanation
+    assert "At resources[0].name:" not in explanation
+
+
+def test_explain_indexed_bad_type_includes_property_name():
+    properties = example_package_properties()
+    properties["resources"][0]["schema"]["primaryKey"] = [123, "name"]
+
+    explanation = explain(check(properties))
+
+    assert "At resources[0].schema:" in explanation
+    assert "| primaryKey[0]: 123" in explanation
+    assert "At resources[0].schema.primaryKey:" not in explanation
+    assert "| [0]: 123" not in explanation
+
+
 def test_fails_properties_with_bad_format():
     """Should fail properties with a field of the wrong format."""
     properties: dict[str, Any] = {
@@ -552,9 +586,21 @@ def test_explain_required_property_as_missing_value():
 
     explanation = explain(check(properties))
 
-    assert "| resources: <MISSING>" in explanation
+    assert "At top level:" in explanation
+    assert f"| resources: {MISSING}" in explanation
     assert f"resources: {properties}" not in explanation
-    assert "[red]^^^^^^^^^[/red]" in explanation
+    assert f"[red]{'^' * len(str(MISSING))}[/red]" in explanation
+
+
+def test_explain_nested_required_property_at_parent_path():
+    properties = example_package_properties()
+    del properties["resources"][0]["name"]
+
+    explanation = explain(check(properties))
+
+    assert "At resources[0]:" in explanation
+    assert f"| name: {MISSING}" in explanation
+    assert "At resources[0].name:" not in explanation
 
 
 def test_fail_with_multiple_resources():

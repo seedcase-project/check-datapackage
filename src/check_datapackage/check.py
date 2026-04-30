@@ -216,8 +216,7 @@ def explain(issues: list[Issue]) -> str:
 
 def _create_explanation(issue: Issue) -> str:
     """Create an informative explanation of what went wrong in each issue."""
-    # Remove suffix '$' to account for root path when `[]` is passed to `check()`
-    property_name = issue.jsonpath.removesuffix("$").split(".")[-1]
+    display_jsonpath, property_name = _display_jsonpath_and_property(issue)
     if not property_name:
         return (
             "check() requires a dictionary with metadata,"
@@ -226,12 +225,26 @@ def _create_explanation(issue: Issue) -> str:
 
     number_of_carets = len(str(issue.instance))
     return (  # noqa: F401
-        f"At {issue.jsonpath.removeprefix('$.')}:\n"
+        f"At {display_jsonpath}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"
         f"| {' ' * len(property_name)}  [red]{'^' * number_of_carets}[/red]\n"
         f"{issue.message}\n"
     )
+
+
+def _display_jsonpath_and_property(issue: Issue) -> tuple[str, str]:
+    if issue.jsonpath == "$":
+        return "top level", ""
+
+    parent_jsonpath, property_name = issue.jsonpath.rsplit(".", maxsplit=1)
+    return _display_jsonpath(parent_jsonpath), property_name
+
+
+def _display_jsonpath(jsonpath: str) -> str:
+    if jsonpath == "$":
+        return "top level"
+    return jsonpath.removeprefix("$.")
 
 
 def check(
