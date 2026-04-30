@@ -15,7 +15,7 @@ from check_datapackage.internals import (
     _get_direct_jsonpaths,
     _get_fields_at_jsonpath,
 )
-from check_datapackage.issue import Issue
+from check_datapackage.issue import MISSING, Issue
 
 
 class CustomCheck(BaseModel, frozen=True):
@@ -206,6 +206,7 @@ class RequiredCheck(BaseModel, frozen=True):
                 jsonpath=f"{path}.{target.field}",
                 type="required",
                 message=self.message,
+                instance=MISSING,
             ),
         )
 
