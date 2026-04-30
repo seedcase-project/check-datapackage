@@ -8,7 +8,7 @@ from check_datapackage.examples import (
     example_resource_properties,
 )
 from check_datapackage.extensions import CustomCheck, Extensions, RequiredCheck
-from check_datapackage.issue import Issue
+from check_datapackage.issue import MISSING, Issue
 
 lowercase_check = CustomCheck(
     jsonpath="$.name",
@@ -156,6 +156,7 @@ def test_required_check_array_wildcard():
             message=name_check.message,
         ),
     ]
+    assert all(issue.instance is MISSING for issue in issues)
 
 
 def test_required_check_union():
