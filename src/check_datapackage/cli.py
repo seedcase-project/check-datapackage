@@ -15,6 +15,7 @@ from seedcase_soil import (
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.exclusion import Exclusion
+from check_datapackage.extensions import Extensions
 
 app = setup_cli(
     name="check-datapackage",
@@ -33,6 +34,7 @@ def check_cmd(
     *,  # Start of keyword-only params
     strict: bool = False,
     exclusions: Annotated[list[Exclusion], Parameter(show=False)] = [],
+    extensions: Annotated[Extensions, Parameter(show=False)] = Extensions(),
 ) -> None:
     """Check a Data Package's metadata against the Data Package standard.
 
@@ -49,10 +51,11 @@ def check_cmd(
             properties from the Data Package standard.
         exclusions: A hidden CLI/config parameter for excluding issues by JSONPath
             and/or issue type.
+        extensions: A hidden CLI/config parameter for adding extra checks.
     """
     address: Address = parse_source(source)
     properties: dict[str, Any] = read_properties(address)
-    config = Config(strict=strict, exclusions=exclusions)
+    config = Config(strict=strict, exclusions=exclusions, extensions=extensions)
     check(properties, config=config, error=True)
     pretty_print("[green]All checks passed![/green]")
 
