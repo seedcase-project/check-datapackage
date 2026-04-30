@@ -116,8 +116,8 @@ finally:
 
 This fails because strict mode requires the `id` property.
 
-To exclude only that issue, add an exclusion to the `.cdp.toml` file that matches both the
-JSONPath and issue type:
+To exclude only that issue, add an exclusion to the `.cdp.toml` file
+that matches both the JSONPath and issue type:
 
 ``` {.toml filename=".cdp.toml"}
 strict = true
