@@ -74,7 +74,7 @@ strict = true
 
 ## Exclusion examples
 
-The examples below use Soil's built-in `simple` Data Package:
+The examples below use [Soil's](https://soil.seedcase-project.org) built-in [`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example):
 
 ``` {.bash filename="Terminal"}
 simple_example="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"
@@ -111,7 +111,7 @@ finally:
 
 This fails because strict mode requires the `id` property.
 
-To exclude only that issue, add an exclusion that matches both the
+To exclude only that issue, add an exclusion to the `.cdp.toml` file that matches both the
 JSONPath and issue type:
 
 ``` {.toml filename=".cdp.toml"}
@@ -141,4 +141,3 @@ try:
     so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
 finally:
     config_path.unlink(missing_ok=True)
-```
