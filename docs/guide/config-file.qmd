@@ -141,3 +141,7 @@ try:
     so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
 finally:
     config_path.unlink(missing_ok=True)
+```
+
+If you want to add different exclusions, you can keep adding more
+`[[exclusions]]` below this one.
