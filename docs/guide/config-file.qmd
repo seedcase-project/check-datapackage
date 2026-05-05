@@ -36,7 +36,9 @@ can be configured via the configuration file:
 - `strict`: If `true`, include checks for Data Package properties marked
   as "SHOULD" in addition to those marked as "MUST". Defaults to
   `false`.
-- `exclusions`: Exclude issues by [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type, or both.
+- `exclusions`: Exclude issues by
+  [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type,
+  or both.
 
 Only option flags are configurable in these files. Positional
 arguments---such as the `source` path/URL passed to
@@ -74,7 +76,9 @@ strict = true
 
 ## Exclusion examples
 
-The examples below use [Soil's](https://soil.seedcase-project.org) built-in [`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example):
+The examples below use [Soil's](https://soil.seedcase-project.org)
+built-in
+[`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example):
 
 ``` {.bash filename="Terminal"}
 simple_example="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"
@@ -111,8 +115,8 @@ finally:
 
 This fails because strict mode requires the `id` property.
 
-To exclude only that issue, add an exclusion to the `.cdp.toml` file that matches both the
-JSONPath and issue type:
+To exclude only that issue, add an exclusion to the `.cdp.toml` file
+that matches both the JSONPath and issue type:
 
 ``` {.toml filename=".cdp.toml"}
 strict = true

@@ -94,7 +94,8 @@ package_properties["resources"][0]["path"] = "\\not/a/path"
 package_properties
 ```
 
-When we run `check()` on these properties, we get the three expected issues:
+When we run `check()` on these properties, we get the three expected
+issues:
 
 ```{python}
 cdp.check(properties=package_properties)

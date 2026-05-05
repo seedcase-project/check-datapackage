@@ -43,8 +43,8 @@ to the terminal:
 so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
 ```
 
-If a check fails, you'll get a `DataPackageError` with more details about
-what went wrong:
+If a check fails, you'll get a `DataPackageError` with more details
+about what went wrong:
 
 ```{python}
 #| echo: false
@@ -130,7 +130,6 @@ check-datapackage check --help
 #| echo: false
 so.format_output_for_docs(["cdp", "check", "--help"])
 ```
-
 
 ## Global options
 
