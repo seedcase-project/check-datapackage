@@ -133,8 +133,8 @@ requests :tada:
 
 [@lwjohnst86](https://github.com/lwjohnst86),
 [@signekb](https://github.com/signekb),
-[@martonvago](https://github.com/martonvago),
-[@joelostblom](https://github.com/joelostblom)
+[@joelostblom](https://github.com/joelostblom),
+[@martonvago](https://github.com/martonvago)
 
 ## Licensing
 
