@@ -46,7 +46,12 @@ interface.
 
 Both configuration files use TOML syntax. The examples below start with
 `.cdp.toml`, then show the `pyproject.toml` variant. All the examples
-below assume that a `datapackage.json` file exists in the current directory. Here, we use the [`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example) example from our package [Soil](https://soil.seedcase-project.org). You can write the same content to `datapackage.json` in your current directory by running the following code snippet:
+below assume that a `datapackage.json` file exists in the current
+directory. Here, we use the
+[`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example)
+example from our package [Soil](https://soil.seedcase-project.org). You
+can write the same content to `datapackage.json` in your current
+directory by running the following code snippet:
 
 ```{python}
 #| output: false
@@ -80,7 +85,8 @@ strict = true
 ```
 
 When you run `check-datapackage check` again, strict mode is enabled and
-the example package does not pass the stricter checks because the `id` property is missing:
+the example package does not pass the stricter checks because the `id`
+property is missing:
 
 ``` {.bash filename="Terminal"}
 check-datapackage check
@@ -99,17 +105,16 @@ finally:
     config_path.unlink(missing_ok=True)
 ```
 
-This is the same as if we had run
-`check-datapackage check --strict` before creating the configuration
-file.
+This is the same as if we had run `check-datapackage check --strict`
+before creating the configuration file.
 
 If you prefer to configure `check-datapackage` via `pyproject.toml`, the
 syntax is almost the same as above; the only difference is that you need
 to include a heading to indicate where in the file `check-datapackage`
 can find the settings. Open up your `pyproject.toml` (or create one in
-the root of your project) and add a new table header 
-`[tool.check-datapackage]` with the same configuration settings as
-you used above:
+the root of your project) and add a new table header
+`[tool.check-datapackage]` with the same configuration settings as you
+used above:
 
 ``` {.toml filename="pyproject.toml"}
 [tool.check-datapackage]
@@ -118,10 +123,10 @@ strict = true
 
 ### Exclusions
 
-Above, we saw that the simple example data package fails strict
-checking because the required `id` property is missing. To exclude
-that issue from the checks, we can add an exclusion to the `.cdp.toml` file that matches both
-the JSONPath and issue type:
+Above, we saw that the simple example data package fails strict checking
+because the required `id` property is missing. To exclude that issue
+from the checks, we can add an exclusion to the `.cdp.toml` file that
+matches both the JSONPath and issue type:
 
 ``` {.toml filename=".cdp.toml"}
 strict = true
