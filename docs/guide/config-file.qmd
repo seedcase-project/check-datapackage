@@ -158,7 +158,21 @@ finally:
 ```
 
 If you want to add different exclusions, you can keep adding more
-`[[exclusions]]` below this one.
+`[[exclusions]]` below the current one.
+
+If you prefer to configure `check-datapackage` via `pyproject.toml`, the
+syntax is almost the same as above; the only difference is that you need
+to include a heading to indicate where in the file `check-datapackage`
+can find the settings:
+
+``` {.toml filename=".cdp.toml"}
+[tool.check-datapackage]
+strict = true
+
+[[tool.check-datapackage.exclusions]]
+jsonpath = "$.id"
+type = "required"
+```
 
 ```{python}
 #| echo: false
