@@ -79,7 +79,9 @@ strict = true
 
 ## Exclusion examples
 
-The examples below use [Soil's](https://soil.seedcase-project.org) built-in [`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example):
+The examples below use [Soil's](https://soil.seedcase-project.org)
+built-in
+[`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example):
 
 ``` {.bash filename="Terminal"}
 simple_example="$(python -c 'from seedcase_soil import Example; print(Example.simple.path)')"

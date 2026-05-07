@@ -47,7 +47,8 @@ For example:
 check-datapackage check SOURCE --strict
 ```
 
-The diagram below shows the flow of inputs and outputs for the `check` command:
+The diagram below shows the flow of inputs and outputs for the `check`
+command:
 
 ```{mermaid}
 %%| label: fig-cli-check-flow
@@ -106,7 +107,8 @@ The behavior of `check` depends on the `SOURCE` format given:
   - `gh:seedcase-project/example-seed-beetle@main` will parse to
     `https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/main/datapackage.json`.
 
-The behavior of `check` can optionally be modified via the its option flags:
+The behavior of `check` can optionally be modified via the its option
+flags:
 
 - `--strict` Enables [strict mode](/docs/guide/config.html#strict-mode)
 - `--verbose`: Outputs more detailed messages about the checking
