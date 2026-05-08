@@ -157,7 +157,7 @@ If you want to add different exclusions, you can keep adding more
 
 #### Required checks
 
-You can also add required checks in your configuration file. For require
+You can also add required checks in your configuration file. To require
 the `contributors` property, add a table titled
 `[extensions.required_checks]`:
 
