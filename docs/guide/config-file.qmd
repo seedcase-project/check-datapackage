@@ -39,6 +39,9 @@ can be configured via the configuration file:
 - `exclusions`: Exclude issues by
   [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type,
   or both.
+- `extensions`: Add extra checks that supplement the Data Package
+  standard. Configuration files support
+  [`RequiredCheck`](/docs/reference/RequiredCheck.qmd) extensions.
 
 Only option flags are configurable in these files. Positional
 arguments---such as the `source` path/URL passed to
@@ -149,3 +152,57 @@ finally:
 
 If you want to add different exclusions, you can keep adding more
 `[[exclusions]]` below this one.
+
+### Extensions
+
+#### Required checks
+
+You can also add required checks in your configuration file. To require
+the `contributors` property, add a table titled
+`[extensions.required_checks]`:
+
+``` {.toml filename=".cdp.toml"}
+[[extensions.required_checks]]
+jsonpath="$.contributors"
+message="The 'contributors' field is required in the Data Package properties."
+```
+
+Run the check:
+
+``` {.bash filename="Terminal"}
+check-datapackage check "$simple_example"
+```
+
+```{python}
+#| echo: false
+config_path.write_text("""
+[[extensions.required_checks]]
+jsonpath="$.contributors"
+message="The 'contributors' field is required in the Data Package properties."
+""")
+
+try:
+    so.format_output_for_docs(["cdp", "check", str(so.Example.simple.path)])
+finally:
+    config_path.unlink(missing_ok=True)
+```
+
+If you use `pyproject.toml`, put the same nested table under
+`[tool.check-datapackage]`:
+
+``` {.toml filename="pyproject.toml"}
+[tool.check-datapackage]
+
+[[tool.check-datapackage.extensions.required_checks]]
+jsonpath="$.contributors"
+message="The 'contributors' field is required in the Data Package properties."
+```
+
+You can add more required checks by adding more
+`[[extensions.required_checks]]` tables.
+
+#### Custom checks
+
+Custom checks require a Python function for their `check` argument, so
+define [`CustomCheck`](/docs/reference/CustomCheck.qmd) extensions in
+Python rather than in a TOML configuration file.
