@@ -190,14 +190,12 @@ def test_check_passes_extensions_from_config_to_check(
         )
     )
 
-    fake_source = object()
-    mock_parse_source.return_value = fake_source
-    mock_read_properties.return_value = {"name": "test-package"}
-    mock_check.return_value = []
-
     monkeypatch.chdir(tmp_path)
     app(["check", "datapackage.json"], result_action="return_value")
 
+    mock_parse_source.assert_called_once_with("datapackage.json")
+    mock_read_properties.assert_called_once()
+    mock_check.assert_called_once()
     _, kwargs = mock_check.call_args
     assert kwargs["config"].extensions == Extensions(
         required_checks=[
