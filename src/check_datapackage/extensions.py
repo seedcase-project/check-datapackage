@@ -17,6 +17,11 @@ from check_datapackage.internals import (
 )
 from check_datapackage.issue import MISSING, Issue
 
+CUSTOM_CHECKS_CONFIG_ERROR = (
+    "Custom checks cannot be configured in TOML because `check` must be "
+    "a Python callable. Define CustomCheck extensions in Python instead."
+)
+
 
 class CustomCheck(BaseModel, frozen=True):
     """A custom check to be done on Data Package metadata.
@@ -259,6 +264,13 @@ class Extensions(BaseModel, frozen=True):
 
     required_checks: list[RequiredCheck] = []
     custom_checks: list[CustomCheck] = []
+
+    @field_validator("custom_checks", mode="before")
+    @classmethod
+    def _reject_config_custom_checks(cls, value: Any) -> Any:
+        if isinstance(value, list) and any(isinstance(item, dict) for item in value):
+            raise ValueError(CUSTOM_CHECKS_CONFIG_ERROR)
+        return value
 
 
 def apply_extensions(
