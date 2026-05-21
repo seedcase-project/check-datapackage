@@ -217,7 +217,7 @@ def test_check_rejects_custom_checks_from_cdp_toml(tmp_path, monkeypatch, capfd)
                 'type = "only-mit"',
                 'jsonpath = "$.licenses[*].name"',
                 'message = "Only MIT is allowed."',
-                'check = "value == \'mit\'"',
+                "check = \"value == 'mit'\"",
             ]
         )
     )
