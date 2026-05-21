@@ -6,14 +6,7 @@ from typing import Any, Self, cast
 from jsonpath import JSONPath, compile
 from jsonpath.segments import JSONPathRecursiveDescentSegment
 from jsonpath.selectors import NameSelector
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    PrivateAttr,
-    field_validator,
-    model_validator,
-)
-from pydantic_core import PydanticCustomError
+from pydantic import BaseModel, PrivateAttr, field_validator, model_validator
 from seedcase_soil import flat_fmap, fmap, keep
 
 from check_datapackage.internals import (
@@ -23,6 +16,11 @@ from check_datapackage.internals import (
     _get_fields_at_jsonpath,
 )
 from check_datapackage.issue import MISSING, Issue
+
+CUSTOM_CHECKS_CONFIG_ERROR = (
+    "Custom checks cannot be configured in TOML because `check` must be "
+    "a Python callable. Define CustomCheck extensions in Python instead."
+)
 
 
 class CustomCheck(BaseModel, frozen=True):
@@ -264,8 +262,6 @@ class Extensions(BaseModel, frozen=True):
         ```
     """
 
-    model_config = ConfigDict(hide_input_in_errors=True)
-
     required_checks: list[RequiredCheck] = []
     custom_checks: list[CustomCheck] = []
 
@@ -273,11 +269,7 @@ class Extensions(BaseModel, frozen=True):
     @classmethod
     def _reject_config_custom_checks(cls, value: Any) -> Any:
         if isinstance(value, list) and any(isinstance(item, dict) for item in value):
-            raise PydanticCustomError(
-                "custom_checks_config",
-                "Custom checks cannot be configured in TOML because `check` must be "
-                "a Python callable. Define CustomCheck extensions in Python instead.",
-            )
+            raise ValueError(CUSTOM_CHECKS_CONFIG_ERROR)
         return value
 
 
