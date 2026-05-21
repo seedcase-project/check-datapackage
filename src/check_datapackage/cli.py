@@ -2,7 +2,7 @@
 
 from typing import Annotated, Any
 
-from cyclopts import CycloptsPanel, Parameter
+from cyclopts import Parameter
 from seedcase_soil import (
     Address,
     parse_source,
@@ -15,15 +15,7 @@ from seedcase_soil import (
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.exclusion import Exclusion
-from check_datapackage.extensions import CUSTOM_CHECKS_CONFIG_ERROR, Extensions
-
-
-def _format_cli_error(error: Any) -> Any:
-    message = str(error)
-    if CUSTOM_CHECKS_CONFIG_ERROR in message:
-        return CycloptsPanel(CUSTOM_CHECKS_CONFIG_ERROR)
-    return CycloptsPanel(error)
-
+from check_datapackage.extensions import Extensions
 
 app = setup_cli(
     name="check-datapackage",
@@ -33,7 +25,6 @@ app = setup_cli(
     ),
     config_name=".cdp.toml",
 )
-app.error_formatter = _format_cli_error
 
 
 @app.command(name="check")
@@ -64,11 +55,7 @@ def check_cmd(
     """
     address: Address = parse_source(source)
     properties: dict[str, Any] = read_properties(address)
-    config = Config(
-        strict=strict,
-        exclusions=exclusions,
-        extensions=extensions,
-    )
+    config = Config(strict=strict, exclusions=exclusions, extensions=extensions)
     check(properties, config=config, error=True)
     pretty_print("[green]All checks passed![/green]")
 

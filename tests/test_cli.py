@@ -231,8 +231,6 @@ def test_check_rejects_custom_checks_from_cdp_toml(tmp_path, monkeypatch, capfd)
     assert "Custom checks cannot be configured in" in err
     assert "callable" in err
     assert "Define CustomCheck extensions in Python instead" in err
-    assert "1 validation error for Extensions" not in err
-    assert "input_value" not in err
 
 
 # Success and error handling ====
