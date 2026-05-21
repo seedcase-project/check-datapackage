@@ -231,7 +231,7 @@ Custom checks require a Python function for their `check` argument, so
 define [`CustomCheck`](/docs/reference/CustomCheck.qmd) extensions in
 Python rather than in a TOML configuration file.
 
-```
+```{python}
 #| output: false
 # Clean up example data from tmp dir
 Path('datapackage.json').unlink(missing_ok=True)
