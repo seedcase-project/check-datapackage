@@ -6,7 +6,7 @@ import pytest
 from seedcase_soil.errors import FileDoesNotExistError
 
 from check_datapackage.check import DataPackageError
-from check_datapackage.cli import app
+from check_datapackage.cli import CUSTOM_CHECKS_CONFIG_ERROR, app
 from check_datapackage.exclusion import Exclusion
 from check_datapackage.extensions import Extensions, RequiredCheck
 
@@ -157,18 +157,16 @@ def test_check_reads_extensions_from_cdp_toml(tmp_path, monkeypatch):
     _, bound, _ = app.parse_args(["check"])
     extensions = bound.arguments["extensions"]
 
-    assert extensions == Extensions(
-        required_checks=[
-            RequiredCheck(
-                jsonpath="$.description",
-                message="Description is required.",
-            ),
-            RequiredCheck(
-                jsonpath="$.contributors[*].email",
-                message="All contributors need an email address.",
-            ),
-        ]
-    )
+    assert extensions.required_checks == [
+        RequiredCheck(
+            jsonpath="$.description",
+            message="Description is required.",
+        ),
+        RequiredCheck(
+            jsonpath="$.contributors[*].email",
+            message="All contributors need an email address.",
+        ),
+    ]
 
 
 def test_check_passes_extensions_from_config_to_check(
@@ -224,15 +222,11 @@ def test_check_rejects_custom_checks_from_cdp_toml(tmp_path, monkeypatch, capfd)
 
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError, match=CUSTOM_CHECKS_CONFIG_ERROR):
         app.parse_args(["check"])
 
     err = capfd.readouterr().err
-    assert "Custom checks cannot be configured in" in err
-    assert "callable" in err
-    assert "Define CustomCheck extensions in Python instead" in err
-    assert "1 validation error for Extensions" not in err
-    assert "input_value" not in err
+    assert err == ""
 
 
 # Success and error handling ====
