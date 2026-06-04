@@ -672,6 +672,15 @@ wheels = [
 ]
 
 [[package]]
+name = "emoji"
+version = "2.15.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/78/0d2db9382c92a163d7095fc08efff7800880f830a152cfced40161e7638d/emoji-2.15.0.tar.gz", hash = "sha256:eae4ab7d86456a70a00a985125a03263a5eac54cd55e51d7e184b1ed3b6757e4", size = 615483, upload-time = "2025-09-21T12:13:02.755Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/5e/4b5aaaabddfacfe36ba7768817bd1f71a7a810a43705e531f3ae4c690767/emoji-2.15.0-py3-none-any.whl", hash = "sha256:205296793d66a89d88af4688fa57fd6496732eb48917a87175a023c8138995eb", size = 608433, upload-time = "2025-09-21T12:13:01.197Z" },
+]
+
+[[package]]
 name = "executing"
 version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1432,6 +1441,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a2/6e/371856a3fb9d31ca8dac321cda606860fa4548858c0cc45d9d1d4ca2628b/mypy_extensions-1.1.0.tar.gz", hash = "sha256:52e68efc3284861e772bbcd66823fde5ae21fd2fdb51c62a211403730b916558", size = 6343, upload-time = "2025-04-22T14:54:24.164Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl", hash = "sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505", size = 4963, upload-time = "2025-04-22T14:54:22.983Z" },
+]
+
+[[package]]
+name = "natsort"
+version = "8.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e2/a9/a0c57aee75f77794adaf35322f8b6404cbd0f89ad45c87197a937764b7d0/natsort-8.4.0.tar.gz", hash = "sha256:45312c4a0e5507593da193dedd04abb1469253b601ecaf63445ad80f0a1ea581", size = 76575, upload-time = "2023-06-20T04:17:19.925Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/82/7a9d0550484a62c6da82858ee9419f3dd1ccc9aa1c26a1e43da3ecd20b0d/natsort-8.4.0-py3-none-any.whl", hash = "sha256:4732914fb471f56b5cce04d7bae6f164a592c7712e1c85f9ef585e197299521c", size = 38268, upload-time = "2023-06-20T04:17:17.522Z" },
 ]
 
 [[package]]
@@ -2334,15 +2352,29 @@ wheels = [
 
 [[package]]
 name = "seedcase-soil"
-version = "0.13.0"
+version = "0.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cyclopts" },
+    { name = "emoji" },
     { name = "rich" },
+    { name = "seedir" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bd/4b/fbad245a6d83c6f135a33674be528b94597cd48c61d2a1260a131f7fa642/seedcase_soil-0.13.0.tar.gz", hash = "sha256:6c69b35b35f26979a0e6e950a9b9a95345128fb8d967e54fdddc940a3744a80a", size = 1044803, upload-time = "2026-05-04T08:31:23.583Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ac/61/d51546f7023ecfbadacba8067a1f16eb68299b7e18d6e3a25f1ddb0479fc/seedcase_soil-0.14.0.tar.gz", hash = "sha256:9eee5a03fb587aa34f62d8877dba5c84a0e7e75bbf25a77f32d04b8523c16351", size = 1046626, upload-time = "2026-05-06T13:52:48.227Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4c/ca/d131b714cfa764c4134e7ea8438b9164da6e91c5d662244ed5ae58ecf213/seedcase_soil-0.13.0-py3-none-any.whl", hash = "sha256:a4ac906a228389b7e99a80ea97db556762e92c49d7bad7d05dcf21655dfb9ec0", size = 17803, upload-time = "2026-05-04T08:31:22.704Z" },
+    { url = "https://files.pythonhosted.org/packages/da/02/05f2901b00dbb46d0559d4394e7a1ce4e27adda8a8aed179e465a0ccdd70/seedcase_soil-0.14.0-py3-none-any.whl", hash = "sha256:c5606edc9b6b8cecd81352274d9cd96d2d49acf7965874cae3c6e380ac77ac5b", size = 18334, upload-time = "2026-05-06T13:52:49.487Z" },
+]
+
+[[package]]
+name = "seedir"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "natsort" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1f/cf/52840f80bf568870e5385aedcd7a902feadcc1a11cbe7b168986d93fed6a/seedir-0.5.1.tar.gz", hash = "sha256:9fb82a6133f92a711bb2d46b2a142f56712e242a4fc03fef2fea9418d307efe2", size = 116403, upload-time = "2025-06-04T02:30:28.483Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7e/6e/f6e510f8ee4171b5b9cf2321094b74722a39d6d2e19b0bfea57f7b974a56/seedir-0.5.1-py3-none-any.whl", hash = "sha256:76ba4e6c9d85930166fa127b31efcbf8ccb471ed38624e728f4eb22e47e7b1a4", size = 113992, upload-time = "2025-06-04T02:30:26.878Z" },
 ]
 
 [[package]]
