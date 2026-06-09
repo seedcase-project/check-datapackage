@@ -1,6 +1,6 @@
 """Functions for the exposed CLI."""
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from cyclopts import Parameter
 from seedcase_soil import (
@@ -28,7 +28,7 @@ class ExtensionsCli:
 
     def __init__(
         self,
-        required_checks: list[RequiredCheck] | None = None,
+        required_checks: Optional[list[RequiredCheck]] = None,
         custom_checks: Any = None,
     ) -> None:
         """Create CLI extensions from config-file-supported fields."""
