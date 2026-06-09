@@ -1,6 +1,6 @@
 """Functions for the exposed CLI."""
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from cyclopts import Parameter
 from seedcase_soil import (
@@ -15,6 +15,27 @@ from seedcase_soil import (
 from check_datapackage.check import check
 from check_datapackage.config import Config
 from check_datapackage.exclusion import Exclusion
+from check_datapackage.extensions import Extensions, RequiredCheck
+
+CUSTOM_CHECKS_CONFIG_ERROR = (
+    "Custom checks cannot be configured in TOML because `check` must be "
+    "a Python callable. Define CustomCheck extensions in Python instead."
+)
+
+
+class ExtensionsCli:
+    """Extensions that can be represented in a TOML config file."""
+
+    def __init__(
+        self,
+        required_checks: Optional[list[RequiredCheck]] = None,
+        custom_checks: Any = None,
+    ) -> None:
+        """Create CLI extensions from config-file-supported fields."""
+        if custom_checks is not None:
+            raise ValueError(CUSTOM_CHECKS_CONFIG_ERROR)
+        self.required_checks = required_checks or []
+
 
 app = setup_cli(
     name="check-datapackage",
@@ -33,6 +54,7 @@ def check_cmd(
     *,  # Start of keyword-only params
     strict: bool = False,
     exclusions: Annotated[list[Exclusion], Parameter(show=False)] = [],
+    extensions: Annotated[ExtensionsCli, Parameter(show=False)] = ExtensionsCli(),
 ) -> None:
     """Check a Data Package's metadata against the Data Package standard.
 
@@ -49,10 +71,15 @@ def check_cmd(
             properties from the Data Package standard.
         exclusions: A hidden CLI/config parameter for excluding issues by JSONPath
             and/or issue type.
+        extensions: A hidden CLI/config parameter for adding extra checks.
     """
     address: Address = parse_source(source)
     properties: dict[str, Any] = read_properties(address)
-    config = Config(strict=strict, exclusions=exclusions)
+    config = Config(
+        strict=strict,
+        exclusions=exclusions,
+        extensions=Extensions(required_checks=extensions.required_checks),
+    )
     check(properties, config=config, error=True)
     pretty_print("[green]All checks passed![/green]")
 

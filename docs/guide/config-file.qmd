@@ -37,6 +37,9 @@ can be configured via the configuration file:
 - `exclusions`: Exclude issues by
   [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type,
   or both.
+- `extensions`: Add extra checks that supplement the Data Package
+  standard. Configuration files support
+  [`RequiredCheck`](/docs/reference/RequiredCheck.qmd) extensions.
 
 Note that the positional `source` argument cannot be set via the
 configuration file; it must be passed via the command line or Python
@@ -174,8 +177,61 @@ jsonpath = "$.id"
 type = "required"
 ```
 
+### Extensions
+
+#### Required checks
+
+You can also add required checks in your configuration file. To require
+the `contributors` property, use the TOML header
+`[[extensions.required_checks]]`:
+
+``` {.toml filename=".cdp.toml"}
+[[extensions.required_checks]]
+jsonpath="$.contributors"
+message="The 'contributors' field is required in the Data Package properties."
+```
+
+Run the check:
+
+``` {.bash filename="Terminal"}
+check-datapackage check
+```
+
 ```{python}
 #| echo: false
+config_path.write_text("""
+[[extensions.required_checks]]
+jsonpath="$.contributors"
+message="The 'contributors' field is required in the Data Package properties."
+""")
+
+try:
+    so.format_output_for_docs(["cdp", "check"])
+finally:
+    config_path.unlink(missing_ok=True)
+```
+
+If you use `pyproject.toml`, put the same nested table under
+`[tool.check-datapackage]`:
+
+``` {.toml filename="pyproject.toml"}
+[tool.check-datapackage]
+
+[[tool.check-datapackage.extensions.required_checks]]
+jsonpath="$.contributors"
+message="The 'contributors' field is required in the Data Package properties."
+```
+
+You can add more required checks by adding more
+`[[extensions.required_checks]]` tables.
+
+#### Custom checks
+
+Custom checks require a Python function for their `check` argument, so
+define [`CustomCheck`](/docs/reference/CustomCheck.qmd) extensions in
+Python rather than in a TOML configuration file.
+
+```{python}
 #| output: false
 # Clean up example data from tmp dir
 Path('datapackage.json').unlink(missing_ok=True)
