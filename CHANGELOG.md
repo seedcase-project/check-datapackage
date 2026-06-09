@@ -17,6 +17,12 @@ individual release will not have many changes within it. Below is a list
 of the releases we've made so far, along with what was changed within
 each release.
 
+## 0.37.0 (2026-06-09)
+
+### Feat
+
+- ✨ connect required checks extensions from the config file (#348)
+
 ## 0.36.0 (2026-06-04)
 
 ## 0.35.0 (2026-05-04)
