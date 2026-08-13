@@ -1,0 +1,12 @@
+[files]
+extend-exclude = [
+  "*.html",
+  "*.css",
+  ".quarto/*",
+  "_site/*",
+  "*.svg",
+  "*.json",
+  ".coverage-report/*",
+  # Has commit hashes that trigger false positives
+  "CHANGELOG.md",
+]
