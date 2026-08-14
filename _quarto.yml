@@ -21,13 +21,13 @@ website:
         href: docs/design/index.qmd
       - text: "Reference"
         href: docs/reference/index.qmd
+    right:
+      - text: "<img src='/_extensions/seedcase-project/seedcase-theme/logos/seedcase/a-part-of.svg' alt='Main Seedcase website' height='30px'>"
+        href: "https://seedcase-project.org"
     tools:
       - icon: github
         href: "https://github.com/seedcase-project/check-datapackage"
         aria-label: "GitHub icon: Source code"
-      - icon: house
-        href: "https://seedcase-project.org"
-        aria-label: "House icon: Main website for the Seedcase Project"
   sidebar:
     - id: overview
       pinned: true
@@ -55,7 +55,7 @@ website:
         - section: "Guide"
           href: docs/guide/index.qmd
           contents:
-           - auto: "docs/guide/*.qmd"
+            - auto: "docs/guide/*.qmd"
 
 quartodoc:
   title: "API Reference"
@@ -71,34 +71,33 @@ quartodoc:
     show_signature_annotations: true
   options: null
   sections:
-  - title: Functions
-    desc: Core functions used to check Data Packages.
-    contents:
-    - name: check
-    - name: explain
+    - title: Functions
+      desc: Core functions used to check Data Packages.
+      contents:
+        - name: check
+        - name: explain
 
-  - title: Configuration
-    desc: Classes to configure behaviour of the checks.
-    contents:
-    - name: Config
-    - name: Extensions
-    - name: CustomCheck
-    - name: RequiredCheck
-    - name: Exclusion
+    - title: Configuration
+      desc: Classes to configure behaviour of the checks.
+      contents:
+        - name: Config
+        - name: Extensions
+        - name: CustomCheck
+        - name: RequiredCheck
+        - name: Exclusion
 
-  - title: Output
-    desc: Classes that contain details about the output.
-    contents:
-    - name: Issue
-    - name: DataPackageError
+    - title: Output
+      desc: Classes that contain details about the output.
+      contents:
+        - name: Issue
+        - name: DataPackageError
 
-  - title: Examples
-    desc: Example Data Package properties used for documents and testing.
-    contents:
-    - name: example_package_properties
-    - name: example_resource_properties
-    - name: example_field_properties
-
+    - title: Examples
+      desc: Example Data Package properties used for documents and testing.
+      contents:
+        - name: example_package_properties
+        - name: example_resource_properties
+        - name: example_field_properties
 
 metadata-files:
   - docs/reference/_sidebar.yml
