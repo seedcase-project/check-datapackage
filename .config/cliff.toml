@@ -3,9 +3,8 @@
 offline = false
 
 [remote.github]
-# TODO: Fill in the owner and repo so that the links in the changelog work correctly.
-owner = ""
-repo = ""
+owner = "seedcase-project"
+repo = "check-datapackage"
 
 [changelog]
 # A Tera template to be rendered for each release in the changelog.
@@ -104,9 +103,8 @@ output = "CHANGELOG.md"
 
 [git]
 commit_preprocessors = [
-  # TODO: Replace OWNER and REPO with actual owner and repo
   # Replace pull request numbers with links to GitHub.
-  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "[#${2}](https://github.com/OWNER/REPO/pull/${2})" },
+  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "[#${2}](https://github.com/seedcase-project/check-datapackage/pull/${2})" },
   # Check spelling of the commit message using https://github.com/crate-ci/typos.
   # If the spelling is incorrect, it will be fixed automatically.
   { pattern = '.*', replace_command = 'uvx typos --write-changes -' },
