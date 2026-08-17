@@ -25,7 +25,7 @@ It's easiest to install uv and justfile using
 [pipx](https://pipx.pypa.io/stable/), so install that first. Then,
 install uv and justfile by running:
 
-``` bash
+```bash
 pipx install uv rust-just
 ```
 
@@ -33,7 +33,7 @@ We keep all our development workflows in the `justfile`, so you can
 explore it to see what commands are available. To see a list of commands
 available, run:
 
-``` bash
+```bash
 just
 ```
 
@@ -41,7 +41,7 @@ As you contribute, make sure your changes pass our tests by opening a
 terminal with the working directory set to the root of this project's
 repository. Then run:
 
-``` bash
+```bash
 just run-all
 ```
 

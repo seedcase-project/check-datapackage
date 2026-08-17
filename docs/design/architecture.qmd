@@ -2,120 +2,115 @@
 title: "Architecture"
 ---
 
-This documentation contains the architectural design for
-`check-datapackage`. For design details of the Seedcase Project as a
-whole, see the [Seedcase Design](https://design.seedcase-project.org)
-documentation.
+This documentation contains the architectural design for `check-datapackage`.
+For design details of the Seedcase Project as a whole, see the [Seedcase
+Design](https://design.seedcase-project.org) documentation.
 
-This document outlines the architecture of `check-datapackage` mostly to
-ensure the team shares a common understanding about the implementation,
-but also to communicate the design to anyone else interested in the
-internal workings of the package.
+This document outlines the architecture of `check-datapackage` mostly to ensure
+the team shares a common understanding about the implementation, but also to
+communicate the design to anyone else interested in the internal workings of the
+package.
 
 ## User types {#user-types}
 
 This section describes the different users we expect and design for:
 
-- **Owner:** Creates and owns the Data Package. Wants to ensure that the
-  Data Package is compliant with the Data Package standard on a general
-  level.
-- **Manager:** Manages and edits the properties within the Data Package.
-  Wants to make sure that whenever changes are made to the properties
-  (e.g., the `description` field is updated), the Data Package remains
-  compliant with the standard.
-- **Developer:** Contributes to building up the Data Package including
-  the data itself and/or the infrastructure around it. Wants to ensure
-  that changes don't impact the compliance of the Data Package. Might
-  add extensions (additional checks) or exclude certain Data Package
-  checks to fit the specific needs of the project.
+- **Owner:** Creates and owns the Data Package. Wants to ensure that the Data
+  Package is compliant with the Data Package standard on a general level.
+- **Manager:** Manages and edits the properties within the Data Package. Wants
+  to make sure that whenever changes are made to the properties (e.g., the
+  `description` field is updated), the Data Package remains compliant with the
+  standard.
+- **Developer:** Contributes to building up the Data Package including the data
+  itself and/or the infrastructure around it. Wants to ensure that changes don't
+  impact the compliance of the Data Package. Might add extensions (additional
+  checks) or exclude certain Data Package checks to fit the specific needs of
+  the project.
 
 ## Naming
 
-This section contains a naming scheme for `check-datapackage` that is
-inspired by the [Data Package standard](https://datapackage.org/).
+This section contains a naming scheme for `check-datapackage` that is inspired
+by the [Data Package standard](https://datapackage.org/).
 
-Overall, we follow the Data Package terminology where possible to keep
-things consistent. However, we also introduce some new terms and
-concepts specific to `check-datapackage`. The main objects and actions
-used throughout the package can be found in the tables below.
+Overall, we follow the Data Package terminology where possible to keep things
+consistent. However, we also introduce some new terms and concepts specific to
+`check-datapackage`. The main objects and actions used throughout the package
+can be found in the tables below.
 
-| Object     | Description                                                                                                                                                |
-|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| package    | A Data Package that contains a collection of related data resources and descriptor(s).                                                                     |
-| descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`.                                                 |
-| properties | Metadata fields (name-value pairs) of a descriptor loaded as a `Properties` type. This can be a subset of the original descriptor or the entire structure. |
-| schema     | The JSON schema defining the Data Package standard.                                                                                                        |
-| config     | An object containing settings for modifying the behaviour and output of the check mechanism.                                                               |
+  | Object     | Description                                                                                                                                                |
+  | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | package    | A Data Package that contains a collection of related data resources and descriptor(s).                                                                     |
+  | descriptor | A standalone and complete metadata structure contained in a JSON file, for example, in `datapackage.json`.                                                 |
+  | properties | Metadata fields (name-value pairs) of a descriptor loaded as a `Properties` type. This can be a subset of the original descriptor or the entire structure. |
+  | schema     | The JSON schema defining the Data Package standard.                                                                                                        |
+  | config     | An object containing settings for modifying the behaviour and output of the check mechanism.                                                               |
 
-: Objects used throughout `check-datapackage`.
+  : Objects used throughout `check-datapackage`.
 
-| Action  | Description                                                                                     |
-|---------|-------------------------------------------------------------------------------------------------|
-| check   | Check that properties comply with the Data Package standard.                                    |
-| explain | Explain issues flagged by the check action in more detail using non-technical language.         |
-| read    | Read various files, such as a Data Package descriptor (the properties) or a configuration file. |
+  | Action  | Description                                                                                     |
+  | ------- | ----------------------------------------------------------------------------------------------- |
+  | check   | Check that properties comply with the Data Package standard.                                    |
+  | explain | Explain issues flagged by the check action in more detail using non-technical language.         |
+  | read    | Read various files, such as a Data Package descriptor (the properties) or a configuration file. |
 
-: Actions that `check-datapackage` can perform.
+  : Actions that `check-datapackage` can perform.
 
 ### Why "check" and not "validate" or "verify"?
 
 If you have ever searched for tools that check something against a
-specification, you'll often see the word "validate". You might also
-notice that we don't use the word "validate" in our package and
-documentation. This is intentional.
+specification, you'll often see the word "validate". You might also notice that
+we don't use the word "validate" in our package and documentation. This is
+intentional.
 
-Although the word "validate" is ubiquitous in programming, it's often
-used loosely and in ways that don't align from its actual meaning. Tools
-that "validate" something often, in practice, *verify* that something
-matches a defined expectation or specification. There are many websites
-and articles comparing the difference between validate and verify. For a
-good overview, see the Wikipedia on this topic in
-[general](https://en.wikipedia.org/wiki/Verification_and_validation) and
-on
+Although the word "validate" is ubiquitous in programming, it's often used
+loosely and in ways that don't align from its actual meaning. Tools that
+"validate" something often, in practice, *verify* that something matches a
+defined expectation or specification. There are many websites and articles
+comparing the difference between validate and verify. For a good overview, see
+the Wikipedia on this topic in
+[general](https://en.wikipedia.org/wiki/Verification_and_validation) and on
 [software](https://en.wikipedia.org/wiki/Software_verification_and_validation)
 specifically.
 
-Unfortunately, "verify" and "validate" are often used interchangeably
-and because of that it can be difficult to distinguish between their
-meanings. This may be due to the similarity in their spelling and
-pronunciation. For that reason, we've decided to use neither of those
-words. Instead, we wanted to use a more common word that reflects what
-we want this package to do while also being generic enough to encompass
-different uses. So we went with "check", since this package *checks*
-that the metadata is correct (based on the specification).
+Unfortunately, "verify" and "validate" are often used interchangeably and
+because of that it can be difficult to distinguish between their meanings. This
+may be due to the similarity in their spelling and pronunciation. For that
+reason, we've decided to use neither of those words. Instead, we wanted to use a
+more common word that reflects what we want this package to do while also being
+generic enough to encompass different uses. So we went with "check", since this
+package *checks* that the metadata is correct (based on the specification).
 
 ## C4 Models
 
 This section contains the [C4 Models](https://c4model.com/) for
-`check-datapackage`. The C4 Model is an established visualisation
-approach to describe the architecture of a software system. It breaks
-the system down into four levels of architectural abstraction: System
-context, containers, components, and code.
+`check-datapackage`. The C4 Model is an established visualisation approach to
+describe the architecture of a software system. It breaks the system down into
+four levels of architectural abstraction: System context, containers,
+components, and code.
 
 ### System context
 
 The system context diagram shows the users and any external systems that
-interact with `check-datapackage`. This includes the user types and the
-Data Package standard.
+interact with `check-datapackage`. This includes the user types and the Data
+Package standard.
 
-`check-datapackage` receives the definitions of the Data Package
-descriptor's structure---including properties that
-[must or should](https://datapackage.org/standard/data-package/#language)
-be included and their formats---from the Data Package standard (version
-2). The standard provides this information through versioned JSON Schema
-profiles that define required properties and textual descriptions that
-outline compliance.
+`check-datapackage` receives the definitions of the Data Package descriptor's
+structure---including properties that [must or
+should](https://datapackage.org/standard/data-package/#language) be included and
+their formats---from the Data Package standard (version 2). The standard
+provides this information through versioned JSON Schema profiles that define
+required properties and textual descriptions that outline compliance.
 
 ::: callout-note
-In the initial version of `check-datapackage`, we only support the
-second edition of the Data Package standard (v2.0). However, we plan to
-extend this to support future editions as they are released, as well as
-the first edition to ensure backward compatibility.
+In the initial version of `check-datapackage`, we only support the second
+edition of the Data Package standard (v2.0). However, we plan to extend this to
+support future editions as they are released, as well as the first edition to
+ensure backward compatibility.
 :::
 
 The users, described in the [User types](#user-types) section, provide
-`check-datapackage` with their Data Package's properties to check its
-compliance with the standard.
+`check-datapackage` with their Data Package's properties to check its compliance
+with the standard.
 
 ```{mermaid}
 %%| label: fig-c4-context
@@ -140,17 +135,16 @@ flowchart LR
 
 ### Container
 
-In C4, a [container diagram](https://c4model.com/diagrams/container)
-zooms in on the system boundary to show the *containers* within it, such
-as web applications or databases. This diagram displays the main
-containers of `check-datapackage`, their responsibilities, and how they
-interact, including the technologies used for each.
+In C4, a [container diagram](https://c4model.com/diagrams/container) zooms in on
+the system boundary to show the *containers* within it, such as web applications
+or databases. This diagram displays the main containers of `check-datapackage`,
+their responsibilities, and how they interact, including the technologies used
+for each.
 
-Currently, we build `check-datapackage` with a single container---the
-core Python package---but we've designed it to be extendable as a
-command line interface (CLI) in the future. With a CLI, we want to ease
-the process of implementing the checks in e.g., continuous integration
-pipelines.
+Currently, we build `check-datapackage` with a single container---the core
+Python package---but we've designed it to be extendable as a command line
+interface (CLI) in the future. With a CLI, we want to ease the process of
+implementing the checks in e.g., continuous integration pipelines.
 
 ```{mermaid}
 %%| label: fig-c4-container
@@ -178,20 +172,19 @@ flowchart LR
 
 ### Component/code
 
-In the diagram below, we zoom in on the core Python package container to
-show its internal components. In C4, a
-[component](https://c4model.com/abstractions/component) is "a grouping
-of related functionality encapsulated behind a well-defined interface",
-like a class or a module, while
-[code](https://c4model.com/abstractions/code) is the basic building
-blocks, such as classes and functions.
+In the diagram below, we zoom in on the core Python package container to show
+its internal components. In C4, a
+[component](https://c4model.com/abstractions/component) is "a grouping of
+related functionality encapsulated behind a well-defined interface", like a
+class or a module, while [code](https://c4model.com/abstractions/code) is the
+basic building blocks, such as classes and functions.
 
-Because the core Python package is relatively small and simple, and
-because both component and code diagrams include classes, we combine the
-component and code levels of the C4 model into a single diagram as shown
-below. This diagram shows the main classes and functions within the core
-Python package. Because the CLI is only a planned future extension, we
-do not include a component/code diagram for it at this time.
+Because the core Python package is relatively small and simple, and because both
+component and code diagrams include classes, we combine the component and code
+levels of the C4 model into a single diagram as shown below. This diagram shows
+the main classes and functions within the core Python package. Because the CLI
+is only a planned future extension, we do not include a component/code diagram
+for it at this time.
 
 ```{mermaid}
 %%| label: fig-c4-component
@@ -237,6 +230,6 @@ flowchart LR
     style config_file fill:#FFFFFF, color:#000000, stroke-dasharray: 5 5
 ```
 
-For more details on the individual classes and functions, see the
-[interface documentation](/docs/design/interface.qmd) and the
-[reference documentation](/docs/reference/index.qmd).
+For more details on the individual classes and functions, see the [interface
+documentation](/docs/design/interface.qmd) and the [reference
+documentation](/docs/reference/index.qmd).

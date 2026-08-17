@@ -4,38 +4,36 @@ description: "Install `check-datapackage` to use on the command-line and in Pyth
 order: 0
 ---
 
-Before installing `check-datapackage`, you need
-[uv](https://docs.astral.sh/uv/) installed. To check that it is
-available, run:
+Before installing `check-datapackage`, you need [uv](https://docs.astral.sh/uv/)
+installed. To check that it is available, run:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 uv --version
 ```
 
-The command should print a version number. If you get an error instead,
-install `uv` before continuing.
+The command should print a version number. If you get an error instead, install
+`uv` before continuing.
 
 ## Install globally
 
-Installing `check-datapackage` globally lets you run it from any
-directory on your machine. To install globally, run:
+Installing `check-datapackage` globally lets you run it from any directory on
+your machine. To install globally, run:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 uv tool install check-datapackage
 ```
 
-Once installed, you can run the program with `check-datapackage` (or
-`cdp` for short). Alternatively, use `uvx` to run `check-datapackage`
-without having to separately install it first---this always fetches the
-latest version:
+Once installed, you can run the program with `check-datapackage` (or `cdp` for
+short). Alternatively, use `uvx` to run `check-datapackage` without having to
+separately install it first---this always fetches the latest version:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 uvx check-datapackage
 ```
 
 To enable shell auto-completions, run:
 
-```{.bash filename="Terminal"}
+```bash {filename="Terminal"}
 check-datapackage --install-completion
 ```
 
@@ -45,25 +43,25 @@ Completions only work for bash, fish, and zsh shells.
 
 ## Install in a Python project
 
-Installing `check-datapackage` in a project's virtual environment keeps
-its dependencies contained within the project and not available
-throughout the system.
+Installing `check-datapackage` in a project's virtual environment keeps its
+dependencies contained within the project and not available throughout the
+system.
 
-We assume you've already created a Python project with a
-`pyproject.toml` file. If not, review uv's
-[projects](https://docs.astral.sh/uv/guides/projects/) guide.
+We assume you've already created a Python project with a `pyproject.toml` file.
+If not, review uv's [projects](https://docs.astral.sh/uv/guides/projects/)
+guide.
 
 From your project's directory, run:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 uv add check-datapackage
 ```
 
 To verify the installation, run:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 uv pip show check-datapackage
 ```
 
-If successful, the output will show details about the installed package
-and you're now ready to use `check-datapackage` in your project!
+If successful, the output will show details about the installed package and
+you're now ready to use `check-datapackage` in your project!
