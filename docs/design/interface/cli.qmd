@@ -52,7 +52,12 @@ The diagram below shows the flow of inputs and outputs for the `check` command:
 ```{mermaid}
 %%| label: fig-cli-check-flow
 %%| fig-cap: "The flow of input and output through the CLI `check` command."
-%%| fig-alt: "Diagram showing the flow of input and output through the CLI `check` command. The user provides the source of the `datapackage.json` file and optional configuration, which are used by the `check` command to output issues."
+%%| fig-alt: >-
+%%|   Diagram showing the flow of input and output through the CLI `check`
+%%|   command. The user provides the source of the `datapackage.json` file and
+%%|   optional configuration, which are used by the `check` command to output
+%%|   issues.
+
 flowchart LR
     source("datapackage.json<br>(file,https,gh/github)<br>[SOURCE]")
     config_file(".cdp.toml or<br>pyproject.toml<br>[file]")

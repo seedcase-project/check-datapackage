@@ -1,0 +1,36 @@
+# Support Python 3.12+.
+target-version = "py312"
+
+# In addition to the default formatters/linters, add these as well.
+[lint]
+extend-select = [
+  # Add the `line-too-long` rule to the enforced rule set.
+  "E501",
+  # Add rule that all functions have docstrings.
+  "D",
+  # Add isort to list.
+  "I",
+  # Check for unused arguments.
+  "ARG",
+]
+ignore = [
+  # Ignore missing docstring at the top of files.
+  "D100",
+  # Use `Optional[]` typing.
+  "UP045",
+  # Use `Union[]` typing (not `|`) to be aligned with `Optional[]`.
+  "UP007",
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.per-file-ignores]
+# Ignore "Module imported but unused" error in all init files.
+"__init__.py" = ["F401"]
+# Don't require docstrings and ignore unused arguments in test files.
+# Must move up from the `.config/` directory to the root of the project.
+"../**/tests/*" = ["D", "ARG"]
+
+[format]
+docstring-code-format = true

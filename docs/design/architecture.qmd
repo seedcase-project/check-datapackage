@@ -114,7 +114,10 @@ with the standard.
 
 ```{mermaid}
 %%| label: fig-c4-context
-%%| fig-cap: "C4 system context diagram showing the anticipated users and the external system (the Data Package standard) `check-datapackage` interacts with."
+%%| fig-cap: >-
+%%|   C4 system context diagram showing the anticipated users and the external
+%%|   system (the Data Package standard) `check-datapackage` interacts with.
+
 flowchart LR
 
     subgraph "Users"
@@ -148,7 +151,11 @@ implementing the checks in e.g., continuous integration pipelines.
 
 ```{mermaid}
 %%| label: fig-c4-container
-%%| fig-cap: "C4 container diagram showing the core Python package in `check-datapackage` and the future command line interface (displayed dashed)."
+%%| fig-cap: >-
+%%|   C4 container diagram showing the core Python package in
+%%|   `check-datapackage` and the future command line interface (displayed
+%%|   dashed).
+
 flowchart LR
 
     users("Users<br>[person]")
@@ -188,8 +195,11 @@ for it at this time.
 
 ```{mermaid}
 %%| label: fig-c4-component
-%%| fig-cap: "C4 component diagram showing the parts of the Python package and their connections."
+%%| fig-cap: >-
+%%|   C4 component diagram showing the parts of the Python package and their
+%%|   connections.
 %%| column: page-right
+
 flowchart LR
 
     subgraph python_package["Core Python Package"]

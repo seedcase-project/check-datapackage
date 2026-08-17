@@ -1,9 +1,0 @@
-[files]
-extend-exclude = [
-  "*.json",
-  "*.css",
-  ".quarto/*",
-  "_site/*",
-  "_extensions/*",
-  ".coverage-report/*"
-]

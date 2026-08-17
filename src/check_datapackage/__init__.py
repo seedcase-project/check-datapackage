@@ -19,16 +19,16 @@ from .issue import Issue
 
 __all__ = [
     "Config",
-    "Exclusion",
-    "Issue",
-    "Extensions",
     "CustomCheck",
     "DataPackageError",
+    "Exclusion",
+    "Extensions",
+    "Issue",
     "RequiredCheck",
+    "check",
+    "example_field_properties",
     "example_package_properties",
     "example_resource_properties",
-    "example_field_properties",
-    "check",
     "explain",
     "pretty_print",
 ]

@@ -3,18 +3,18 @@ name = "check-datapackage"
 version = "0.37.0"
 description = "Check your Data Package's metadata against the Data Package standard to ensure that it's compliant with the standard"
 authors = [
-  {name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
-  {name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
-  {name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
-  {name = "Marton Vago", email = "marton.vago95@gmail.com" },
-  {name = "Joel Ostblom", email = "joel@joelostblom.com" },
+  { name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
+  { name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
+  { name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
+  { name = "Marton Vago", email = "marton.vago95@gmail.com" },
+  { name = "Joel Ostblom", email = "joel@joelostblom.com" },
 ]
 maintainers = [
-  {name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
-  {name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
-  {name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
-  {name = "Marton Vago", email = "marton.vago95@gmail.com" },
-  {name = "Joel Ostblom", email = "joel@joelostblom.com" },
+  { name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
+  { name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
+  { name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
+  { name = "Marton Vago", email = "marton.vago95@gmail.com" },
+  { name = "Joel Ostblom", email = "joel@joelostblom.com" },
 ]
 readme = "README.md"
 license = "MIT"
@@ -29,18 +29,37 @@ keywords = [
   "data engineering",
   "metadata checks",
   "data package",
-  "data package checks"
+  "data package checks",
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "jsonschema>=4.25.1",
-    "pydantic>=2.12.3",
-    "python-jsonpath>=2.0.1",
-    "rich>=14.3.0",
-    "seedcase-soil>=0.12.0",
-    "types-jsonschema>=4.25.1.20250822",
+  "jsonschema>=4.25.1",
+  "pydantic>=2.12.3",
+  "python-jsonpath>=2.0.1",
+  "rich>=14.3.0",
+  "seedcase-soil>=0.12.0",
+  "types-jsonschema>=4.25.1.20250822",
 ]
+# From https://pypi.org/classifiers/
+classifiers = [
+  "License :: OSI Approved :: MIT License",
 
+  # Strict typing, checked via Pyrefly
+  "Typing :: Typed",
+
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 4 - Beta",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: Developers",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+]
 [project.scripts]
 check-datapackage = "check_datapackage.cli:main"
 cdp = "check_datapackage.cli:main"
@@ -57,18 +76,40 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.8.6",
-    "commitizen>=4.8.3",
-    "genbadge>=1.1.2",
-    "jupyter>=1.1.1",
-    "mypy>=1.17.1",
-    "pre-commit>=4.3.0",
-    "pytest>=8.4.1",
-    "pytest-cov>=6.2.1",
-    "pytest-mock>=3.15.1",
-    "quartodoc>=0.11.1",
-    "ruff>=0.12.11",
-    "types-tabulate>=0.9.0.20241207",
-    "typos>=1.35.6",
-    "vulture>=2.14",
+  "bandit>=1.8.6",
+  "commitizen>=4.8.3",
+  "genbadge>=1.1.2",
+  "jupyter>=1.1.1",
+  "mypy>=1.17.1",
+  "pre-commit>=4.3.0",
+  "pytest>=8.4.1",
+  "pytest-cov>=6.2.1",
+  "pytest-mock>=3.15.1",
+  "quartodoc>=0.11.1",
+  "ruff>=0.12.11",
+  "types-tabulate>=0.9.0.20241207",
+  "typos>=1.35.6",
+  "vulture>=2.14",
 ]
+
+[tool.pytest.ini_options]
+# - A short traceback (tb) mode to make it easier to view.
+# - Use the `src/` package (importlib).
+# - Use code coverage on the `src/` package.
+# - If tests fail, do not generate coverage report.
+# - Create the coverage report in XML (for badge), terminal, and HTML.
+# - Trigger failure if below 90% code coverage.
+addopts = "--tb=short --import-mode=importlib --cov=src --no-cov-on-fail --cov-report=term --cov-report=xml --cov-report=html --cov-fail-under=90"
+
+[tool.pyrefly]
+project-includes = ["src/", "tests/"]
+min-severity = "warn"
+python-version = "3.12.0"
+preset = "strict"
+python-interpreter-path = ".venv/bin/python"
+# Use inline `# type: ignore` comments, which can be useful.
+permissive-ignores = true
+
+[tool.ruff]
+
+extend = ".config/ruff.toml"
