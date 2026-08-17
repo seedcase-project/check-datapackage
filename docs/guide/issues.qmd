@@ -25,6 +25,7 @@ with the missing `resources` field (that we remove here to demonstrate the
 
 ```{python}
 import check_datapackage as cdp
+
 package_properties = cdp.example_package_properties()
 del package_properties["resources"]
 package_properties

@@ -103,7 +103,9 @@ Now let's exclude these `Issue`s so that `check()` finds no issues by adding our
 exclusions to a `Config` object and giving it to `check()`:
 
 ```{python}
-config = cdp.Config(exclusions=[exclusion_name, exclusion_path, exclusion_created_format])
+config = cdp.Config(
+    exclusions=[exclusion_name, exclusion_path, exclusion_created_format]
+)
 cdp.check(properties=package_properties, config=config)
 ```
 

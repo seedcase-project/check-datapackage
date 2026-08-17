@@ -59,7 +59,7 @@ import seedcase_soil as so
 from pathlib import Path
 
 properties = so.read_properties(so.Example.simple.address)
-so.write_properties(properties, Path('datapackage.json'))
+so.write_properties(properties, Path("datapackage.json"))
 ```
 
 ### Strict checking
@@ -233,5 +233,5 @@ than in a TOML configuration file.
 #| output: false
 
 # Clean up example data from tmp dir
-Path('datapackage.json').unlink(missing_ok=True)
+Path("datapackage.json").unlink(missing_ok=True)
 ```

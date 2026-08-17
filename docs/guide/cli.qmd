@@ -75,11 +75,13 @@ check-datapackage check https://raw.githubusercontent.com/seedcase-project/examp
 ```{python}
 #| echo: false
 
-so.format_output_for_docs([
-    "cdp",
-    "check",
-    "https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json",
-])
+so.format_output_for_docs(
+    [
+        "cdp",
+        "check",
+        "https://raw.githubusercontent.com/seedcase-project/example-seed-beetle/refs/heads/main/datapackage.json",
+    ]
+)
 ```
 
 For Data Packages on GitHub, use either a `gh:` or `github:` prefix as a
@@ -104,7 +106,9 @@ check-datapackage check gh:seedcase-project/example-seed-beetle@main
 ```{python}
 #| echo: false
 
-so.format_output_for_docs(["cdp", "check", "gh:seedcase-project/example-seed-beetle@main"])
+so.format_output_for_docs(
+    ["cdp", "check", "gh:seedcase-project/example-seed-beetle@main"]
+)
 ```
 
 ::: callout-important
