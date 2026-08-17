@@ -1,10 +1,11 @@
 import os
 import re
 import sys
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
 from functools import reduce
 from types import TracebackType
-from typing import Any, Callable, Iterator, Optional, cast
+from typing import Any, Optional, cast
 
 from jsonpath import findall, resolve
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
@@ -224,7 +225,7 @@ def _create_explanation(issue: Issue) -> str:
         )
 
     number_of_carets = len(str(issue.instance))
-    return (  # noqa: F401
+    return (
         f"At {display_jsonpath}:\n"
         "|\n"
         f"| {property_name}{': ' if property_name else '  '}{issue.instance}\n"

@@ -1,6 +1,9 @@
 ---
 title: "Configuring the checks"
-description: "A simple introduction to customising the types of checks that are done against your `datapackage.json` by using the `Config` class, such as excluding certain checks or adding your own."
+description: >-
+  A simple introduction to customising the types of checks that are done against
+  your `datapackage.json` by using the `Config` class, such as excluding certain
+  checks or adding your own.
 jupyter: python3
 order: 3
 ---
@@ -8,37 +11,34 @@ order: 3
 {{< include ../includes/_pretty_repr.qmd >}}
 
 You can pass a [`Config`](/docs/reference/Config.qmd) object to
-[`check()`](/docs/reference/check.qmd) to customise the checks done on
-your Data Package's properties. The following configuration options are
-available:
+[`check()`](/docs/reference/check.qmd) to customise the checks done on your Data
+Package's properties. The following configuration options are available:
 
-- `version`: The version of Data Package standard to check against.
-  Defaults to `v2`.
+- `version`: The version of Data Package standard to check against. Defaults to
+  `v2`.
 - `exclusions`: A list of checks to exclude.
 - `extensions`: A list of extensions, which are additional checks that
   supplement those specified by the Data Package standard.
-- `strict`: Whether to include "SHOULD" checks in addition to "MUST"
-  checks. Defaults to `False`.
+- `strict`: Whether to include "SHOULD" checks in addition to "MUST" checks.
+  Defaults to `False`.
 
 ::: callout-important
-The Data Package standard uses language from
-[RFC 2119](https://www.ietf.org/rfc/rfc2119.txt) to define its
-specifications. They use "MUST" for required properties and "SHOULD" for
-properties that should be included but are not strictly required. We try
-to match this language in `check-datapackage` by using the terms "MUST"
-and "SHOULD", though we also use "required" for "MUST" in our
-documentation.
+The Data Package standard uses language from [RFC
+2119](https://www.ietf.org/rfc/rfc2119.txt) to define its specifications. They
+use "MUST" for required properties and "SHOULD" for properties that should be
+included but are not strictly required. We try to match this language in
+`check-datapackage` by using the terms "MUST" and "SHOULD", though we also use
+"required" for "MUST" in our documentation.
 :::
 
 ## Excluding checks
 
-You can exclude checks based on their `type` and the fields they apply
-to.
+You can exclude checks based on their `type` and the fields they apply to.
 
-The Data Package standard defines a range of check types (e.g.,
-`required` or `pattern`) and it is also possible to create your own. For
-example, to exclude checks flagging missing fields, you would exclude
-the `required` check by defining an `Exclusion` object with this `type`:
+The Data Package standard defines a range of check types (e.g., `required` or
+`pattern`) and it is also possible to create your own. For example, to exclude
+checks flagging missing fields, you would exclude the `required` check by
+defining an `Exclusion` object with this `type`:
 
 ```{python}
 from textwrap import dedent
@@ -48,29 +48,29 @@ exclusion_required = cdp.Exclusion(type="required")
 exclusion_required
 ```
 
-To exclude checks of a specific field or fields, you can use a
-[JSON path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath`
-attribute of an [`Exclusion`](/docs/reference/Exclusion.qmd) object. For
-example, you can exclude all checks on the `name` field of the Data
-Package properties by writing:
+To exclude checks of a specific field or fields, you can use a [JSON
+path](https://en.wikipedia.org/wiki/JSONPath) in the `jsonpath` attribute of an
+[`Exclusion`](/docs/reference/Exclusion.qmd) object. For example, you can
+exclude all checks on the `name` field of the Data Package properties by
+writing:
 
 ```{python}
 exclusion_name = cdp.Exclusion(jsonpath="$.name")
 exclusion_name
 ```
 
-Or you can use the wildcard JSON path selector to exclude checks on the
-`path` field of **all** Data Resource properties:
+Or you can use the wildcard JSON path selector to exclude checks on the `path`
+field of **all** Data Resource properties:
 
 ```{python}
 exclusion_path = cdp.Exclusion(jsonpath="$.resources[*].path")
 exclusion_path
 ```
 
-The `type` and `jsonpath` arguments can also be combined, so we can
-ignore an [`Issue`](/docs/reference/Issue.qmd) of a specific type on a
-specific field. For example, to exclude checks of whether the `created`
-field is in a specific format (`type="format"`), we can use:
+The `type` and `jsonpath` arguments can also be combined, so we can ignore an
+[`Issue`](/docs/reference/Issue.qmd) of a specific type on a specific field. For
+example, to exclude checks of whether the `created` field is in a specific
+format (`type="format"`), we can use:
 
 ```{python}
 exclusion_created_format = cdp.Exclusion(type="format", jsonpath="$.created")
@@ -78,11 +78,10 @@ exclusion_created_format
 ```
 
 To apply your exclusions when running the `check()`, you add them to the
-`Config` object passed to the `check()` function. First, let's make an
-example that has three `Issue` items: the package `name` is a number,
-the `created` field is not a date, and the resource `path` doesn't point
-to a data file (isn't a real path). So we'll modify our example
-`package_properties` from
+`Config` object passed to the `check()` function. First, let's make an example
+that has three `Issue` items: the package `name` is a number, the `created`
+field is not a date, and the resource `path` doesn't point to a data file (isn't
+a real path). So we'll modify our example `package_properties` from
 [`example_package_properties()`](/docs/reference/example_package_properties.qmd)
 to make these Issues appear:
 
@@ -94,15 +93,14 @@ package_properties["resources"][0]["path"] = "\\not/a/path"
 package_properties
 ```
 
-When we run `check()` on these properties, we get the three expected
-issues:
+When we run `check()` on these properties, we get the three expected issues:
 
 ```{python}
 cdp.check(properties=package_properties)
 ```
 
-Now let's exclude these `Issue`s so that `check()` finds no issues by
-adding our exclusions to a `Config` object and giving it to `check()`:
+Now let's exclude these `Issue`s so that `check()` finds no issues by adding our
+exclusions to a `Config` object and giving it to `check()`:
 
 ```{python}
 config = cdp.Config(exclusions=[exclusion_name, exclusion_path, exclusion_created_format])
@@ -111,18 +109,17 @@ cdp.check(properties=package_properties, config=config)
 
 ## Adding extensions
 
-It is possible to add checks in addition to the ones defined in the Data
-Package standard. We call these additional checks *extensions*. There
-are currently two types of extensions supported:
-[`CustomCheck`](/docs/reference/CustomCheck.qmd) and
-[`RequiredCheck`](/docs/reference/RequiredCheck.qmd). You can add as
-many `CustomCheck`s and `RequiredCheck`s to your `Config` as you want to
-fit your needs.
+It is possible to add checks in addition to the ones defined in the Data Package
+standard. We call these additional checks *extensions*. There are currently two
+types of extensions supported: [`CustomCheck`](/docs/reference/CustomCheck.qmd)
+and [`RequiredCheck`](/docs/reference/RequiredCheck.qmd). You can add as many
+`CustomCheck`s and `RequiredCheck`s to your `Config` as you want to fit your
+needs.
 
 ### Custom checks
 
-Let's say your organisation only accepts Data Packages licensed under
-MIT. You can express this `CustomCheck` as follows:
+Let's say your organisation only accepts Data Packages licensed under MIT. You
+can express this `CustomCheck` as follows:
 
 ```{python}
 license_check = cdp.CustomCheck(
@@ -137,29 +134,28 @@ license_check = cdp.CustomCheck(
 ```
 
 For more details on what each parameter means, see the
-[`CustomCheck`](/docs/reference/CustomCheck.qmd) documentation. Specific
-to this example, the `type` is setting the identifier of the check to
-`only-mit` and the `jsonpath` is indicating to only check the `name`
-property of each license in the `licenses` property of the Data Package.
+[`CustomCheck`](/docs/reference/CustomCheck.qmd) documentation. Specific to this
+example, the `type` is setting the identifier of the check to `only-mit` and the
+`jsonpath` is indicating to only check the `name` property of each license in
+the `licenses` property of the Data Package.
 
-To register your custom checks with the `check()` function, you add them
-to the `Config` object passed to the function:
+To register your custom checks with the `check()` function, you add them to the
+`Config` object passed to the function:
 
 ```{python}
 config = cdp.Config(extensions=cdp.Extensions(custom_checks=[license_check]))
 cdp.check(properties=package_properties, config=config)
 ```
 
-We can see that the custom check was applied: `check()` returned one
-issue flagging the first license attached to the Data Package.
+We can see that the custom check was applied: `check()` returned one issue
+flagging the first license attached to the Data Package.
 
 ### Required checks
 
-You can also set specific properties in the `datapackage.json` file to
-be required, even when they aren't required by the Data Package standard
-with a `RequiredCheck`. For example, if you want to make the
-`description` field of Data Package a required field, you can define a
-`RequiredCheck` like this:
+You can also set specific properties in the `datapackage.json` file to be
+required, even when they aren't required by the Data Package standard with a
+`RequiredCheck`. For example, if you want to make the `description` field of
+Data Package a required field, you can define a `RequiredCheck` like this:
 
 ```{python}
 description_required = cdp.RequiredCheck(
@@ -168,13 +164,12 @@ description_required = cdp.RequiredCheck(
 )
 ```
 
-See the [`RequiredCheck`](/docs/reference/RequiredCheck.qmd)
-documentation for more details on its parameters.
+See the [`RequiredCheck`](/docs/reference/RequiredCheck.qmd) documentation for
+more details on its parameters.
 
-To apply this `RequiredCheck`, it should be added to the `Config` object
-passed to `check()` like shown below. We'll create a
-`package_properties` without a `description` field to see the effect of
-this check:
+To apply this `RequiredCheck`, it should be added to the `Config` object passed
+to `check()` like shown below. We'll create a `package_properties` without a
+`description` field to see the effect of this check:
 
 ```{python}
 package_properties = cdp.example_package_properties()
@@ -185,14 +180,14 @@ cdp.check(properties=package_properties, config=config)
 
 ## Strict mode
 
-The Data Package standard includes properties that "MUST" and "SHOULD"
-be included and/or have a specific format in a compliant Data Package.
-By default, `check()` only includes "MUST" checks. To include "SHOULD"
-checks, set the `strict` argument to `True` in the `Config` object.
+The Data Package standard includes properties that "MUST" and "SHOULD" be
+included and/or have a specific format in a compliant Data Package. By default,
+`check()` only includes "MUST" checks. To include "SHOULD" checks, set the
+`strict` argument to `True` in the `Config` object.
 
-For example, the `name` field of a Data Package "SHOULD" not contain
-special characters. So running `check()` in strict mode (`strict=True`)
-on the following properties would output an `Issue`:
+For example, the `name` field of a Data Package "SHOULD" not contain special
+characters. So running `check()` in strict mode (`strict=True`) on the following
+properties would output an `Issue`:
 
 ```{python}
 package_properties = cdp.example_package_properties()

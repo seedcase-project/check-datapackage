@@ -3,28 +3,26 @@ title: "Design"
 ---
 
 The purpose of these design documents is to describe the design of
-`check-datapackage` in enough detail to guide a sustainable
-implementation (i.e., maintainable in the long term) and to ensure that
-the team has a shared understanding of the package's scope and
-architecture.
+`check-datapackage` in enough detail to guide a sustainable implementation
+(i.e., maintainable in the long term) and to ensure that the team has a shared
+understanding of the package's scope and architecture.
 
-`check-datapackage`'s design builds off of our overall Seedcase
-[design principles and patterns](https://design.seedcase-project.org/),
-and strongly follows the same design principles and patterns described
-there.
+`check-datapackage`'s design builds off of our overall Seedcase [design
+principles and patterns](https://design.seedcase-project.org/), and strongly
+follows the same design principles and patterns described there.
 
 ## Purpose
 
-The overall aim of `check-datapackage` is to check the compliance of a
-Data Package's metadata, found in the `datapackage.json` file, against
-the [Data Package standard](https://datapackage.org/). The contents of
-the `datapackage.json` are called
+The overall aim of `check-datapackage` is to check the compliance of a Data
+Package's metadata, found in the `datapackage.json` file, against the [Data
+Package standard](https://datapackage.org/). The contents of the
+`datapackage.json` are called
 ["properties"](https://datapackage.org/standard/data-package/#properties).
 
 Specifically, `check-datapackage` should:
 
-1. Check that the structure and contents of the Data Package (the
-   properties) match the specification.
+1. Check that the structure and contents of the Data Package (the properties)
+   match the specification.
 2. Provide simple, user-friendly feedback about mismatches.
 
 ## Requirements
@@ -37,13 +35,12 @@ Overall, `check-datapackage` must:
 - Allow configuration to check or not check certain components of the
   properties.
 - Support turning off specific checks defined in the standard.
-- Support custom, user-defined checks in addition to those in the
-  standard.
-- Provide clear, user-friendly, and structured messages about any
-  issues, identifying in which properties the issues occur.
-- Provide a strict mode that enforces all aspects of the Data Package
-  standard, including "SHOULD" checks of properties that should be
-  included or should be in a specific format.
+- Support custom, user-defined checks in addition to those in the standard.
+- Provide clear, user-friendly, and structured messages about any issues,
+  identifying in which properties the issues occur.
+- Provide a strict mode that enforces all aspects of the Data Package standard,
+  including "SHOULD" checks of properties that should be included or should be
+  in a specific format.
 - Be designed in a way that can be extended as a command-line interface
   (CLI) in the future.
 
