@@ -3,9 +3,9 @@ toc: false
 page-layout: custom
 ---
 
-::::: landing-page-block
-:::: hero-text
-::: text-center
+::: landing-page-block
+::::: hero-text
+::::::: text-center
 ![](_extensions/seedcase-project/seedcase-theme/logos/check-datapackage/icon.svg){fig-alt="Check
 datapackage logo." width="150px"}
 
@@ -14,75 +14,73 @@ datapackage font." height="50px"}
 
 ## Ensure the compliance of your Data Package metadata
 
-[Overview](/docs/index.qmd){.btn .about-link}
-[Explore guide](/docs/guide/index.qmd){.btn .about-link}
-:::
-::::
+[Overview](/docs/index.qmd){.btn .about-link} [Explore
+guide](/docs/guide/index.qmd){.btn .about-link}
+:::::::
 :::::
-
-:::: landing-page-block
-::: {#hero-heading}
-{{< include /docs/includes/_badges.qmd >}}
 :::
-::::
 
-::::: hero-banner
-:::: landing-page-block
-::: hero-text
-`check-datapackage` is a Python package that checks your Data Package's
-metadata against the [Data Package standard](https://datapackage.org/)
-to ensure that your metadata is compliant with the standard.
+::: landing-page-block
+::::: {#hero-heading}
+{{< include /docs/includes/_badges.qmd >}}
+:::::
+:::
+
+::: hero-banner
+::::: landing-page-block
+::::::: hero-text
+`check-datapackage` is a Python package that checks your Data Package's metadata
+against the [Data Package standard](https://datapackage.org/) to ensure that
+your metadata is compliant with the standard.
 
 ## Key features :sparkles
 
-- Checks your metadata in `datapackage.json` against the Data Package
-  standard.
-- Enables you to configure which components of the metadata should or
-  should not be checked.
+- Checks your metadata in `datapackage.json` against the Data Package standard.
+- Enables you to configure which components of the metadata should or should not
+  be checked.
 - Enables you to turn off specific checks defined in the standard.
 - Supports user-defined, custom checks.
-- Provides clear and user-friendly messages that point directly to where
-  issues occur in the metadata.
-- Supports a strict mode that enforces full compliance with the
-  standard, including not only the checks defined by the Data Package
-  specification as "MUST" but also those marked as "SHOULD".
+- Provides clear and user-friendly messages that point directly to where issues
+  occur in the metadata.
+- Supports a strict mode that enforces full compliance with the standard,
+  including not only the checks defined by the Data Package specification as
+  "MUST" but also those marked as "SHOULD".
 
 :warning: Note that `check-datapackage` only checks the metadata in your
-`datapackage.json` file against the Data Package standard---it does not
-check the data itself against the metadata.
-:::
-::::
+`datapackage.json` file against the Data Package standard---it does not check
+the data itself against the metadata.
+:::::::
 :::::
+:::
 
-::::: landing-page-block
-:::: hero-text
+::: landing-page-block
+::::: hero-text
 ## About the Seedcase Project
 
-`check-datapackage` is part of the
-[**Seedcase Project**](https://seedcase-project.org), which helps
-research projects manage and process data in line with the
+`check-datapackage` is part of the [**Seedcase
+Project**](https://seedcase-project.org), which helps research projects manage
+and process data in line with the
 [FAIR](https://www.go-fair.org/fair-principles/) principles.
 
-This package works as a standalone tool but is also integrated in
-[Seedcase Sprout](https://sprout.seedcase-project.org), a Python package
-that provides a framework for growing structured, organised, and FAIR
-data.
+This package works as a standalone tool but is also integrated in [Seedcase
+Sprout](https://sprout.seedcase-project.org), a Python package that provides a
+framework for growing structured, organised, and FAIR data.
 
-::: text-center
+::::::: text-center
 [Check out Sprout](https://sprout.seedcase-project.org/){.btn
 .about-link}
-:::
-::::
+:::::::
 :::::
+:::
 
-::::: hero-banner
-:::: landing-page-block
-::: hero-text
+::: hero-banner
+::::: landing-page-block
+::::::: hero-text
 ## Want to contribute?
 
-We would love your feedback or contributions! Head over to the
-[GitHub repository](https://github.com/seedcase-project/check-datapackage)
-to share your ideas or contribute code. Your input makes us better!
-:::
-::::
+We would love your feedback or contributions! Head over to the [GitHub
+repository](https://github.com/seedcase-project/check-datapackage) to share your
+ideas or contribute code. Your input makes us better!
+:::::::
 :::::
+:::

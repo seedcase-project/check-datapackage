@@ -2,27 +2,25 @@
 title: "Configuration"
 ---
 
-This document describes the configuration settings for both the Python
-classes and the configuration file. It primarily serves as a reference
-for us to develop from and track what has been finished and what remains
-to be done.
+This document describes the configuration settings for both the Python classes
+and the configuration file. It primarily serves as a reference for us to develop
+from and track what has been finished and what remains to be done.
 
 {{< include /docs/includes/_design-status.qmd >}}
 
 ## Overview
 
-Configuration settings allow users to customise the checking behaviour
-of `check-datapackage`.
+Configuration settings allow users to customise the checking behaviour of
+`check-datapackage`.
 
 ## {{< var planned >}} Configuration file
 
-When we develop the CLI, we'll use a configuration file to store the
-settings contained within the `Config` class. This file will be named
-`.cdp.toml` and will be located in the same directory as the
-`datapackage.json` file. This is an example of what that file could look
-like:
+When we develop the CLI, we'll use a configuration file to store the settings
+contained within the `Config` class. This file will be named `.cdp.toml` and
+will be located in the same directory as the `datapackage.json` file. This is an
+example of what that file could look like:
 
-```{.toml}
+```toml
 # The Data Package standard version to check against.
 version = "v2"
 

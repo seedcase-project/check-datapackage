@@ -4,12 +4,11 @@ title: "Inputs"
 
 This section describes the inputs accepted by `check-datapackage`.
 
-- The Data Package properties: This is a `Properties` type containing
-  the metadata of a Data Package. Allowed properties are defined in the
-  [Data Package standard](https://datapackage.org/). A common use case
-  is loading the properties from the `datapackage.json` file.
-- The configuration settings: Values that control how
-  `check-datapackage` behaves (like which content to include in the
-  output, how to format it, and where to save it). These can be provided
-  as command-line arguments, via a Python class, or within a
-  configuration file.
+- The Data Package properties: This is a `Properties` type containing the
+  metadata of a Data Package. Allowed properties are defined in the [Data
+  Package standard](https://datapackage.org/). A common use case is loading the
+  properties from the `datapackage.json` file.
+- The configuration settings: Values that control how `check-datapackage`
+  behaves (like which content to include in the output, how to format it, and
+  where to save it). These can be provided as command-line arguments, via a
+  Python class, or within a configuration file.

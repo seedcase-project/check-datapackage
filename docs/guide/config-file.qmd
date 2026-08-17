@@ -5,77 +5,75 @@ order: 5
 ---
 
 `check-datapackage` can be configured through command-line options and a
-configuration file. This guide covers configuration files for the CLI.
-For command-line usage, see the [CLI guide](/docs/guide/cli.qmd). For
-the Python `Config` class used with `check()`, see
-[Configuring the checks](/docs/guide/config.qmd).
+configuration file. This guide covers configuration files for the CLI. For
+command-line usage, see the [CLI guide](/docs/guide/cli.qmd). For the Python
+`Config` class used with `check()`, see [Configuring the
+checks](/docs/guide/config.qmd).
 
-A configuration file lets you set preferences once, so you don't have to
-repeat them every time you run `check-datapackage check`.
-`check-datapackage` supports two configuration files: `.cdp.toml` and
-`pyproject.toml`. These files should be placed in the root of your
-project---`check-datapackage` will find them automatically.
+A configuration file lets you set preferences once, so you don't have to repeat
+them every time you run `check-datapackage check`. `check-datapackage` supports
+two configuration files: `.cdp.toml` and `pyproject.toml`. These files should be
+placed in the root of your project---`check-datapackage` will find them
+automatically.
 
-Use `.cdp.toml` if you want a file dedicated to `check-datapackage`
-settings, or `pyproject.toml` if your Data Package is a Python project
-that already uses `pyproject.toml` and you prefer to keep all config
-settings in one place.
+Use `.cdp.toml` if you want a file dedicated to `check-datapackage` settings, or
+`pyproject.toml` if your Data Package is a Python project that already uses
+`pyproject.toml` and you prefer to keep all config settings in one place.
 
 ::: callout-note
-Settings provided via the CLI or Python interface always take priority
-over the configuration file.
+Settings provided via the CLI or Python interface always take priority over the
+configuration file.
 :::
 
 ## Configurable settings
 
-Before diving into editing your configuration, let’s see which settings
-can be configured via the configuration file:
+Before diving into editing your configuration, let's see which settings can be
+configured via the configuration file:
 
-- `strict`: If `true`, include checks for Data Package properties marked
-  as "SHOULD" in addition to those marked as "MUST". Defaults to
-  `false`.
+- `strict`: If `true`, include checks for Data Package properties marked as
+  "SHOULD" in addition to those marked as "MUST". Defaults to `false`.
 - `exclusions`: Exclude issues by
-  [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type,
-  or both.
-- `extensions`: Add extra checks that supplement the Data Package
-  standard. Configuration files support
+  [JSONPath](https://www.rfc-editor.org/rfc/rfc9535.html), issue type, or both.
+- `extensions`: Add extra checks that supplement the Data Package standard.
+  Configuration files support
   [`RequiredCheck`](/docs/reference/RequiredCheck.qmd) extensions.
 
-Note that the positional `source` argument cannot be set via the
-configuration file; it must be passed via the command line or Python
-interface.
+Note that the positional `source` argument cannot be set via the configuration
+file; it must be passed via the command line or Python interface.
 
 ## Configuration file syntax
 
 Both configuration files use TOML syntax. The examples below start with
-`.cdp.toml`, then show the `pyproject.toml` variant. All the examples
-below assume that a `datapackage.json` file exists in the current
-directory. Here, we use the
-[`simple` Data Package](https://soil.seedcase-project.org/docs/reference/example)
-example from our package [Soil](https://soil.seedcase-project.org). You
-can write the same content to `datapackage.json` in your current
-directory by running the following code snippet:
+`.cdp.toml`, then show the `pyproject.toml` variant. All the examples below
+assume that a `datapackage.json` file exists in the current directory. Here, we
+use the [`simple` Data
+Package](https://soil.seedcase-project.org/docs/reference/example) example from
+our package [Soil](https://soil.seedcase-project.org). You can write the same
+content to `datapackage.json` in your current directory by running the following
+code snippet:
 
 ```{python}
 #| output: false
+
 import seedcase_soil as so
 from pathlib import Path
 
 properties = so.read_properties(so.Example.simple.address)
-so.write_properties(properties, Path('datapackage.json'))
+so.write_properties(properties, Path("datapackage.json"))
 ```
 
 ### Strict checking
 
-Before creating a configuration file, we can see that the simple example
-data package passes all checks:
+Before creating a configuration file, we can see that the simple example data
+package passes all checks:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 check-datapackage check
 ```
 
 ```{python}
 #| echo: false
+
 import seedcase_soil as so
 
 so.format_output_for_docs(["cdp", "check"])
@@ -83,20 +81,21 @@ so.format_output_for_docs(["cdp", "check"])
 
 Now, create a `.cdp.toml` file and enable strict checking:
 
-``` {.toml filename=".cdp.toml"}
+```toml {filename=".cdp.toml"}
 strict = true
 ```
 
-When you run `check-datapackage check` again, strict mode is enabled and
-the example package does not pass the stricter checks because the `id`
-property is missing:
+When you run `check-datapackage check` again, strict mode is enabled and the
+example package does not pass the stricter checks because the `id` property is
+missing:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 check-datapackage check
 ```
 
 ```{python}
 #| echo: false
+
 config_path = Path(".cdp.toml")
 config_path.write_text("""
 strict = true
@@ -108,30 +107,29 @@ finally:
     config_path.unlink(missing_ok=True)
 ```
 
-This is the same as if we had run `check-datapackage check --strict`
-before creating the configuration file.
+This is the same as if we had run `check-datapackage check --strict` before
+creating the configuration file.
 
-If you prefer to configure `check-datapackage` via `pyproject.toml`, the
-syntax is almost the same as above; the only difference is that you need
-to include a heading to indicate where in the file `check-datapackage`
-can find the settings. Open up your `pyproject.toml` (or create one in
-the root of your project) and add a new table header
-`[tool.check-datapackage]` with the same configuration settings as you
-used above:
+If you prefer to configure `check-datapackage` via `pyproject.toml`, the syntax
+is almost the same as above; the only difference is that you need to include a
+heading to indicate where in the file `check-datapackage` can find the settings.
+Open up your `pyproject.toml` (or create one in the root of your project) and
+add a new table header `[tool.check-datapackage]` with the same configuration
+settings as you used above:
 
-``` {.toml filename="pyproject.toml"}
+```toml {filename="pyproject.toml"}
 [tool.check-datapackage]
 strict = true
 ```
 
 ### Exclusions
 
-Above, we saw that the simple example data package fails strict checking
-because the required `id` property is missing. To exclude that issue
-from the checks, we can add an exclusion to the `.cdp.toml` file that
-matches both the JSONPath and issue type:
+Above, we saw that the simple example data package fails strict checking because
+the required `id` property is missing. To exclude that issue from the checks, we
+can add an exclusion to the `.cdp.toml` file that matches both the JSONPath and
+issue type:
 
-``` {.toml filename=".cdp.toml"}
+```toml {filename=".cdp.toml"}
 strict = true
 
 [[exclusions]]
@@ -141,12 +139,13 @@ type = "required"
 
 Running the same command now passes:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 check-datapackage check
 ```
 
 ```{python}
 #| echo: false
+
 config_path.write_text("""
 strict = true
 [[exclusions]]
@@ -163,12 +162,11 @@ finally:
 If you want to add different exclusions, you can keep adding more
 `[[exclusions]]` below the current one.
 
-If you prefer to configure `check-datapackage` via `pyproject.toml`, the
-syntax is almost the same as above; the only difference is that you need
-to include a heading to indicate where in the file `check-datapackage`
-can find the settings:
+If you prefer to configure `check-datapackage` via `pyproject.toml`, the syntax
+is almost the same as above; the only difference is that you need to include a
+heading to indicate where in the file `check-datapackage` can find the settings:
 
-``` {.toml filename=".cdp.toml"}
+```toml {filename=".cdp.toml"}
 [tool.check-datapackage]
 strict = true
 
@@ -181,11 +179,10 @@ type = "required"
 
 #### Required checks
 
-You can also add required checks in your configuration file. To require
-the `contributors` property, use the TOML header
-`[[extensions.required_checks]]`:
+You can also add required checks in your configuration file. To require the
+`contributors` property, use the TOML header `[[extensions.required_checks]]`:
 
-``` {.toml filename=".cdp.toml"}
+```toml {filename=".cdp.toml"}
 [[extensions.required_checks]]
 jsonpath="$.contributors"
 message="The 'contributors' field is required in the Data Package properties."
@@ -193,12 +190,13 @@ message="The 'contributors' field is required in the Data Package properties."
 
 Run the check:
 
-``` {.bash filename="Terminal"}
+```bash {filename="Terminal"}
 check-datapackage check
 ```
 
 ```{python}
 #| echo: false
+
 config_path.write_text("""
 [[extensions.required_checks]]
 jsonpath="$.contributors"
@@ -214,7 +212,7 @@ finally:
 If you use `pyproject.toml`, put the same nested table under
 `[tool.check-datapackage]`:
 
-``` {.toml filename="pyproject.toml"}
+```toml {filename="pyproject.toml"}
 [tool.check-datapackage]
 
 [[tool.check-datapackage.extensions.required_checks]]
@@ -222,17 +220,18 @@ jsonpath="$.contributors"
 message="The 'contributors' field is required in the Data Package properties."
 ```
 
-You can add more required checks by adding more
-`[[extensions.required_checks]]` tables.
+You can add more required checks by adding more `[[extensions.required_checks]]`
+tables.
 
 #### Custom checks
 
-Custom checks require a Python function for their `check` argument, so
-define [`CustomCheck`](/docs/reference/CustomCheck.qmd) extensions in
-Python rather than in a TOML configuration file.
+Custom checks require a Python function for their `check` argument, so define
+[`CustomCheck`](/docs/reference/CustomCheck.qmd) extensions in Python rather
+than in a TOML configuration file.
 
 ```{python}
 #| output: false
+
 # Clean up example data from tmp dir
-Path('datapackage.json').unlink(missing_ok=True)
+Path("datapackage.json").unlink(missing_ok=True)
 ```
