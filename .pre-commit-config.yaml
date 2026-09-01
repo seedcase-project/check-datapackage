@@ -11,7 +11,7 @@ repos:
       - id: gitleaks
 
   - repo: https://github.com/jolars/panache-pre-commit
-    rev: v3.6.1
+    rev: v3.7.0
     hooks:
       - id: panache-format
 
@@ -29,14 +29,14 @@ repos:
   # sub-packages, which confuses pre-commit when it tries to find the latest
   # version
   - repo: https://github.com/adhtruong/mirrors-typos
-    rev: v1.49.0
+    rev: v1.50.0
     hooks:
       - id: typos
         args: [--config, .config/typos.toml, --force-exclude]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.16.4
+    rev: v0.16.5
     hooks:
       # Run the linter.
       - id: ruff-check
