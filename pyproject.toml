@@ -6,14 +6,14 @@ authors = [
   { name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
   { name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
   { name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
-  { name = "Marton Vago", email = "marton.vago95@gmail.com" },
+  { name = "Fruzsina Vago", email = "fruzsi.vago@gmail.com" },
   { name = "Joel Ostblom", email = "joel@joelostblom.com" },
 ]
 maintainers = [
   { name = "Luke W. Johnston", email = "lwjohnst@gmail.com" },
   { name = "Kristiane Beicher", email = "kris.beicher@clin.au.dk" },
   { name = "Signe Kirk Brødbæk", email = "signekb@clin.au.dk" },
-  { name = "Marton Vago", email = "marton.vago95@gmail.com" },
+  { name = "Fruzsina Vago", email = "fruzsi.vago@gmail.com" },
   { name = "Joel Ostblom", email = "joel@joelostblom.com" },
 ]
 readme = "README.md"

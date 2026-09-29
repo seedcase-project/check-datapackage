@@ -134,7 +134,7 @@ requests :tada:
 [@lwjohnst86](https://github.com/lwjohnst86),
 [@signekb](https://github.com/signekb),
 [@joelostblom](https://github.com/joelostblom),
-[@martonvago](https://github.com/martonvago)
+[@fruvago](https://github.com/fruvago)
 
 ## Licensing
 
@@ -151,7 +151,7 @@ Project](https://seedcase-project.org), which is a collaborative effort
 to create a framework for data management and analysis in research. If
 you use this project in your work, please cite it as follows:
 
-Johnston L.W., Brødbæk S.K., Beicher K., Vago M., Ostblom J. (2025).
+Johnston L.W., Brødbæk S.K., Beicher K., Vago F., Ostblom J. (2025).
 Check Data Package: Ensure the correctness and compliance of your Data
 Package DOI: 10.5281/zenodo.17733655 URL:
 https://check-datapackage.seedcase-project.org
@@ -159,7 +159,7 @@ https://check-datapackage.seedcase-project.org
 Or as a BibTeX entry:
 
     @misc{YourReferenceHere,
-    author = {Johnston, Luke William and Brødbæk, Signe Kirk and Beicher, Kristiane and Vago, Marton and Ostblom, Joel},
+    author = {Johnston, Luke William and Brødbæk, Signe Kirk and Beicher, Kristiane and Vago, Fruzsina and Ostblom, Joel},
     doi = {10.5281/zenodo.17733655},
     month = {11},
     title = {Check Data Package: Ensure the correctness and compliance of your Data Package},
