@@ -612,7 +612,7 @@ wheels = [
 
 [[package]]
 name = "cyclopts"
-version = "4.16.1"
+version = "5.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -620,9 +620,9 @@ dependencies = [
     { name = "rich" },
     { name = "rich-rst" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/34/07/bf61d13de86d96a4c46aff00c9ca0eced44bcc8c3e16280605c1253e5720/cyclopts-4.16.1.tar.gz", hash = "sha256:8aa47bf92a5fb33abca5af05e576eecdb0d2f79893ad29238046df78370fc4a8", size = 181196, upload-time = "2026-05-25T15:29:08.518Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/8c/7a7f5a3af1845cb6b9c28bf2a6db1bc510a6b9661109138c70ab6d8d650a/cyclopts-5.1.1.tar.gz", hash = "sha256:252fe37b01a80f10933f91c312db551e4e86ffd87bee401ab2ed091769135426", size = 237903, upload-time = "2026-10-01T00:00:02.762Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/8d/7f362c2fb8ef4decd2160bc24d4292c6ca658cc6d9a161b89ca5122bbdbf/cyclopts-4.16.1-py3-none-any.whl", hash = "sha256:617795392c4113a2c2cc7af716f20244900e87f23daa05442d1268d81472a592", size = 219020, upload-time = "2026-05-25T15:29:09.646Z" },
+    { url = "https://files.pythonhosted.org/packages/2a/37/1afff6923395f2f0ce730bae8851371b7418be17dc44d90ba80f72799240/cyclopts-5.1.1-py3-none-any.whl", hash = "sha256:ff0da67b2d2d8fe716d20ab82c698277ef30a8fb75d24e9b38a06f56c44931fd", size = 279527, upload-time = "2026-10-01T00:00:00.485Z" },
 ]
 
 [[package]]
@@ -2427,7 +2427,7 @@ wheels = [
 
 [[package]]
 name = "seedcase-soil"
-version = "0.16.0"
+version = "0.16.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cyclopts" },
@@ -2435,9 +2435,9 @@ dependencies = [
     { name = "rich" },
     { name = "seedir" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/22/35/166fd59d598c61291a47a101e744f736bbcb9b582b0e3309f00236d90467/seedcase_soil-0.16.0.tar.gz", hash = "sha256:17b3a0313f0af1bb5fb5257cd41c4d75a4f84d4b1d520e1300d9a39d9da1e774", size = 1051522, upload-time = "2026-06-10T13:34:51.974Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/14/cb/26ecfb4e49abb478c0e5eb39d87ebc8b74a3891208a15816331ac88f84b2/seedcase_soil-0.16.1.tar.gz", hash = "sha256:4fb29ca54750bcf8f8752153c4498ca909b050e4399f5c7056ce3d1334ac37f0", size = 1064852, upload-time = "2026-09-25T12:18:08.724Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/bd/6693f3209b002980bea27742282fc5934910176f391f31b756ceddbc8ff3/seedcase_soil-0.16.0-py3-none-any.whl", hash = "sha256:5706878bec88693e57d906fac9e38d04ed5f4f16b6addf0127d89b593f74feda", size = 18557, upload-time = "2026-06-10T13:34:51.012Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/19/3c1b954bd20d7e6519ad62ef3bf8a0bbb860021f14551912fc283ebb1d44/seedcase_soil-0.16.1-py3-none-any.whl", hash = "sha256:a94cd58d34ebb3ce133c4b83f6c4d3e82eb909aa58a139a278992c2f436ee938", size = 17988, upload-time = "2026-09-25T12:18:07.742Z" },
 ]
 
 [[package]]
